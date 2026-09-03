@@ -114,7 +114,9 @@ export async function request<T>(
   method: MethodType = 'POST',
   options?: RequestOptions
 ): Promise<Response<T>> {
-  return queryRequest<T>(action, data, queryParam, method, options).catch(error => error as Response<T>)
+  return queryRequest<T>(action, data, queryParam, method, options).catch(
+    error => error as Response<T>
+  )
 }
 
 export async function proxyRequest<T>(data: EndpointType): Promise<Response<T>> {

@@ -1,5 +1,3 @@
- 
-
 /**
  * snake_case to camelCase
  */

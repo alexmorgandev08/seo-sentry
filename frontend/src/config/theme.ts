@@ -1,5 +1,5 @@
-import { theme as antdTheme } from 'antd'
-import type { ThemeConfig } from 'antd'
+import { theme as antdTheme } from 'ant-design-vue'
+import type { ThemeConfig } from 'ant-design-vue/es/config-provider/context'
 
 /**
  * Components reference the palette through CSS variables, so a theme switch is
@@ -87,6 +87,9 @@ export function buildTheme(isDark: boolean, isCompact: boolean): ThemeConfig {
       colorTextDescription: c.inkMuted,
       colorTextSecondary: c.inkMuted,
       colorWarning: c.warning,
+      // Component-level tokens are not supported by ant-design-vue; anything
+      // that was expressed per component in the React build now lives in
+      // global.css under the #seo-change-monitor-root scope.
       controlHeight: 34,
       controlHeightLG: 38,
       controlHeightSM: 26,
@@ -95,33 +98,6 @@ export function buildTheme(isDark: boolean, isCompact: boolean): ThemeConfig {
       fontWeightStrong: 600,
       lineHeight: 1.5,
       wireframe: false
-    },
-    components: {
-      // antd ships a drop shadow on every button, which at this size reads as a
-      // toy control rather than a tool. Flat, with the border doing the work.
-      Button: {
-        dangerShadow: 'none',
-        defaultShadow: 'none',
-        fontWeight: 500,
-        paddingInline: 14,
-        primaryShadow: 'none'
-      },
-      Card: {
-        headerBg: 'transparent',
-        headerFontSize: 13,
-        headerHeight: 44,
-        paddingLG: 16
-      },
-      Segmented: { itemSelectedBg: c.surface, trackBg: c.lineSoft },
-      Table: {
-        cellPaddingBlock: 14,
-        cellPaddingInline: 16,
-        headerBg: 'transparent',
-        headerColor: c.inkMuted,
-        headerSplitColor: 'transparent',
-        rowHoverBg: c.lineSoft
-      },
-      Tag: { borderRadiusSM: 5 }
     }
   }
 }

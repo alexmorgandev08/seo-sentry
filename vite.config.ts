@@ -1,5 +1,5 @@
 // export { default } from './.config/_plugin-commons/vite-config'
-import react from '@vitejs/plugin-react'
+import vue from '@vitejs/plugin-vue'
 import { checkSubmoduleUpdatesPlugin, generateBuildCodeNamePlugin } from 'bitapps-dev-utils'
 import { humanId } from 'human-id'
 import path from 'node:path'
@@ -31,7 +31,7 @@ export default defineConfig(({ mode }) => {
       emptyOutDir: true,
       outDir: `../${ASSETS_DIR}`,
       rollupOptions: {
-        input: path.resolve(import.meta.dirname, 'frontend/src/main.tsx'),
+        input: path.resolve(import.meta.dirname, 'frontend/src/main.ts'),
         output: {
           assetFileNames: fInfo => {
             const pathArr = fInfo?.name?.split('/')
@@ -66,13 +66,7 @@ export default defineConfig(({ mode }) => {
       ...(!isTest && { SERVER_VARIABLES: `window.${SERVER_VARIABLES}` })
     },
     plugins: [
-      react({
-        babel: {
-          plugins: ['@emotion/babel-plugin']
-        },
-        jsxImportSource: '@emotion/react',
-        jsxRuntime: 'automatic'
-      }),
+      vue(),
       tsconfigPaths(),
       generateBuildCodeNamePlugin({ codeName, dir: ASSETS_DIR }),
       checkSubmoduleUpdatesPlugin()
@@ -99,13 +93,13 @@ export default defineConfig(({ mode }) => {
       strictPort: true // strict port to match on PHP side
     },
     ssr: {
-      noExternal: isTest ? ['@vitejs/plugin-react'] : []
+      noExternal: isTest ? ['@vitejs/plugin-vue'] : []
     },
     test: {
       environment: 'happy-dom',
       // environment: 'jsdom',
       globals: true,
-      include: ['frontend/src/**/*.test.{tsx,ts}'],
+      include: ['frontend/src/**/*.test.{ts,vue}'],
       root: './',
       setupFiles: ['./frontend/src/config/test.setup.ts'],
       testTimeout: 10_000

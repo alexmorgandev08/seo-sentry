@@ -14,12 +14,11 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "module": "ESNext",
-    "moduleResolution": "Node",
+    "moduleResolution": "Bundler",
     "resolveJsonModule": false,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx",
-    "jsxImportSource": "@emotion/react",
+    "jsx": "preserve",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "plugins": [
       {
@@ -41,7 +40,8 @@
     }
   },
   "include": [
-    "./frontend",
+    "./frontend/**/*.ts",
+    "./frontend/**/*.vue",
     "./frontend/src/types",
     "./scripts"
   ],

@@ -162,6 +162,45 @@ body.toplevel_page_seo-change-monitor #wpfooter {
   margin-bottom: 0;
 }
 
+/*
+ * Component styling that was expressed as antd component tokens in the React
+ * build. ant-design-vue 4 ships empty per-component ComponentToken interfaces,
+ * so these have no token equivalent and live here instead.
+ */
+#seo-change-monitor-root .ant-btn {
+  box-shadow: none;
+}
+
+#seo-change-monitor-root .ant-card-head-title {
+  font-size: 13px;
+}
+
+#seo-change-monitor-root .ant-card-body {
+  padding: 16px;
+}
+
+#seo-change-monitor-root .ant-table-thead > tr > th,
+#seo-change-monitor-root .ant-table-tbody > tr > td {
+  padding: 14px 16px;
+}
+
+#seo-change-monitor-root .ant-table-thead > tr > th {
+  background: transparent;
+  color: var(--scm-ink-muted);
+}
+
+#seo-change-monitor-root .ant-table-thead > tr > th::before {
+  display: none;
+}
+
+#seo-change-monitor-root .ant-table-tbody > tr:hover > td {
+  background: var(--scm-line-soft);
+}
+
+#seo-change-monitor-root .ant-tag {
+  border-radius: 5px;
+}
+
 /* Cards: quiet border, no heavy shadow, consistent radius. */
 #seo-change-monitor-root .ant-card {
   box-shadow: none;

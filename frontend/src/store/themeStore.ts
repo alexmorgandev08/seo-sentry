@@ -1,4 +1,5 @@
-import { create } from 'zustand'
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
 
 export type ThemeMode = 'dark' | 'light' | 'system'
 
@@ -36,7 +37,7 @@ export const resolveMode = (mode: ThemeMode) =>
   mode === 'system' ? (prefersDark() ? 'dark' : 'light') : mode
 
 /**
- * Applies the resolved theme to the app root. Exported so main.tsx can call it
+ * Applies the resolved theme to the app root. Exported so main.ts can call it
  * before the first render and avoid a flash of the wrong theme.
  */
 export const applyTheme = (resolved: 'dark' | 'light', compact: boolean) => {
@@ -48,24 +49,11 @@ export const applyTheme = (resolved: 'dark' | 'light', compact: boolean) => {
   root.style.colorScheme = resolved
 
   // Mirrored onto <html> so the palette variables, which are also declared at
-  // :root, switch for antd's portalled surfaces (drawers, modals, dropdowns,
+  // :root, switch for the portalled surfaces (drawers, modals, dropdowns,
   // tooltips) — those render outside the app root and cannot see its classes.
   document.documentElement.classList.toggle('scm-dark', resolved === 'dark')
   document.documentElement.classList.toggle('scm-compact', compact)
 }
-
-interface ThemeState {
-  mode: ThemeMode
-  resolved: 'dark' | 'light'
-  compact: boolean
-  setMode: (mode: ThemeMode) => void
-  setCompact: (compact: boolean) => void
-  /** Re-evaluates 'system' when the OS preference changes. */
-  syncSystem: () => void
-}
-
-const initialMode = readStoredMode()
-const initialCompact = readStoredCompact()
 
 const store = (key: string, value: string) => {
   try {
@@ -75,27 +63,31 @@ const store = (key: string, value: string) => {
   }
 }
 
-export const useThemeStore = create<ThemeState>((set, get) => ({
-  mode: initialMode,
-  resolved: resolveMode(initialMode),
-  compact: initialCompact,
-  setMode: mode => {
-    const resolved = resolveMode(mode)
+export const useThemeStore = defineStore('theme', () => {
+  const mode = ref<ThemeMode>(readStoredMode())
+  const resolved = ref<'dark' | 'light'>(resolveMode(mode.value))
+  const compact = ref(readStoredCompact())
 
-    store(STORAGE_KEY, mode)
-    applyTheme(resolved, get().compact)
-    set({ mode, resolved })
-  },
-  setCompact: compact => {
-    store(DENSITY_KEY, compact ? '1' : '0')
-    applyTheme(get().resolved, compact)
-    set({ compact })
-  },
-  syncSystem: () => {
-    if (get().mode !== 'system') return
-
-    const resolved = resolveMode('system')
-    applyTheme(resolved, get().compact)
-    set({ resolved })
+  const setMode = (next: ThemeMode) => {
+    mode.value = next
+    resolved.value = resolveMode(next)
+    store(STORAGE_KEY, next)
+    applyTheme(resolved.value, compact.value)
   }
-}))
+
+  const setCompact = (next: boolean) => {
+    compact.value = next
+    store(DENSITY_KEY, next ? '1' : '0')
+    applyTheme(resolved.value, next)
+  }
+
+  /** Re-evaluates 'system' when the OS preference changes. */
+  const syncSystem = () => {
+    if (mode.value !== 'system') return
+
+    resolved.value = resolveMode('system')
+    applyTheme(resolved.value, compact.value)
+  }
+
+  return { compact, mode, resolved, setCompact, setMode, syncSystem }
+})

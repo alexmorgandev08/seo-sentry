@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { onMounted, onUnmounted, ref } from 'vue'
 
 /** antd's own gap between the viewport edge and a toast. */
 const GAP = 8
@@ -21,15 +21,13 @@ function measure() {
 }
 
 export default function useAdminBarOffset() {
-  const [offset, setOffset] = useState(measure)
+  const offset = ref(measure())
+  const onResize = () => {
+    offset.value = measure()
+  }
 
-  useEffect(() => {
-    const onResize = () => setOffset(measure())
-
-    window.addEventListener('resize', onResize)
-
-    return () => window.removeEventListener('resize', onResize)
-  }, [])
+  onMounted(() => window.addEventListener('resize', onResize))
+  onUnmounted(() => window.removeEventListener('resize', onResize))
 
   return offset
 }

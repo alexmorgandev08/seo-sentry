@@ -1,5 +1,3 @@
- 
- 
 import { __ as i18n_, sprintf as i18nSprintf } from '@wordpress/i18n'
 
 // declare let bitapp: any

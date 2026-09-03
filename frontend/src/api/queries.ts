@@ -1,4 +1,5 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+import { computed, toValue } from 'vue'
 import call from './client'
 import type {
   AiExplanation,
@@ -11,9 +12,10 @@ import type {
   FindingsPage,
   PostSearchResult,
   Settings,
-  Target,
-  SiteStatusSummary
+  SiteStatusSummary,
+  Target
 } from './types'
+import type { MaybeRefOrGetter } from 'vue'
 
 export const keys = {
   targets: ['targets'] as const,
@@ -69,17 +71,24 @@ export const useDeleteTarget = () => {
   })
 }
 
-export const usePostSearch = (term: string) =>
+/*
+ * The reactive arguments below take MaybeRefOrGetter and read through
+ * toValue(): callers pass a plain value where the input never changes (the
+ * dashboard's fixed window) and a ref or computed where it does (the flight
+ * log's filters, the search box). A plain object in the query key would
+ * freeze the query at its first value and never refetch.
+ */
+export const usePostSearch = (term: MaybeRefOrGetter<string>) =>
   useQuery({
-    queryKey: keys.postSearch(term),
-    queryFn: () => call<PostSearchResult[]>('targets/post-search', { term }),
-    enabled: term.length > 1
+    queryKey: computed(() => keys.postSearch(toValue(term))),
+    queryFn: () => call<PostSearchResult[]>('targets/post-search', { term: toValue(term) }),
+    enabled: computed(() => toValue(term).length > 1)
   })
 
-export const useFindings = (filters: FindingFilters) =>
+export const useFindings = (filters: MaybeRefOrGetter<FindingFilters>) =>
   useQuery({
-    queryKey: keys.findings(filters),
-    queryFn: () => call<FindingsPage>('findings/get', filters)
+    queryKey: computed(() => keys.findings(toValue(filters))),
+    queryFn: () => call<FindingsPage>('findings/get', toValue(filters))
   })
 
 export const useRunStatus = () =>
@@ -153,11 +162,11 @@ export const useExplainWithAi = () =>
       call<AiExplanation>('ai/explain', payload)
   })
 
-export const useAiUsage = (enabled: boolean) =>
+export const useAiUsage = (enabled: MaybeRefOrGetter<boolean>) =>
   useQuery({
     queryKey: ['ai-usage'],
     queryFn: () => call<{ usage: AiUsage; cap: number; available: boolean }>('ai/usage'),
-    enabled
+    enabled: computed(() => toValue(enabled))
   })
 
 export const useTestSlack = () =>

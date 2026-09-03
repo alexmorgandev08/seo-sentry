@@ -1,5 +1,5 @@
-import { useEffect } from 'react'
-import { useLocation } from 'react-router'
+import { watch } from 'vue'
+import { useRoute } from 'vue-router'
 import config from '@config/config'
 
 /**
@@ -9,33 +9,38 @@ import config from '@config/config'
  * WordPress always marks the first one current; it cannot see the hash.
  */
 export default function useWpMenuHighlight() {
-  const location = useLocation()
+  const route = useRoute()
 
-  useEffect(() => {
-    const items = document.querySelectorAll<HTMLAnchorElement>(
-      `#adminmenu a[href*="page=${config.PLUGIN_SLUG}"]`
-    )
+  watch(
+    () => route.path,
+    path => {
+      const items = document.querySelectorAll<HTMLAnchorElement>(
+        `#adminmenu a[href*="page=${config.PLUGIN_SLUG}"]`
+      )
 
-    if (items.length === 0) return
+      if (items.length === 0) return
 
-    const route = location.pathname === '/' ? '' : `#${location.pathname}`
+      const current = path === '/' ? '' : `#${path}`
 
-    items.forEach(anchor => {
-      const parent = anchor.parentElement
-      if (!parent || parent.tagName !== 'LI') return
+      items.forEach(anchor => {
+        const parent = anchor.parentElement
+        if (!parent || parent.tagName !== 'LI') return
 
-      const hashIndex = anchor.getAttribute('href')?.indexOf('#') ?? -1
-      const anchorRoute = hashIndex === -1 ? '' : (anchor.getAttribute('href') ?? '').slice(hashIndex)
-      const isCurrent = anchorRoute === route
+        const href = anchor.getAttribute('href') ?? ''
+        const hashIndex = href.indexOf('#')
+        const anchorRoute = hashIndex === -1 ? '' : href.slice(hashIndex)
+        const isCurrent = anchorRoute === current
 
-      parent.classList.toggle('current', isCurrent)
-      anchor.classList.toggle('current', isCurrent)
+        parent.classList.toggle('current', isCurrent)
+        anchor.classList.toggle('current', isCurrent)
 
-      if (isCurrent) {
-        anchor.setAttribute('aria-current', 'page')
-      } else {
-        anchor.removeAttribute('aria-current')
-      }
-    })
-  }, [location.pathname])
+        if (isCurrent) {
+          anchor.setAttribute('aria-current', 'page')
+        } else {
+          anchor.removeAttribute('aria-current')
+        }
+      })
+    },
+    { immediate: true }
+  )
 }
