@@ -40,11 +40,13 @@ interface ConfigType {
 }
 
 const config = {
-  AJAX_URL: getServerVariable('ajaxURL', '/wp-admin/admin-ajax.php'),
-  API_URL: getServerVariable('apiURL', {
-    base: '/wp-json/SilentSeoAlerts/v1',
-    separator: '?'
-  }),
+  /*
+   * Deliberately no fallback: a guessed path is wrong on a relocated wp-admin,
+   * and with plain permalinks the REST root is a query argument. PHP resolves
+   * both and passes them through wp_localize_script, which always runs here.
+   */
+  AJAX_URL: getServerVariable('ajaxURL'),
+  API_URL: getServerVariable('apiURL'),
   DATE_FORMAT: getServerVariable('dateFormat', 'F j, Y'),
   FREE_VERSION: getServerVariable('version'),
   IS_DEV: import.meta.env.DEV,

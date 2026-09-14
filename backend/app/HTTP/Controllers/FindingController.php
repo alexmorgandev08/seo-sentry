@@ -49,11 +49,11 @@ class FindingController
         $page    = max(1, (int) ($request->get('page') ?: 1));
 
         $total    = $this->countFiltered($request);
-        $findings = $query->take($perPage)->skip(($page - 1) * $perPage)->get() ?: [];
+        $findings = Db::rows($query->take($perPage)->skip(($page - 1) * $perPage)->get());
 
         return Response::success(
             [
-                'items'    => array_map([$this, 'present'], \is_array($findings) ? $findings : [$findings]),
+                'items'    => array_map([$this, 'present'], $findings),
                 'total'    => $total,
                 'page'     => $page,
                 'per_page' => $perPage,

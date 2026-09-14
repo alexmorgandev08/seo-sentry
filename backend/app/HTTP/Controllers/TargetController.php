@@ -15,9 +15,9 @@ class TargetController
 {
     public function index()
     {
-        $targets = Target::where('type', Target::TYPE_PAGE)->orderBy('id')->desc()->get();
+        $targets = Db::rows(Target::where('type', Target::TYPE_PAGE)->orderBy('id')->desc()->get());
 
-        return Response::success($targets ?: []);
+        return Response::success($targets);
     }
 
     public function store(Request $request)

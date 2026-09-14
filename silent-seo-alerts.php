@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Silent SEO Alerts
  * Description:       Alerts you when a page goes noindex or its title, meta, canonical or schema changes — and explains what it means in plain English.
- * Version:           1.0.0
+ * Version:           1.0.1
  * Author:            MI
  * Text Domain:       silent-seo-alerts
  * Requires PHP:      8.2

@@ -65,11 +65,13 @@ class ImpairedState
 
         Config::deleteOption('impaired');
 
-        $open = Finding::where('change_type', ChangeTypes::MONITORING_IMPAIRED)
-            ->where('status', Finding::STATUS_OPEN)
-            ->get();
+        $open = Db::rows(
+            Finding::where('change_type', ChangeTypes::MONITORING_IMPAIRED)
+                ->where('status', Finding::STATUS_OPEN)
+                ->get()
+        );
 
-        foreach ((array) $open as $finding) {
+        foreach ($open as $finding) {
             Db::update(
                 'findings',
                 ['status' => Finding::STATUS_AUTO_RESOLVED, 'resolved_at' => gmdate('Y-m-d H:i:s')],

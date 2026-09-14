@@ -67,14 +67,12 @@ class FindingRecorder
      */
     public function autoResolve($targetId, array $currentFields)
     {
-        $open = Finding::where('target_id', $targetId)
-            ->where('status', Finding::STATUS_OPEN)
-            ->where('severity', Finding::SEVERITY_CRITICAL)
-            ->get();
-
-        if (!$open) {
-            return [];
-        }
+        $open = Db::rows(
+            Finding::where('target_id', $targetId)
+                ->where('status', Finding::STATUS_OPEN)
+                ->where('severity', Finding::SEVERITY_CRITICAL)
+                ->get()
+        );
 
         $resolved = [];
         foreach ($open as $finding) {

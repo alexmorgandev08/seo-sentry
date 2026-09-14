@@ -249,11 +249,11 @@ class CheckRunner
 
     private function finalizeRun($runId, $done, $total, $transportErrors)
     {
-        $counts = ['critical' => 0, 'warning' => 0, 'info' => 0];
-        $rows   = Finding::where('check_run_id', $runId)->get() ?: [];
-        foreach ((array) $rows as $row) {
-            if (isset($counts[$row->severity])) {
-                ++$counts[$row->severity];
+        $counts   = ['critical' => 0, 'warning' => 0, 'info' => 0];
+        $findings = Db::rows(Finding::where('check_run_id', $runId)->get());
+        foreach ($findings as $finding) {
+            if (isset($counts[$finding->severity])) {
+                ++$counts[$finding->severity];
             }
         }
 

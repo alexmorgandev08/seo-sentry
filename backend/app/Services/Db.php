@@ -28,7 +28,7 @@ class Db
     /**
      * Normalises a get() result into a list.
      *
-     * @param mixed $result array of models, a single model, or false
+     * @param mixed $result Collection, array of models, a single model, or false
      *
      * @return array
      */
@@ -36,6 +36,15 @@ class Db
     {
         if (\is_array($result)) {
             return $result;
+        }
+
+        /*
+         * wp-database 2.x returns a Collection from get(). Iterating it yields
+         * the models; its own toArray() flattens them into plain arrays, which
+         * every caller reading ->severity or ->url would not survive.
+         */
+        if ($result instanceof \Traversable) {
+            return iterator_to_array($result, false);
         }
 
         return $result ? [$result] : [];

@@ -4,7 +4,7 @@ Tags: seo, monitoring, noindex, alerts, schema
 Requires at least: 5.9
 Tested up to: 7.1
 Requires PHP: 8.2
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -121,10 +121,17 @@ plugin cleans up every site on the network.
 
 == Changelog ==
 
+= 1.0.1 =
+* Resolve the Ajax and REST endpoints only from the values WordPress provides, instead of falling back to a hard-coded path.
+* Update the bundled database library to 2.0.5.
+
 = 1.0.0 =
 * Initial release.
 
 == Upgrade Notice ==
+
+= 1.0.1 =
+Endpoint resolution fix and an updated database library.
 
 = 1.0.0 =
 First release.
