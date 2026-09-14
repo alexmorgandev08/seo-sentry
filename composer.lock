@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0068c08faa0b510b93fcdfc1d62d1c3a",
+    "content-hash": "14d14e13ba5d6ba87ef1f7319104cc47",
     "packages": [
         {
             "name": "bitapps/wp-database",
@@ -65,25 +65,30 @@
         },
         {
             "name": "bitapps/wp-kit",
-            "version": "2.3.1",
+            "version": "2.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bit-apps-pro/wp-kit.git",
-                "reference": "93e3fc62eb34e44394be87bbee8480e196275d75"
+                "reference": "a17210323f8021634ee168a5a32f79ec5204c080"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bit-apps-pro/wp-kit/zipball/93e3fc62eb34e44394be87bbee8480e196275d75",
-                "reference": "93e3fc62eb34e44394be87bbee8480e196275d75",
+                "url": "https://api.github.com/repos/bit-apps-pro/wp-kit/zipball/a17210323f8021634ee168a5a32f79ec5204c080",
+                "reference": "a17210323f8021634ee168a5a32f79ec5204c080",
                 "shasum": ""
             },
             "require": {
-                "bitapps/wp-validator": "^1.0"
+                "bitapps/wp-validator": "^1.0",
+                "php": ">=8.0"
             },
             "require-dev": {
+                "captainhook/captainhook": "^5.29",
+                "captainhook/hook-installer": "^1.0",
                 "dealerdirect/phpcodesniffer-composer-installer": "^0.7",
                 "friendsofphp/php-cs-fixer": "^3.10",
                 "phpcompatibility/phpcompatibility-wp": "*",
+                "phpunit/phpunit": "^9.6",
+                "rector/rector": "^2.5",
                 "sirbrillig/phpcs-variable-analysis": "*"
             },
             "type": "library",
@@ -109,22 +114,22 @@
             ],
             "support": {
                 "issues": "https://github.com/bit-apps-pro/wp-kit/issues",
-                "source": "https://github.com/bit-apps-pro/wp-kit/tree/2.3.1"
+                "source": "https://github.com/bit-apps-pro/wp-kit/tree/2.4.0"
             },
-            "time": "2026-07-19T05:39:32+00:00"
+            "time": "2026-09-05T11:56:28+00:00"
         },
         {
             "name": "bitapps/wp-validator",
-            "version": "1.2.3",
+            "version": "1.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bit-apps-pro/wp-validator.git",
-                "reference": "43a6f68414f5c580122f136cda45624e9fcaf837"
+                "reference": "f11daf31d16a128109199185c07509df95f6cddf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bit-apps-pro/wp-validator/zipball/43a6f68414f5c580122f136cda45624e9fcaf837",
-                "reference": "43a6f68414f5c580122f136cda45624e9fcaf837",
+                "url": "https://api.github.com/repos/bit-apps-pro/wp-validator/zipball/f11daf31d16a128109199185c07509df95f6cddf",
+                "reference": "f11daf31d16a128109199185c07509df95f6cddf",
                 "shasum": ""
             },
             "require": {
@@ -170,7 +175,7 @@
                 "issues": "https://github.com/Bit-Apps-Pro/wp-validator/issues",
                 "source": "https://github.com/Bit-Apps-Pro/wp-validator"
             },
-            "time": "2026-03-31T05:04:09+00:00"
+            "time": "2026-09-05T11:10:28+00:00"
         },
         {
             "name": "typisttech/imposter",
@@ -1707,16 +1712,16 @@
         },
         {
             "name": "friendsofphp/php-cs-fixer",
-            "version": "v3.95.24",
+            "version": "v3.95.25",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer.git",
-                "reference": "9a4b8050f8768646bf3693ee7416978ceeca6206"
+                "reference": "2cdfc1f3daf173d83a1ebb6177949b58c95de6ff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHP-CS-Fixer/PHP-CS-Fixer/zipball/9a4b8050f8768646bf3693ee7416978ceeca6206",
-                "reference": "9a4b8050f8768646bf3693ee7416978ceeca6206",
+                "url": "https://api.github.com/repos/PHP-CS-Fixer/PHP-CS-Fixer/zipball/2cdfc1f3daf173d83a1ebb6177949b58c95de6ff",
+                "reference": "2cdfc1f3daf173d83a1ebb6177949b58c95de6ff",
                 "shasum": ""
             },
             "require": {
@@ -1799,7 +1804,7 @@
             ],
             "support": {
                 "issues": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/issues",
-                "source": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/tree/v3.95.24"
+                "source": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/tree/v3.95.25"
             },
             "funding": [
                 {
@@ -1807,7 +1812,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-08-31T15:31:12+00:00"
+            "time": "2026-09-08T11:11:37+00:00"
         },
         {
             "name": "gettext/gettext",
@@ -2391,16 +2396,16 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v5.8.0",
+            "version": "v5.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "044a6a392ff8ad0d61f14370a5fbbd0a0107152f"
+                "reference": "9e33da9553fe7786f0962b35f4e4ecf01be89def"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/044a6a392ff8ad0d61f14370a5fbbd0a0107152f",
-                "reference": "044a6a392ff8ad0d61f14370a5fbbd0a0107152f",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/9e33da9553fe7786f0962b35f4e4ecf01be89def",
+                "reference": "9e33da9553fe7786f0962b35f4e4ecf01be89def",
                 "shasum": ""
             },
             "require": {
@@ -2442,9 +2447,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nikic/PHP-Parser/issues",
-                "source": "https://github.com/nikic/PHP-Parser/tree/v5.8.0"
+                "source": "https://github.com/nikic/PHP-Parser/tree/v5.9.0"
             },
-            "time": "2026-07-04T14:30:18+00:00"
+            "time": "2026-09-13T18:51:52+00:00"
         },
         {
             "name": "nunomaduro/phpinsights",
@@ -3268,11 +3273,11 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "2.2.12",
+            "version": "2.2.14",
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/174b0d88710f00a42598886504dd7a146f91ace5",
-                "reference": "174b0d88710f00a42598886504dd7a146f91ace5",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/9c672e7a8e791dfc3d30e55f683e73fc0b63a3ac",
+                "reference": "9c672e7a8e791dfc3d30e55f683e73fc0b63a3ac",
                 "shasum": ""
             },
             "require": {
@@ -3328,7 +3333,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-08-31T19:09:43+00:00"
+            "time": "2026-09-12T21:39:33+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -4525,21 +4530,21 @@
         },
         {
             "name": "rector/rector",
-            "version": "2.6.6",
+            "version": "2.6.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rectorphp/rector.git",
-                "reference": "ca069d6c79feaa6651b423c15d101a27a436093e"
+                "reference": "f4aa224edb9b0630fb43826d4cb6a49b62e48d4c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rectorphp/rector/zipball/ca069d6c79feaa6651b423c15d101a27a436093e",
-                "reference": "ca069d6c79feaa6651b423c15d101a27a436093e",
+                "url": "https://api.github.com/repos/rectorphp/rector/zipball/f4aa224edb9b0630fb43826d4cb6a49b62e48d4c",
+                "reference": "f4aa224edb9b0630fb43826d4cb6a49b62e48d4c",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.4|^8.0",
-                "phpstan/phpstan": "^2.2.10"
+                "phpstan/phpstan": "^2.2.14"
             },
             "conflict": {
                 "rector/rector-doctrine": "*",
@@ -4570,7 +4575,7 @@
             ],
             "support": {
                 "issues": "https://github.com/rectorphp/rector/issues",
-                "source": "https://github.com/rectorphp/rector/tree/2.6.6"
+                "source": "https://github.com/rectorphp/rector/tree/2.6.7"
             },
             "funding": [
                 {
@@ -4578,7 +4583,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-09-02T09:38:46+00:00"
+            "time": "2026-09-13T20:17:44+00:00"
         },
         {
             "name": "sebastian/cli-parser",

@@ -1,4 +1,4 @@
-=== SEO Sentry ===
+=== SEOSentry – SEO Change & Regression Monitor ===
 Contributors: alexmorgandev
 Tags: seo, monitoring, noindex, alerts, schema
 Requires at least: 5.9
