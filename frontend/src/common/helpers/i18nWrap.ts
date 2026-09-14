@@ -6,7 +6,7 @@ import { __ as i18n_, sprintf as i18nSprintf } from '@wordpress/i18n'
 declare let wp: any
 // declare var bitapp: any
 
-const __ = (text: string, domain = 'silent-seo-alerts'): string => {
+const __ = (text: string, domain = 'seo-sentry'): string => {
   if (SERVER_VARIABLES?.translations?.[text]) {
     return SERVER_VARIABLES.translations[text]
   }

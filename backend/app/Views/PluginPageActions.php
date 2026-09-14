@@ -15,11 +15,11 @@ class PluginPageActions
         return [
             [
                 'url'   => admin_url('admin.php?page=' . Config::SLUG . '#/settings'),
-                'title' => __('Settings', 'silent-seo-alerts'),
+                'title' => __('Settings', 'seo-sentry'),
             ],
             [
-                'url'   => 'https://wordpress.org/support/plugin/silent-seo-alerts/',
-                'title' => __('Support', 'silent-seo-alerts'),
+                'url'   => 'https://wordpress.org/support/plugin/seo-sentry/',
+                'title' => __('Support', 'seo-sentry'),
             ],
         ];
     }

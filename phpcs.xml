@@ -22,7 +22,7 @@
   <config name="minimum_supported_wp_version" value="5.9" />
   <rule ref="WordPress.WP.I18n">
     <properties>
-      <property name="text_domain" type="array" value="silent-seo-alerts" />
+      <property name="text_domain" type="array" value="seo-sentry" />
     </properties>
   </rule>
 

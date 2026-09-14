@@ -1,4 +1,4 @@
-=== Silent SEO Alerts ===
+=== SEO Sentry ===
 Contributors: alexmorgandev
 Tags: seo, monitoring, noindex, alerts, schema
 Requires at least: 5.9
@@ -17,7 +17,7 @@ change drops the canonical tag, someone rewrites a title, an editor trims 800
 words out of a post — and nothing tells you. You find out weeks later, when the
 traffic is already gone.
 
-Silent SEO Alerts takes a snapshot of the SEO-relevant parts of your pages,
+SEO Sentry takes a snapshot of the SEO-relevant parts of your pages,
 then re-checks them on a schedule and tells you what changed. Every finding is
 graded — critical, warning or informational — and written in plain English, so
 you know whether to drop everything or just make a note.
@@ -66,15 +66,15 @@ The admin screens are built from TypeScript and React. The files in `assets/`
 are the compiled output; the readable source, the build configuration and the
 lockfile all live in the public repository:
 
-https://github.com/csemazharul/silent-seo-alerts
+https://github.com/csemazharul/seo-sentry
 
 `BUILD.txt` there has the two commands that turn one into the other.
 
 == Installation ==
 
-1. Upload the plugin to `/wp-content/plugins/silent-seo-alerts`, or install it through **Plugins → Add New**.
+1. Upload the plugin to `/wp-content/plugins/seo-sentry`, or install it through **Plugins → Add New**.
 2. Activate it through the **Plugins** menu.
-3. Open **Silent SEO Alerts** in the admin sidebar. The plugin takes a first snapshot of your pages — this is the baseline it compares against, so no findings appear until the next run.
+3. Open **SEO Sentry** in the admin sidebar. The plugin takes a first snapshot of your pages — this is the baseline it compares against, so no findings appear until the next run.
 4. Under **Settings**, pick a check frequency and the email address alerts should go to.
 
 == Frequently Asked Questions ==

@@ -11,13 +11,13 @@ use SEOChangeMonitor\Views\PluginPageActions;
 
 class Config
 {
-    public const SLUG = 'silent-seo-alerts';
+    public const SLUG = 'seo-sentry';
 
-    public const REST_NAMESPACE = 'SilentSeoAlerts';
+    public const REST_NAMESPACE = 'SeoSentry';
 
-    public const PRO_PLUGIN_SLUG = 'silent-seo-alerts-pro';
+    public const PRO_PLUGIN_SLUG = 'seo-sentry-pro';
 
-    public const TITLE = 'Silent SEO Alerts';
+    public const TITLE = 'SEO Sentry';
 
     public const VAR_PREFIX = 'SEO_CHANGE_MONITOR_';
 

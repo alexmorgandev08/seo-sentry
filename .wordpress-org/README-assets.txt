@@ -29,8 +29,8 @@ Optional, but they make the listing look finished
 
 Committing them
 ---------------
-  svn co https://plugins.svn.wordpress.org/silent-seo-alerts
-  cd silent-seo-alerts
+  svn co https://plugins.svn.wordpress.org/seo-sentry
+  cd seo-sentry
   cp /path/to/screenshot-*.png assets/
   svn add assets/*
   svn ci -m "Add listing screenshots"

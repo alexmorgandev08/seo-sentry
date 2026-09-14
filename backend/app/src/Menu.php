@@ -29,12 +29,12 @@ final class Menu
         // Submenu entries point at the same admin page with a hash route, so
         // the React app navigates without a page load.
         $routes = [
-            ''               => __('Dashboard', 'silent-seo-alerts'),
-            '#/pages'        => __('Monitored Pages', 'silent-seo-alerts'),
-            '#/log'          => __('Flight Log', 'silent-seo-alerts'),
-            '#/site'         => __('Site-wide', 'silent-seo-alerts'),
-            '#/integrations' => __('Integrations', 'silent-seo-alerts'),
-            '#/settings'     => __('Settings', 'silent-seo-alerts'),
+            ''               => __('Dashboard', 'seo-sentry'),
+            '#/pages'        => __('Monitored Pages', 'seo-sentry'),
+            '#/log'          => __('Flight Log', 'seo-sentry'),
+            '#/site'         => __('Site-wide', 'seo-sentry'),
+            '#/integrations' => __('Integrations', 'seo-sentry'),
+            '#/settings'     => __('Settings', 'seo-sentry'),
         ];
 
         foreach ($routes as $route => $label) {

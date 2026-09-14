@@ -65,7 +65,7 @@ class FindingController
     {
         $finding = Finding::findOne(['id' => (int) $request->get('id')]);
         if (!$finding) {
-            return Response::error(__('Finding not found.', 'silent-seo-alerts'));
+            return Response::error(__('Finding not found.', 'seo-sentry'));
         }
 
         return Response::success($this->present($finding));
@@ -85,7 +85,7 @@ class FindingController
     {
         $finding = Finding::findOne(['id' => (int) $request->get('id')]);
         if (!$finding) {
-            return Response::error(__('Finding not found.', 'silent-seo-alerts'));
+            return Response::error(__('Finding not found.', 'seo-sentry'));
         }
 
         Db::update(
@@ -101,12 +101,12 @@ class FindingController
     {
         $finding = Finding::findOne(['id' => (int) $request->get('id')]);
         if (!$finding) {
-            return Response::error(__('Finding not found.', 'silent-seo-alerts'));
+            return Response::error(__('Finding not found.', 'seo-sentry'));
         }
 
         $note = sanitize_textarea_field((string) $request->get('note'));
         if ($note === '') {
-            return Response::error(__('Please add a short note explaining why.', 'silent-seo-alerts'));
+            return Response::error(__('Please add a short note explaining why.', 'seo-sentry'));
         }
 
         Db::update(

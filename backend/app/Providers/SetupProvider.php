@@ -41,9 +41,9 @@ class SetupProvider
     public function seedSystemTargets()
     {
         $systems = [
-            [Target::TYPE_ROBOTS, home_url('/robots.txt'), __('robots.txt', 'silent-seo-alerts')],
-            [Target::TYPE_SITEMAP, '', __('XML sitemap', 'silent-seo-alerts')],
-            [Target::TYPE_SITE_SETTINGS, '', __('Site indexing settings', 'silent-seo-alerts')],
+            [Target::TYPE_ROBOTS, home_url('/robots.txt'), __('robots.txt', 'seo-sentry')],
+            [Target::TYPE_SITEMAP, '', __('XML sitemap', 'seo-sentry')],
+            [Target::TYPE_SITE_SETTINGS, '', __('Site indexing settings', 'seo-sentry')],
         ];
 
         foreach ($systems as [$type, $url, $label]) {
@@ -68,7 +68,7 @@ class SetupProvider
                 'type'      => Target::TYPE_PAGE,
                 'post_id'   => (int) get_option('page_on_front') ?: null,
                 'url'       => home_url('/'),
-                'label'     => __('Front page', 'silent-seo-alerts'),
+                'label'     => __('Front page', 'seo-sentry'),
                 'is_active' => 1,
             ]
         );

@@ -1,12 +1,12 @@
 // Vitest global setup: provide the server variables the app reads at runtime.
 ;(globalThis as Record<string, unknown>).SERVER_VARIABLES = {
   ajaxURL: 'http://localhost/wp-admin/admin-ajax.php',
-  apiURL: { base: 'http://localhost/wp-json/SilentSeoAlerts/v1', separator: '?' },
+  apiURL: { base: 'http://localhost/wp-json/SeoSentry/v1', separator: '?' },
   assetsURL: '',
   dateFormat: 'F j, Y',
   nonce: 'test-nonce',
-  pluginAdminURL: 'http://localhost/wp-admin/admin.php?page=silent-seo-alerts#',
-  pluginSlug: 'silent-seo-alerts',
+  pluginAdminURL: 'http://localhost/wp-admin/admin.php?page=seo-sentry#',
+  pluginSlug: 'seo-sentry',
   restNonce: 'test-rest-nonce',
   rootURL: 'http://localhost/',
   routePrefix: 'SEO_CHANGE_MONITOR_',

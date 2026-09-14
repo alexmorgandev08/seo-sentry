@@ -1,4 +1,4 @@
-# Silent SEO Alerts
+# SEO Sentry
 
 A WordPress plugin that watches your pages for SEO-affecting changes and tells you what
 broke, how bad it is, and what to do about it — in plain English.
@@ -67,7 +67,7 @@ web fonts reach `assets/fonts/`.
 To produce the distributable zip:
 
 ```bash
-pnpm prod:free-zip     # -> dist/silent-seo-alerts-<version>.zip
+pnpm prod:free-zip     # -> dist/seo-sentry-<version>.zip
 ```
 
 `scripts/build-zip.mjs` copies an explicit allowlist, installs Composer dependencies
@@ -78,7 +78,7 @@ to confirm nothing forbidden (`.env`, `.git`, `node_modules`) slipped in.
 
 ## Local development
 
-Place the repository in `wp-content/plugins/silent-seo-alerts/`, then:
+Place the repository in `wp-content/plugins/seo-sentry/`, then:
 
 ```bash
 composer install
@@ -91,10 +91,10 @@ Set these in `.env` so WordPress loads assets from Vite instead of `assets/`:
 
 ```env
 DEV     = true
-DEV_URL = http://localhost:3000/wp-content/plugins/silent-seo-alerts/frontend
+DEV_URL = http://localhost:3000/wp-content/plugins/seo-sentry/frontend
 ```
 
-Activate the plugin in **Plugins**, then open **Silent SEO Alerts** in the admin sidebar.
+Activate the plugin in **Plugins**, then open **SEO Sentry** in the admin sidebar.
 The first run records a baseline — nothing is reported until the run after that, because
 there is nothing to compare against yet.
 
@@ -113,7 +113,7 @@ The release gate is the official
 zip rather than the working tree — it is what WordPress.org reviewers use:
 
 ```bash
-wp plugin check silent-seo-alerts
+wp plugin check seo-sentry
 ```
 
 > Known rough edges: `composer lint` (and `pnpm lint:php`, which calls it) references a
@@ -127,7 +127,7 @@ wp plugin check silent-seo-alerts
 ## Project structure
 
 ```
-├── silent-seo-alerts.php        # plugin header, loads backend/bootstrap.php
+├── seo-sentry.php               # plugin header, loads backend/bootstrap.php
 ├── uninstall.php                # drops tables, options, transients, cron on delete
 ├── backend/
 │   ├── app/
@@ -159,7 +159,7 @@ wp plugin check silent-seo-alerts
 ## Architecture notes
 
 **Storage prefix.** Tables and options use `SEO_CHANGE_MONITOR_`, and the PHP namespace is
-`SEOChangeMonitor\`. The plugin was renamed to Silent SEO Alerts after those were set; they
+`SEOChangeMonitor\`. The plugin was renamed to SEO Sentry after those were set; they
 were deliberately left alone, because changing the namespace would mean regenerating the
 whole Imposter-prefixed `vendor/` tree, and changing the storage prefix would orphan
 existing installs' data. Only the public identity — name, slug, text domain — was renamed.

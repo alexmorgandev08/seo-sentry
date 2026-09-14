@@ -18,7 +18,7 @@ class CheckController
         $run    = $runner->runSync('manual');
 
         if (!$run) {
-            return Response::error(__('Could not start the check.', 'silent-seo-alerts'));
+            return Response::error(__('Could not start the check.', 'seo-sentry'));
         }
 
         return Response::success($run);

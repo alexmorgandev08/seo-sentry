@@ -6,7 +6,7 @@
  * autoloader, the bootstrap or any plugin class is available. The storage
  * prefix is therefore spelled out rather than read from Config.
  *
- * @package SilentSeoAlerts
+ * @package SeoSentry
  */
 
 if (!defined('WP_UNINSTALL_PLUGIN')) {
@@ -17,7 +17,7 @@ if (!defined('WP_UNINSTALL_PLUGIN')) {
  * Drops the plugin's tables, options, transients and scheduled events for the
  * blog that is currently switched to.
  */
-function silent_seo_alerts_uninstall_site()
+function seo_sentry_uninstall_site()
 {
     global $wpdb;
 
@@ -65,10 +65,10 @@ function silent_seo_alerts_uninstall_site()
  * The loop lives in a function so its counters stay local: WordPress includes
  * this file at file scope, where they would otherwise become globals.
  */
-function silent_seo_alerts_uninstall_everywhere()
+function seo_sentry_uninstall_everywhere()
 {
     if (!is_multisite()) {
-        silent_seo_alerts_uninstall_site();
+        seo_sentry_uninstall_site();
 
         return;
     }
@@ -83,7 +83,7 @@ function silent_seo_alerts_uninstall_everywhere()
 
         foreach ($siteIds as $siteId) {
             switch_to_blog($siteId);
-            silent_seo_alerts_uninstall_site();
+            seo_sentry_uninstall_site();
             restore_current_blog();
         }
 
@@ -91,4 +91,4 @@ function silent_seo_alerts_uninstall_everywhere()
     } while (count($siteIds) === $perPage);
 }
 
-silent_seo_alerts_uninstall_everywhere();
+seo_sentry_uninstall_everywhere();

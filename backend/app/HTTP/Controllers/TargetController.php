@@ -31,11 +31,11 @@ class TargetController
         }
 
         if (!$url) {
-            return Response::error(__('Please provide a valid URL on this site.', 'silent-seo-alerts'));
+            return Response::error(__('Please provide a valid URL on this site.', 'seo-sentry'));
         }
 
         if (Target::findOne(['url' => $url, 'type' => Target::TYPE_PAGE])) {
-            return Response::error(__('This page is already being monitored.', 'silent-seo-alerts'));
+            return Response::error(__('This page is already being monitored.', 'seo-sentry'));
         }
 
         $label  = sanitize_text_field((string) $request->get('label'));
@@ -56,7 +56,7 @@ class TargetController
     {
         $target = $this->findPageTarget((int) $request->get('id'));
         if (!$target) {
-            return Response::error(__('Monitored page not found.', 'silent-seo-alerts'));
+            return Response::error(__('Monitored page not found.', 'seo-sentry'));
         }
 
         $updates = [];
@@ -79,7 +79,7 @@ class TargetController
     {
         $target = $this->findPageTarget((int) $request->get('id'));
         if (!$target) {
-            return Response::error(__('Monitored page not found.', 'silent-seo-alerts'));
+            return Response::error(__('Monitored page not found.', 'seo-sentry'));
         }
 
         Target::destroy([$target->id]);
@@ -104,7 +104,7 @@ class TargetController
         foreach ($posts as $post) {
             $results[] = [
                 'post_id' => $post->ID,
-                'title'   => $post->post_title !== '' ? $post->post_title : __('(no title)', 'silent-seo-alerts'),
+                'title'   => $post->post_title !== '' ? $post->post_title : __('(no title)', 'seo-sentry'),
                 'url'     => get_permalink($post),
                 'type'    => $post->post_type,
             ];

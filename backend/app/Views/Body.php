@@ -12,6 +12,6 @@ class Body
 {
     public function render()
     {
-        echo '<div id="silent-seo-alerts-root"></div>';
+        echo '<div id="seo-sentry-root"></div>';
     }
 }

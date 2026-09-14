@@ -36,8 +36,8 @@ class NetworkDashboard
     public function registerMenu()
     {
         add_menu_page(
-            __('Silent SEO Alerts', 'silent-seo-alerts'),
-            __('Silent SEO Alerts', 'silent-seo-alerts'),
+            __('SEO Sentry', 'seo-sentry'),
+            __('SEO Sentry', 'seo-sentry'),
             'manage_network_options',
             Config::SLUG . '-network',
             [$this, 'render'],
@@ -140,14 +140,14 @@ class NetworkDashboard
         );
 
         echo '<div class="wrap">';
-        printf('<h1>%s</h1>', esc_html__('Silent SEO Alerts network overview', 'silent-seo-alerts'));
+        printf('<h1>%s</h1>', esc_html__('SEO Sentry network overview', 'seo-sentry'));
 
         printf(
             '<p>%s</p>',
             esc_html(
                 sprintf(
                     /* translators: 1: sites, 2: pages, 3: critical, 4: warnings */
-                    __('%1$d sites · %2$d pages monitored · %3$d critical · %4$d warnings', 'silent-seo-alerts'),
+                    __('%1$d sites · %2$d pages monitored · %3$d critical · %4$d warnings', 'seo-sentry'),
                     \count($rows),
                     $totals['pages'],
                     $totals['critical'],
@@ -166,7 +166,7 @@ class NetworkDashboard
                             'Monitoring is impaired on %d site. Its results cannot be trusted until fixed.',
                             'Monitoring is impaired on %d sites. Their results cannot be trusted until fixed.',
                             $totals['impaired'],
-                            'silent-seo-alerts'
+                            'seo-sentry'
                         ),
                         $totals['impaired']
                     )
@@ -177,18 +177,18 @@ class NetworkDashboard
         printf(
             '<p><a class="button" href="%s">%s</a> <span style="color:#646970;">%s</span></p>',
             esc_url($refreshUrl),
-            esc_html__('Refresh now', 'silent-seo-alerts'),
-            esc_html__('Figures are cached for 5 minutes.', 'silent-seo-alerts')
+            esc_html__('Refresh now', 'seo-sentry'),
+            esc_html__('Figures are cached for 5 minutes.', 'seo-sentry')
         );
 
         echo '<table class="widefat striped"><thead><tr>';
         foreach (
             [
-                __('Site', 'silent-seo-alerts'),
-                __('Critical', 'silent-seo-alerts'),
-                __('Warnings', 'silent-seo-alerts'),
-                __('Pages', 'silent-seo-alerts'),
-                __('Last check', 'silent-seo-alerts'),
+                __('Site', 'seo-sentry'),
+                __('Critical', 'seo-sentry'),
+                __('Warnings', 'seo-sentry'),
+                __('Pages', 'seo-sentry'),
+                __('Last check', 'seo-sentry'),
                 '',
             ] as $heading
         ) {
@@ -207,7 +207,7 @@ class NetworkDashboard
             if (!$row['active']) {
                 printf(
                     '<td colspan="4" style="color:#646970;">%s</td>',
-                    esc_html__('Plugin not active on this site', 'silent-seo-alerts')
+                    esc_html__('Plugin not active on this site', 'seo-sentry')
                 );
             } else {
                 printf(
@@ -220,15 +220,15 @@ class NetworkDashboard
                 printf(
                     '<td>%s</td>',
                     $row['impaired']
-                        ? '<span style="color:#bd8600;">' . esc_html__('impaired', 'silent-seo-alerts') . '</span>'
-                        : esc_html($row['last_run'] ?: __('never', 'silent-seo-alerts'))
+                        ? '<span style="color:#bd8600;">' . esc_html__('impaired', 'seo-sentry') . '</span>'
+                        : esc_html($row['last_run'] ?: __('never', 'seo-sentry'))
                 );
             }
 
             printf(
                 '<td><a href="%s">%s</a></td>',
                 esc_url($row['admin_url']),
-                esc_html__('Open', 'silent-seo-alerts')
+                esc_html__('Open', 'seo-sentry')
             );
             echo '</tr>';
         }

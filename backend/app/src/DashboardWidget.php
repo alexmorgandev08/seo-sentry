@@ -31,7 +31,7 @@ class DashboardWidget
 
         wp_add_dashboard_widget(
             'seo_change_monitor_summary',
-            __('Silent SEO Alerts', 'silent-seo-alerts'),
+            __('SEO Sentry', 'seo-sentry'),
             [$this, 'render']
         );
     }
@@ -52,7 +52,7 @@ class DashboardWidget
         if ($impaired) {
             printf(
                 '<p style="padding:8px 12px;border-left:4px solid #bd8600;background:#fcf9e8;"><strong>%s</strong><br>%s</p>',
-                esc_html__('Monitoring impaired', 'silent-seo-alerts'),
+                esc_html__('Monitoring impaired', 'seo-sentry'),
                 esc_html($impaired['reason'])
             );
         }
@@ -62,17 +62,17 @@ class DashboardWidget
             '<li><strong style="color:%s;">%d</strong> %s</li>',
             $counts[Finding::SEVERITY_CRITICAL] > 0 ? '#b32d2e' : 'inherit',
             (int) $counts[Finding::SEVERITY_CRITICAL],
-            esc_html__('critical changes open', 'silent-seo-alerts')
+            esc_html__('critical changes open', 'seo-sentry')
         );
         printf(
             '<li><strong>%d</strong> %s</li>',
             (int) $counts[Finding::SEVERITY_WARNING],
-            esc_html__('warnings open', 'silent-seo-alerts')
+            esc_html__('warnings open', 'seo-sentry')
         );
         printf(
             '<li><strong>%d</strong> %s</li>',
             (int) $counts[Finding::SEVERITY_INFO],
-            esc_html__('informational changes open', 'silent-seo-alerts')
+            esc_html__('informational changes open', 'seo-sentry')
         );
         echo '</ul>';
 
@@ -82,17 +82,17 @@ class DashboardWidget
                 ? esc_html(
                     sprintf(
                         /* translators: %s: date and time */
-                        __('Last checked %s', 'silent-seo-alerts'),
+                        __('Last checked %s', 'seo-sentry'),
                         $lastRun->finished_at
                     )
                 )
-                : esc_html__('No check has run yet.', 'silent-seo-alerts')
+                : esc_html__('No check has run yet.', 'seo-sentry')
         );
 
         printf(
             '<a href="%s" class="button button-secondary">%s</a>',
             esc_url($logUrl),
-            esc_html__('Open the flight log', 'silent-seo-alerts')
+            esc_html__('Open the flight log', 'seo-sentry')
         );
     }
 }

@@ -25,7 +25,7 @@ class SettingsController
         if ($request->has('frequency')) {
             $frequency = (string) $request->get('frequency');
             if (!\in_array($frequency, Settings::FREQUENCIES, true)) {
-                return Response::error(__('Invalid check frequency.', 'silent-seo-alerts'));
+                return Response::error(__('Invalid check frequency.', 'seo-sentry'));
             }
 
             $partial['frequency'] = $frequency;
@@ -34,7 +34,7 @@ class SettingsController
         if ($request->has('email_threshold')) {
             $threshold = (string) $request->get('email_threshold');
             if (!\in_array($threshold, Settings::THRESHOLDS, true)) {
-                return Response::error(__('Invalid email threshold.', 'silent-seo-alerts'));
+                return Response::error(__('Invalid email threshold.', 'seo-sentry'));
             }
 
             $partial['email_threshold'] = $threshold;
@@ -47,7 +47,7 @@ class SettingsController
         if ($request->has('email_recipient')) {
             $recipient = sanitize_email((string) $request->get('email_recipient'));
             if ($recipient !== '' && !is_email($recipient)) {
-                return Response::error(__('Invalid email address.', 'silent-seo-alerts'));
+                return Response::error(__('Invalid email address.', 'seo-sentry'));
             }
 
             $partial['email_recipient'] = $recipient;
@@ -56,7 +56,7 @@ class SettingsController
         if ($request->has('retention_days')) {
             $days = (int) $request->get('retention_days');
             if ($days < 0 || $days > 3650) {
-                return Response::error(__('Retention must be between 0 (keep forever) and 3650 days.', 'silent-seo-alerts'));
+                return Response::error(__('Retention must be between 0 (keep forever) and 3650 days.', 'seo-sentry'));
             }
 
             $partial['retention_days'] = $days;

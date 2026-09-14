@@ -67,10 +67,10 @@ class AlertMailer
             return sprintf(
                 /* translators: 1: site name, 2: number of critical changes */
                 _n(
-                    '[%1$s] Silent SEO Alerts: %2$d critical change detected',
-                    '[%1$s] Silent SEO Alerts: %2$d critical changes detected',
+                    '[%1$s] SEO Sentry: %2$d critical change detected',
+                    '[%1$s] SEO Sentry: %2$d critical changes detected',
                     $critical,
-                    'silent-seo-alerts'
+                    'seo-sentry'
                 ),
                 $siteName,
                 $critical
@@ -79,21 +79,21 @@ class AlertMailer
 
         if ($findings === [] && $resolved !== []) {
             /* translators: %s: site name */
-            return sprintf(__('[%s] Silent SEO Alerts: all clear', 'silent-seo-alerts'), $siteName);
+            return sprintf(__('[%s] SEO Sentry: all clear', 'seo-sentry'), $siteName);
         }
 
         if ($impaired) {
             /* translators: %s: site name */
-            return sprintf(__('[%s] Silent SEO Alerts: monitoring impaired', 'silent-seo-alerts'), $siteName);
+            return sprintf(__('[%s] SEO Sentry: monitoring impaired', 'seo-sentry'), $siteName);
         }
 
         return sprintf(
             /* translators: 1: site name, 2: number of changes */
             _n(
-                '[%1$s] Silent SEO Alerts: %2$d change detected',
-                '[%1$s] Silent SEO Alerts: %2$d changes detected',
+                '[%1$s] SEO Sentry: %2$d change detected',
+                '[%1$s] SEO Sentry: %2$d changes detected',
                 \count($findings),
-                'silent-seo-alerts'
+                'seo-sentry'
             ),
             $siteName,
             \count($findings)

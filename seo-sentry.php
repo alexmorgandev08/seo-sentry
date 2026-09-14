@@ -1,10 +1,10 @@
 <?php
 /**
- * Plugin Name:       Silent SEO Alerts
+ * Plugin Name:       SEO Sentry
  * Description:       Alerts you when a page goes noindex or its title, meta, canonical or schema changes — and explains what it means in plain English.
  * Version:           1.0.1
  * Author:            MI
- * Text Domain:       silent-seo-alerts
+ * Text Domain:       seo-sentry
  * Requires PHP:      8.2
  * Requires at least: 5.9
  * Domain Path:       /languages

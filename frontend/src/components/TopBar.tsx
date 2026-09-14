@@ -155,7 +155,7 @@ export default function TopBar() {
             className="hidden whitespace-nowrap text-sm font-semibold tracking-tight 2xl:block"
             style={{ color: palette.ink }}
           >
-            {__('Silent SEO Alerts')}
+            {__('SEO Sentry')}
           </span>
         </div>
 
