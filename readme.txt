@@ -1,6 +1,6 @@
-=== SEOSentry – SEO Change & Regression Monitor ===
+=== SEOSentry – SEO Change Detection & Alerts ===
 Contributors: alexmorgandev
-Tags: seo, monitoring, noindex, alerts, schema
+Tags: seo, monitoring, xml sitemap, schema, robots.txt
 Requires at least: 5.9
 Tested up to: 7.1
 Requires PHP: 8.2
@@ -8,130 +8,333 @@ Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Alerts you when a page goes noindex or its title, meta, canonical or schema changes, and explains what it means in plain English.
+Monitor SEO changes to noindex, titles, meta descriptions, canonicals, schema, robots.txt, sitemaps and redirects with email alerts.
 
 == Description ==
 
-Most SEO damage is silent. A plugin update flips a page to `noindex`, a theme
-change drops the canonical tag, someone rewrites a title, an editor trims 800
-words out of a post — and nothing tells you. You find out weeks later, when the
-traffic is already gone.
+SEOSentry is an SEO change monitoring plugin for WordPress. It watches important SEO elements on your pages and across your site, records what changed, and alerts you when something may need attention.
 
-SEO Sentry takes a snapshot of the SEO-relevant parts of your pages,
-then re-checks them on a schedule and tells you what changed. Every finding is
-graded — critical, warning or informational — and written in plain English, so
-you know whether to drop everything or just make a note.
+A page can accidentally become noindex after an update. A canonical URL can change. Schema markup can disappear. A redirect can start pointing outside your site. Your robots.txt or XML sitemap can also change without anyone noticing.
 
-= What it watches on each page =
+SEOSentry creates a baseline of the SEO elements it monitors and compares future checks against that baseline. When something changes, it records the finding as critical, warning, or informational so you can quickly understand what happened.
 
-* **Indexing** — `noindex` and `nofollow` appearing or disappearing, and any other change to the robots meta tag
-* **Titles and meta descriptions** — changed or removed
-* **Canonical tags** — changed, removed, or pointed at another domain
-* **Structured data** — schema types added or removed, and JSON-LD that stopped parsing
-* **Social tags** — Open Graph and Twitter card changes
-* **Headings** — the H1 changing, disappearing, or a page suddenly having several
-* **Content volume** — word-count drops, flagged harder when the drop is severe
-* **Availability** — HTTP errors, new redirects, and redirects that now leave your site
+It does not replace your SEO plugin or change your SEO settings. It monitors them for unexpected changes.
 
-= What it watches site-wide =
+= Monitor individual WordPress pages =
 
-* **robots.txt** — any change, and a loud alert if it starts blocking everything
-* **AI crawler rules** — when your robots.txt starts or stops allowing GPTBot, ClaudeBot, PerplexityBot, Google-Extended, CCBot and others
-* **XML sitemap** — unreachable, invalid, or a sudden drop in the number of URLs
-* **Search engine visibility** — the WordPress "Discourage search engines" setting being switched on
+Add pages to Monitored Pages individually or in bulk.
 
-= AI crawler activity =
+You can:
 
-The plugin also records when AI crawlers actually visit, so you can see which
-ones are reading your site and notice when one goes quiet. This needs no setup:
-it reads the user agent on incoming requests.
+* Select pages from any public WordPress post type
+* Add multiple URLs at once
+* Pause or resume monitoring for individual pages
+* Pause or resume multiple pages in bulk
+* Remove monitored pages individually or in bulk
 
-= Alerts =
+Each successful first check creates a baseline. Later checks are compared with that baseline to detect SEO changes.
 
-When a run finds something, you get one email digest — not one message per
-finding. You choose the threshold, so you can be told about everything or only
-about the critical items. Checks run hourly, twice daily or daily, and a page
-is also re-checked shortly after you edit it.
+= SEO changes SEOSentry monitors =
 
-= Everything runs on your own site =
+SEOSentry checks important on-page and technical SEO signals, including:
 
-There is no account, no API key and no external service. The plugin fetches the
-URLs you add to it — normally your own pages, your robots.txt and your sitemap
-— using the WordPress HTTP API, and stores the results in your own database.
-Nothing is sent anywhere else, and no usage data is collected.
+* **Robots meta tags**: detects noindex, nofollow, and other robots meta changes
+* **SEO titles**: detects changed or removed page titles
+* **Meta descriptions**: detects changed or removed meta descriptions
+* **Canonical URLs**: detects changed or removed canonicals, including canonicals pointing to another domain
+* **Structured data and schema**: detects schema types being added or removed and JSON-LD that no longer parses correctly
+* **Open Graph tags**: detects changes to social sharing metadata
+* **Twitter/X card tags**: detects changes to card metadata
+* **H1 headings**: detects missing, changed, or multiple H1 headings
+* **Content size**: detects significant word-count drops
+* **HTTP status errors**: detects monitored pages returning errors
+* **Redirects**: detects new redirects and redirects that lead outside the site
+
+= Site-wide SEO monitoring =
+
+SEOSentry also runs checks that apply to the whole WordPress site.
+
+**robots.txt monitoring**
+
+Detects changes to robots.txt and raises a critical finding if the file begins blocking the entire site from crawling.
+
+**AI crawler rules**
+
+Checks robots.txt rules related to AI and search services, including directives for GPTBot, ClaudeBot, PerplexityBot, Google-Extended, CCBot, and other supported agents or tokens.
+
+This helps you see when crawler access rules change. SEOSentry does not modify those rules.
+
+**XML sitemap monitoring**
+
+Checks whether the XML sitemap is reachable and valid, and detects significant drops in the number of URLs found in the sitemap.
+
+**WordPress search visibility**
+
+Detects when WordPress's "Discourage search engines from indexing this site" setting is enabled or changed.
+
+= SEO change history =
+
+Every detected change is stored in the Change History.
+
+Findings are graded as:
+
+* **Critical**: changes that may have an immediate effect on crawling, indexing, or page availability
+* **Warning**: changes that may require review
+* **Info**: lower-risk changes recorded for reference
+
+You can filter the history by severity, status, and monitored page to quickly find the changes you need to review.
+
+= SEO monitoring dashboard =
+
+The SEOSentry dashboard gives you an overview of the site's current monitoring status.
+
+It includes:
+
+* Open critical, warning, and informational findings
+* 14-day SEO change trend
+* Changes grouped by type
+* Pages and findings that need attention
+* Monitoring status
+* Recent monitoring activity
+* AI crawler activity statistics
+
+= Email alerts =
+
+SEOSentry can send one email digest after a check run when qualifying changes are found.
+
+Instead of sending a separate email for every finding, related findings are included in a single digest.
+
+You can choose which severity levels trigger an email:
+
+* Critical only
+* Critical and warning
+* Critical, warning, and informational
+
+= Scheduled SEO checks =
+
+Choose how often SEOSentry checks your monitored pages:
+
+* Hourly
+* Twice daily
+* Daily
+* Manual only
+
+SEOSentry also schedules an automatic re-check about 90 seconds after a WordPress plugin, theme, or core update. This can help catch SEO regressions caused by software updates soon after they happen.
+
+= AI crawler activity tracking =
+
+SEOSentry records requests from supported AI crawler user agents when they visit your WordPress site.
+
+This lets you see activity from crawlers such as GPTBot, ClaudeBot, PerplexityBot, CCBot, and other supported bots without connecting an analytics service.
+
+No additional setup is required.
+
+Crawler activity tracking reports visits. It does not guarantee that content will be indexed, cited, or used by an AI platform.
+
+= Configurable history retention =
+
+Choose how long SEOSentry keeps monitoring history in your WordPress database.
+
+This gives you control over how much historical SEO change data is retained.
+
+= Works with your existing SEO setup =
+
+SEOSentry is designed to monitor the SEO output of your WordPress site rather than replace the tools that create it.
+
+You can use it alongside your existing SEO plugin, theme, page builder, structured data setup, sitemap system, and other WordPress tools.
+
+If one of those tools changes an SEO-relevant part of a monitored page, SEOSentry can record the difference during the next check.
+
+= Multisite support =
+
+SEOSentry supports WordPress Multisite.
+
+Each site in the network maintains its own:
+
+* Monitored pages
+* SEO change history
+* Settings
+* Scheduled monitoring configuration
+
+= Privacy and data handling =
+
+SEOSentry does not require an account, API key, or external monitoring service.
+
+Page snapshots, findings, settings, monitoring history, and crawler activity are stored in your WordPress database.
+
+Scheduled checks use WordPress functionality to request the pages and site resources being monitored.
+
+SEOSentry does not collect usage telemetry or send monitoring data to the plugin developer.
 
 = Source code =
 
-The admin screens are built from TypeScript and React. The files in `assets/`
-are the compiled output; the readable source, the build configuration and the
-lockfile all live in the public repository:
+See the full source code on GitHub
 
 https://github.com/csemazharul/seo-sentry
 
-`BUILD.txt` there has the two commands that turn one into the other.
 
 == Installation ==
 
-1. Upload the plugin to `/wp-content/plugins/seo-sentry`, or install it through **Plugins → Add New**.
-2. Activate it through the **Plugins** menu.
-3. Open **SEO Sentry** in the admin sidebar. The plugin takes a first snapshot of your pages — this is the baseline it compares against, so no findings appear until the next run.
-4. Under **Settings**, pick a check frequency and the email address alerts should go to.
+1. Install SEOSentry through **Plugins → Add New**, or upload it to `/wp-content/plugins/seo-sentry/`.
+2. Activate the plugin.
+3. Open **SEOSentry → Monitored Pages**.
+4. Add the WordPress pages or URLs you want to monitor.
+5. Allow the first successful check to create the SEO baseline for each page.
+6. Open **Settings** to choose the check frequency, email alert threshold, notification address, and history retention period.
+
+Future checks compare the current SEO state with the saved baseline and record any detected changes.
 
 == Frequently Asked Questions ==
 
-= Why do I see nothing after activating? =
+= What is SEOSentry? =
 
-The first run records a baseline. There is nothing to compare against yet, so
-there are no findings. The next scheduled run is the one that reports changes.
+SEOSentry is a WordPress SEO monitoring plugin that detects changes to important technical and on-page SEO elements.
 
-= Does it slow down my site? =
+It can monitor noindex and robots directives, titles, meta descriptions, canonical URLs, schema markup, H1 headings, redirects, HTTP errors, robots.txt, XML sitemaps, and other SEO signals.
 
-Checks run on WP-Cron, in the background, and fetch pages one at a time. AI
-crawler tracking adds a single throttled lookup on requests from a known bot
-user agent and does nothing at all for normal visitors.
+= Does SEOSentry change my SEO settings? =
 
-= Will it flag changes I made on purpose? =
+No.
 
-It will report them, because it cannot know your intent — but expected edits
-such as a rewritten title are graded lower than something like a page going
-`noindex`. You can dismiss anything you have already dealt with.
+SEOSentry monitors SEO output and records changes. It does not automatically rewrite titles, change canonicals, edit robots.txt, modify schema, or change indexing settings.
 
-= Does it need an API key or an account? =
+= Does SEOSentry replace my SEO plugin? =
 
-No. Nothing in this plugin talks to a third-party service.
+No.
 
-= What happens to my data if I delete the plugin? =
+Your SEO plugin can continue managing titles, meta descriptions, canonicals, schema, sitemaps, and other SEO settings.
 
-Deleting the plugin removes its tables, options, scheduled events and cached
-values completely. Deactivating it leaves everything in place, so you can
-deactivate safely if you only want to pause monitoring.
+SEOSentry provides a separate monitoring layer that helps detect when those outputs change.
 
-= Does it work on multisite? =
+= Why are there no findings after I add a page? =
 
-Yes. Each site keeps its own targets, history and settings, and deleting the
-plugin cleans up every site on the network.
+The first successful check creates the baseline for that page.
+
+There is nothing to compare during the first check. Findings appear when a later check detects a difference from the saved baseline.
+
+= Can I monitor multiple pages at once? =
+
+Yes.
+
+You can select multiple pages from public WordPress post types or add multiple URLs at once. Monitoring can also be paused, resumed, or removed in bulk.
+
+= What happens if a page becomes noindex? =
+
+If the robots meta directives change and noindex appears, SEOSentry records the change and grades it according to its severity.
+
+If your email alert threshold includes that severity, the finding can also be included in the email digest for that check run.
+
+= Does it monitor canonical URLs? =
+
+Yes.
+
+SEOSentry can detect when a canonical tag changes, disappears, or begins pointing to another domain.
+
+= Does it monitor schema markup? =
+
+Yes.
+
+SEOSentry monitors structured data found on the page. It can detect schema types being added or removed and JSON-LD that no longer parses correctly.
+
+= Does it monitor robots.txt? =
+
+Yes.
+
+SEOSentry monitors robots.txt for changes and can raise a critical finding if the file begins blocking crawling across the whole site.
+
+It also checks supported AI crawler directives.
+
+= Does it monitor XML sitemaps? =
+
+Yes.
+
+SEOSentry checks whether the XML sitemap is reachable and valid and can detect significant drops in the sitemap URL count.
+
+= Does SEOSentry track AI crawlers? =
+
+Yes.
+
+SEOSentry can record requests from supported AI crawler user agents such as GPTBot, ClaudeBot, PerplexityBot, and CCBot.
+
+It also checks robots.txt rules associated with supported AI crawlers and services.
+
+Crawler activity indicates that a crawler requested the site. It does not mean the content will necessarily be indexed or appear in AI-generated answers.
+
+= Will SEOSentry alert me after a plugin, theme, or WordPress update? =
+
+SEOSentry schedules an automatic re-check approximately 90 seconds after a plugin, theme, or WordPress core update.
+
+This is designed to help identify SEO changes introduced by software updates.
+
+= How often can SEOSentry check my pages? =
+
+You can choose hourly, twice daily, daily, or manual-only monitoring.
+
+Scheduled checks use WordPress scheduling functionality.
+
+= Will I receive an email for every SEO change? =
+
+No.
+
+SEOSentry groups qualifying findings from a check run into one email digest rather than sending a separate email for each finding.
+
+You can also choose the minimum severity required before an email is sent.
+
+= Does SEOSentry slow down the frontend of my site? =
+
+Scheduled page checks run separately through WordPress scheduling rather than as part of rendering normal visitor pages.
+
+AI crawler tracking only applies when a supported crawler user agent makes a request.
+
+As with any scheduled WordPress task, actual resource usage depends on the number of monitored pages, check frequency, hosting environment, and site configuration.
+
+= Does SEOSentry require an external account or API key? =
+
+No.
+
+The free version does not require an SEOSentry account, API key, or external monitoring service.
+
+= Does SEOSentry collect usage data? =
+
+No.
+
+The free version does not send usage telemetry or monitoring data to the plugin developer.
+
+Monitoring information is stored in your WordPress database.
+
+= Can I pause monitoring without deleting a page? =
+
+Yes.
+
+Monitoring can be paused and resumed for individual pages or multiple pages in bulk.
+
+= Does SEOSentry work with WordPress Multisite? =
+
+Yes.
+
+Each site maintains its own monitored pages, findings, history, and settings.
+
+= What happens when I deactivate or delete SEOSentry? =
+
+Deactivating the plugin keeps its stored data so monitoring can be resumed later.
+
+Deleting the plugin removes its plugin-specific tables, options, scheduled events, and cached values.
 
 == Screenshots ==
 
-1. The dashboard: how many critical, warning and informational changes are open, a 14-day history, a breakdown by change type, what needs attention first, and which AI crawlers have visited.
-2. Monitored pages: every page being watched, when it was last checked, how that check went, and a switch to pause any of them.
-3. Change history: every SEO change found, graded by severity and explained in plain English, filterable by severity, status and page.
-4. Site checks: robots.txt, the XML sitemap, WordPress's own search engine visibility setting, and what your robots.txt tells each AI crawler.
-5. Settings: how often to check, how long to keep history, and who gets emailed about what.
+1. **Dashboard** — Open SEO issues, 14-day change trend, change-type breakdown, pages needing attention, monitoring status, AI crawler activity, and recent activity.
+2. **Monitored Pages** — Add and manage the pages SEOSentry watches, view their latest check status, and pause or resume monitoring.
+3. **Change History** — Review detected SEO changes, severity, status, affected page, and plain-language details with filtering options.
+4. **Site Checks** — Monitor robots.txt, AI crawler directives, XML sitemap health, and WordPress search engine visibility.
+5. **Settings** — Configure check frequency, email alert thresholds, notification settings, and history retention.
 
 == Changelog ==
 
 = 1.0.1 =
-* Resolve the Ajax and REST endpoints only from the values WordPress provides, instead of falling back to a hard-coded path.
-* Update the bundled database library to 2.0.5.
+
+* Resolve Ajax and REST endpoint URLs from values provided by WordPress instead of using a hard-coded fallback path.
+* Update the bundled database library to version 2.0.5.
 
 = 1.0.0 =
+
 * Initial release.
-
-== Upgrade Notice ==
-
-= 1.0.1 =
-Endpoint resolution fix and an updated database library.
-
-= 1.0.0 =
-First release.
