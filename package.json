@@ -40,7 +40,7 @@
     "test:watch": "vitest --watch=true --ui=false",
     "ts-check": "tsc",
     "type-cov": "pnpx type-coverage -p ./tsconfig.json --strict --details",
-    "update-ver": "node bin/update-version.js",
+    "update-ver": "node bin/update-version.js -p seo-sentry",
     "package": "node scripts/build-zip.mjs",
     "prod:free-zip": "pnpm build:free && node scripts/build-zip.mjs",
     "i18n": "wp i18n make-pot . languages/seo-sentry.pot --slug=seo-sentry --exclude=frontend,node_modules,vendor,tests,assets,dist,scripts"

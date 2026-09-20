@@ -4,7 +4,7 @@ Tags: seo, monitoring, xml sitemap, schema, robots.txt
 Requires at least: 5.9
 Tested up to: 7.1
 Requires PHP: 8.2
-Stable tag: 1.0.1
+Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -321,11 +321,6 @@ Deactivating the plugin keeps its stored data so monitoring can be resumed later
 Deleting the plugin removes its plugin-specific tables, options, scheduled events, and cached values.
 
 == Changelog ==
-
-= 1.0.1 =
-
-* Resolve Ajax and REST endpoint URLs from values provided by WordPress instead of using a hard-coded fallback path.
-* Update the bundled database library to version 2.0.5.
 
 = 1.0.0 =
 
