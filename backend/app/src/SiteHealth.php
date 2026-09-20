@@ -112,7 +112,7 @@ class SiteHealth
             $result['actions'] = sprintf(
                 '<p><a href="%s">%s</a></p>',
                 esc_url(admin_url('admin.php?page=' . Config::SLUG . '#/log')),
-                esc_html__('Open the flight log', 'seo-sentry')
+                esc_html__('View all changes', 'seo-sentry')
             );
         }
 

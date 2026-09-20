@@ -1,8 +1,14 @@
-import { PlusOutlined } from '@ant-design/icons'
-import { App, Button, Card, Popconfirm, Switch, Table, Tag } from 'antd'
+import { DeleteOutlined, PlusOutlined } from '@ant-design/icons'
+import { App, Button, Card, Popconfirm, Space, Switch, Table, Tag, Tooltip } from 'antd'
 import { useState } from 'react'
 import { __, sprintf } from '@common/helpers/i18nWrap'
-import { useDeleteTarget, useTargets, useUpdateTarget } from '@/api/queries'
+import {
+  useBulkDeleteTargets,
+  useBulkUpdateTargets,
+  useDeleteTarget,
+  useTargets,
+  useUpdateTarget
+} from '@/api/queries'
 import { resultLabel } from '@components/changeLabels'
 import PageHeader from '@components/PageHeader'
 import When from '@components/When'
@@ -19,10 +25,13 @@ const RESULT_TONE: Record<string, string> = {
 
 export default function TargetsPage() {
   const [isAdding, setIsAdding] = useState(false)
+  const [selectedIds, setSelectedIds] = useState<number[]>([])
   const { message } = App.useApp()
   const { data: targets, isLoading } = useTargets()
   const updateTarget = useUpdateTarget()
   const deleteTarget = useDeleteTarget()
+  const bulkUpdate = useBulkUpdateTargets()
+  const bulkDelete = useBulkDeleteTargets()
 
   const toggle = (target: Target, isActive: boolean) => {
     updateTarget.mutate(
@@ -38,6 +47,29 @@ export default function TargetsPage() {
     })
   }
 
+  const bulkToggle = (isActive: boolean) => {
+    bulkUpdate.mutate(
+      { ids: selectedIds, is_active: isActive },
+      {
+        onSuccess: () => setSelectedIds([]),
+        onError: error => message.error(error.message)
+      }
+    )
+  }
+
+  const bulkRemove = () => {
+    const count = selectedIds.length
+    bulkDelete.mutate(selectedIds, {
+      onSuccess: () => {
+        setSelectedIds([])
+        message.success(sprintf(__('%d pages removed from monitoring.'), count))
+      },
+      onError: error => message.error(error.message)
+    })
+  }
+
+  const isBulkBusy = bulkUpdate.isPending || bulkDelete.isPending
+
   return (
     <>
       <PageHeader
@@ -50,6 +82,41 @@ export default function TargetsPage() {
       />
 
       <Card styles={{ body: { padding: 0 } }}>
+        {/* Only takes the bar's place when something is selected, so an empty
+            selection never costs the page a row of space. */}
+        {selectedIds.length > 0 && (
+          <div
+            className="flex flex-wrap items-center justify-between gap-3 border-0 border-b border-solid px-4 py-3"
+            style={{ background: palette.primarySoft, borderColor: palette.lineSoft }}
+          >
+            <span className="text-sm font-medium" style={{ color: palette.ink }}>
+              {sprintf(__('%d selected'), selectedIds.length)}
+            </span>
+            <Space size="small" wrap>
+              <Button disabled={isBulkBusy} size="small" onClick={() => bulkToggle(true)}>
+                {__('Resume monitoring')}
+              </Button>
+              <Button disabled={isBulkBusy} size="small" onClick={() => bulkToggle(false)}>
+                {__('Pause monitoring')}
+              </Button>
+              <Popconfirm
+                cancelText={__('Cancel')}
+                okText={__('Remove')}
+                title={sprintf(__('Stop monitoring %d pages?'), selectedIds.length)}
+                description={__('They stay visible in Change History.')}
+                onConfirm={bulkRemove}
+              >
+                <Button danger disabled={isBulkBusy} icon={<DeleteOutlined />} size="small">
+                  {__('Remove')}
+                </Button>
+              </Popconfirm>
+              <Button disabled={isBulkBusy} size="small" type="text" onClick={() => setSelectedIds([])}>
+                {__('Clear')}
+              </Button>
+            </Space>
+          </div>
+        )}
+
         <Table<Target>
           dataSource={targets ?? []}
           loading={isLoading}
@@ -59,6 +126,10 @@ export default function TargetsPage() {
             showTotal: (count, range) => sprintf(__('%d-%d of %d'), range[0], range[1], count)
           }}
           rowKey="id"
+          rowSelection={{
+            selectedRowKeys: selectedIds,
+            onChange: keys => setSelectedIds(keys as number[])
+          }}
           columns={[
             {
               title: __('Page'),
@@ -109,19 +180,25 @@ export default function TargetsPage() {
             },
             {
               title: '',
-              width: 100,
-              align: 'right',
+              width: 56,
+              align: 'center',
               render: (_, target) => (
                 <Popconfirm
                   cancelText={__('Cancel')}
                   okText={__('Remove')}
                   title={__('Stop monitoring this page?')}
-                  description={__('Its history stays in the flight log.')}
+                  description={__('It stays visible in Change History.')}
                   onConfirm={() => remove(target)}
                 >
-                  <Button className="scm-row-remove" size="small" type="text">
-                    {__('Remove')}
-                  </Button>
+                  <Tooltip title={__('Remove')}>
+                    <Button
+                      aria-label={__('Remove')}
+                      className="scm-row-remove"
+                      icon={<DeleteOutlined />}
+                      size="small"
+                      type="text"
+                    />
+                  </Tooltip>
                 </Popconfirm>
               )
             }

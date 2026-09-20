@@ -35,7 +35,7 @@ const LIGHT = {
   inkMuted: '#5f6875',
   line: '#e3e6ea',
   lineSoft: '#eef0f3',
-  primary: '#1d4ed8',
+  primary: '#566afa',
   primarySoft: '#eef2ff',
   success: '#067647',
   surface: '#ffffff',
@@ -50,8 +50,8 @@ const DARK = {
   inkMuted: '#98a1ad',
   line: '#2a2f38',
   lineSoft: '#222630',
-  primary: '#8aa8ff',
-  primarySoft: 'rgba(138, 168, 255, 0.16)',
+  primary: '#a5b4fc',
+  primarySoft: 'rgba(165, 180, 252, 0.16)',
   success: '#4ec98e',
   surface: '#1a1d23',
   warning: '#e0a458'
@@ -68,9 +68,9 @@ export function buildTheme(isDark: boolean, isCompact: boolean): ThemeConfig {
   return {
     algorithm,
     token: {
-      borderRadius: 8,
-      borderRadiusLG: 10,
-      borderRadiusSM: 6,
+      borderRadius: 10,
+      borderRadiusLG: 14,
+      borderRadiusSM: 8,
       colorBgContainer: c.surface,
       colorBgElevated: c.surface,
       colorBgLayout: c.canvas,

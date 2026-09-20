@@ -1,7 +1,6 @@
 import {
   ApiOutlined,
   DashboardOutlined,
-  EyeOutlined,
   FileSearchOutlined,
   GlobalOutlined,
   LoadingOutlined,
@@ -35,8 +34,8 @@ const NAV = [
     icon: <UnorderedListOutlined />,
     label: __('Monitored Pages')
   },
-  { key: '/log', icon: <FileSearchOutlined />, label: __('Flight Log') },
-  { key: '/site', icon: <GlobalOutlined />, label: __('Site-wide') },
+  { key: '/log', icon: <FileSearchOutlined />, label: __('Change History') },
+  { key: '/site', icon: <GlobalOutlined />, label: __('Site Checks') },
   ...PRO_NAV,
   { key: '/settings', icon: <SettingOutlined />, label: __('Settings') }
 ]
@@ -144,10 +143,20 @@ export default function TopBar() {
       <div className="flex w-full items-center gap-4 px-6 py-3 lg:px-8">
         <div className="flex flex-1 shrink-0 items-center gap-2.5">
           <span
-            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-sm text-white"
+            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-white"
             style={{ background: palette.primary }}
           >
-            <EyeOutlined />
+            {/* Same shield-with-eye-cutout mark as the plugin icon/banner
+                (.wordpress-org/src/icon-s2.html), so the in-app header, the
+                wp-admin menu and the .org listing all read as one identity. */}
+            <svg fill="none" height="16" viewBox="0 0 96 96" width="16">
+              <path
+                d="M48 5 L85 18 V47 C85 68 68 84 48 92 C28 84 11 68 11 47 V18 Z M27 48 Q48 31 69 48 Q48 65 27 48 Z"
+                fill="currentColor"
+                fillRule="evenodd"
+              />
+              <circle cx="48" cy="48" fill="#fbbf24" r="7.5" />
+            </svg>
           </span>
           {/* The full name costs ~130px that the menu needs on a narrower
               screen, so below 2xl the mark carries the identity on its own. */}

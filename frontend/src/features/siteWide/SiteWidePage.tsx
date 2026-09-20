@@ -71,7 +71,7 @@ export default function SiteWidePage() {
 
   return (
     <>
-      <PageHeader title={__('Site-wide')} />
+      <PageHeader title={__('Site Checks')} />
 
       {/* Spacing lives on this column: margin utilities on antd roots lose to
           its cssinjs reset at high hash priority. */}

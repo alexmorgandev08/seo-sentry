@@ -7,7 +7,7 @@
  * @var array|null  $impaired     impaired-state details, if monitoring is impaired
  * @var array       $explanations finding id => ['what','why','check']
  * @var array       $pageLabels   target id => label
- * @var string      $adminUrl     link to the flight log
+ * @var string      $adminUrl     link to the detected-changes list
  */
 
 if (!defined('ABSPATH')) {
@@ -115,7 +115,7 @@ $severityColours = [
     <?php endif; ?>
 
     <p style="font-size:13px;color:#646970;">
-        <a href="<?php echo esc_url($adminUrl); ?>" style="color:#2271b1;"><?php esc_html_e('Open the flight log', 'seo-sentry'); ?></a>
+        <a href="<?php echo esc_url($adminUrl); ?>" style="color:#2271b1;"><?php esc_html_e('View all changes', 'seo-sentry'); ?></a>
         &nbsp;·&nbsp;
         <?php esc_html_e('Sent by SEO Sentry. Change your alert settings in the plugin.', 'seo-sentry'); ?>
     </p>

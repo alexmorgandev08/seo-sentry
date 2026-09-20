@@ -36,7 +36,7 @@
   --scm-ink: #111827;
   --scm-ink-muted: #5f6875;
   --scm-ink-faint: #9ca3af;
-  --scm-primary: #1d4ed8;
+  --scm-primary: #566afa;
   --scm-primary-soft: #eef2ff;
   --scm-critical: #c8372a;
   --scm-critical-soft: #fef3f2;
@@ -96,8 +96,8 @@
   --scm-ink: #e7eaef;
   --scm-ink-muted: #98a1ad;
   --scm-ink-faint: #6b7280;
-  --scm-primary: #8aa8ff;
-  --scm-primary-soft: rgba(138, 168, 255, 16%);
+  --scm-primary: #a5b4fc;
+  --scm-primary-soft: rgba(165, 180, 252, 16%);
   --scm-critical: #f27c72;
   --scm-critical-soft: rgba(242, 124, 114, 14%);
   --scm-warning: #e0a458;
@@ -165,6 +165,31 @@ body.toplevel_page_seo-sentry #wpfooter {
 /* Cards: quiet border, no heavy shadow, consistent radius. */
 #seo-sentry-root .ant-card {
   box-shadow: none;
+}
+
+/*
+ * wp-admin styles every bare `input[type=text|search]` with its own border
+ * and, on focus, a blue box-shadow ring. antd's Select renders search as a
+ * real (deliberately invisible) <input>, and wp-admin's rule outranks antd's
+ * own reset for it, so a small boxed sliver shows up at the caret position
+ * once the control is focused - most visible when the Select is empty and
+ * that input is the only thing occupying the row.
+ */
+#seo-sentry-root .ant-select-selection-search-input {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  outline: none;
+}
+
+/*
+ * antd sits the extra/help text almost flush under the control, which reads
+ * as cramped once it wraps to two lines. A little air and looser leading
+ * fixes that without touching the copy itself.
+ */
+#seo-sentry-root .ant-form-item-extra {
+  margin-top: 6px;
+  line-height: 1.5;
 }
 
 /*
@@ -249,7 +274,7 @@ body.toplevel_page_seo-sentry #wpfooter {
  * which runs at hashPriority "high".
  */
 #seo-sentry-root .ant-btn.scm-row-remove {
-  color: var(--scm-ink-muted);
+  color: var(--scm-critical);
 }
 
 #seo-sentry-root .ant-btn.scm-row-remove:hover {

@@ -34,7 +34,7 @@ export default function FlightLogPage() {
 
   return (
     <>
-      <PageHeader title={__('Flight Log')} />
+      <PageHeader title={__('Change History')} />
 
       {/* Filters live inside the results card rather than floating above it:
           they act on the table below, so they read as one surface with it and

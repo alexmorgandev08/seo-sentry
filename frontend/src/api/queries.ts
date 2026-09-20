@@ -40,12 +40,12 @@ const useInvalidateAll = () => {
 export const useTargets = () =>
   useQuery({ queryKey: keys.targets, queryFn: () => call<Target[]>('targets/get') })
 
-export const useCreateTarget = () => {
+export const useBulkCreateTargets = () => {
   const client = useQueryClient()
 
   return useMutation({
-    mutationFn: (payload: { url?: string; post_id?: number; label?: string }) =>
-      call<Target>('targets/create', payload),
+    mutationFn: (payload: { post_ids?: number[]; urls?: string[] }) =>
+      call<{ created: Target[]; skipped: number; invalid: number }>('targets/bulk-create', payload),
     onSuccess: () => client.invalidateQueries({ queryKey: keys.targets })
   })
 }
@@ -65,6 +65,25 @@ export const useDeleteTarget = () => {
 
   return useMutation({
     mutationFn: (id: number) => call<{ deleted: number }>('targets/delete', { id }),
+    onSuccess: () => client.invalidateQueries({ queryKey: keys.targets })
+  })
+}
+
+export const useBulkUpdateTargets = () => {
+  const client = useQueryClient()
+
+  return useMutation({
+    mutationFn: (payload: { ids: number[]; is_active: boolean }) =>
+      call<{ updated: number[] }>('targets/bulk-update', payload),
+    onSuccess: () => client.invalidateQueries({ queryKey: keys.targets })
+  })
+}
+
+export const useBulkDeleteTargets = () => {
+  const client = useQueryClient()
+
+  return useMutation({
+    mutationFn: (ids: number[]) => call<{ deleted: number[] }>('targets/bulk-delete', { ids }),
     onSuccess: () => client.invalidateQueries({ queryKey: keys.targets })
   })
 }

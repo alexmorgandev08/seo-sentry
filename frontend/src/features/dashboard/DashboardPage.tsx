@@ -4,7 +4,7 @@ import {
   RightOutlined,
   SafetyCertificateOutlined
 } from '@ant-design/icons'
-import { Alert, App, Button, Card, Popconfirm } from 'antd'
+import { Alert, App, Button, Card, Popconfirm, Tooltip } from 'antd'
 import { useNavigate } from 'react-router'
 import classNames from '@common/helpers/classNames'
 import { __, sprintf } from '@common/helpers/i18nWrap'
@@ -72,7 +72,7 @@ export default function DashboardPage() {
       onSuccess: data =>
         message.success(
           sprintf(
-            __('Baseline saved for %d pages. Run your updates, then check again.'),
+            __('Snapshot saved for %d pages. Run your updates, then check again.'),
             data.targets
           )
         ),
@@ -89,23 +89,31 @@ export default function DashboardPage() {
               <Popconfirm
                 cancelText={__('Keep it')}
                 okText={__('Discard')}
-                title={__('Discard the saved baseline?')}
+                title={__('Discard the saved snapshot?')}
                 onConfirm={() => disarmBaseline.mutate()}
               >
-                <Button loading={disarmBaseline.isPending}>{__('Discard baseline')}</Button>
+                <Button loading={disarmBaseline.isPending}>{__('Discard snapshot')}</Button>
               </Popconfirm>
             ) : (
-              <Button
-                icon={<SafetyCertificateOutlined />}
-                loading={armBaseline.isPending}
-                onClick={arm}
+              <Tooltip
+                title={__(
+                  'Takes a snapshot of every monitored page right now. Use this just before a theme, plugin or content update: the next check compares against this snapshot instead of the last one, so you see exactly what the update changed. It expires on its own after 24 hours.'
+                )}
               >
-                {__('Arm baseline')}
-              </Button>
+                <Button
+                  icon={<SafetyCertificateOutlined />}
+                  loading={armBaseline.isPending}
+                  onClick={arm}
+                >
+                  {__('Snapshot now')}
+                </Button>
+              </Tooltip>
             )}
-            <Button icon={<ReloadOutlined />} loading={isRunning} type="primary" onClick={runCheck}>
-              {__('Check now')}
-            </Button>
+            <Tooltip title={__('Runs every check immediately, instead of waiting for the next scheduled run.')}>
+              <Button icon={<ReloadOutlined />} loading={isRunning} type="primary" onClick={runCheck}>
+                {__('Check now')}
+              </Button>
+            </Tooltip>
           </>
         }
         title={__('Dashboard')}
@@ -134,7 +142,7 @@ export default function DashboardPage() {
             description={__(
               'The next check compares against this snapshot instead of the last run, so anything your updates break shows up clearly. It expires on its own after 24 hours.'
             )}
-            message={__('Baseline saved. Go ahead and run your updates')}
+            message={__('Snapshot saved. Go ahead and run your updates')}
             type="info"
           />
         )}

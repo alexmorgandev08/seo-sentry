@@ -115,8 +115,8 @@ plugin cleans up every site on the network.
 
 1. The dashboard: how many critical, warning and informational changes are open, a 14-day history, a breakdown by change type, what needs attention first, and which AI crawlers have visited.
 2. Monitored pages: every page being watched, when it was last checked, how that check went, and a switch to pause any of them.
-3. The flight log: every change found, graded by severity and explained in plain English, filterable by severity, status and page.
-4. Site-wide checks: robots.txt, the XML sitemap, WordPress's own search engine visibility setting, and what your robots.txt tells each AI crawler.
+3. Change history: every SEO change found, graded by severity and explained in plain English, filterable by severity, status and page.
+4. Site checks: robots.txt, the XML sitemap, WordPress's own search engine visibility setting, and what your robots.txt tells each AI crawler.
 5. Settings: how often to check, how long to keep history, and who gets emailed about what.
 
 == Changelog ==

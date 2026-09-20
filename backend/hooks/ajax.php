@@ -15,8 +15,11 @@ Route::group(
     function (): void {
         Route::post('targets/get', [TargetController::class, 'index']);
         Route::post('targets/create', [TargetController::class, 'store']);
+        Route::post('targets/bulk-create', [TargetController::class, 'bulkCreate']);
         Route::post('targets/update', [TargetController::class, 'update']);
         Route::post('targets/delete', [TargetController::class, 'destroy']);
+        Route::post('targets/bulk-update', [TargetController::class, 'bulkUpdate']);
+        Route::post('targets/bulk-delete', [TargetController::class, 'bulkDestroy']);
         Route::post('targets/post-search', [TargetController::class, 'searchPosts']);
 
         Route::post('check/now', [CheckController::class, 'checkNow']);

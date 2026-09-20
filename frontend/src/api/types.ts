@@ -142,6 +142,7 @@ export interface PostSearchResult {
   title: string
   url: string
   type: string
+  post_type_label: string
 }
 
 export interface FindingFilters {

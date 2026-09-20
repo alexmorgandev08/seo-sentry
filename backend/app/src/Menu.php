@@ -21,7 +21,7 @@ final class Menu
                 'capability' => 'manage_options',
                 'slug'       => Config::SLUG,
                 'callback'   => [$body, 'render'],
-                'icon'       => 'dashicons-visibility',
+                'icon'       => 'dashicons-shield-alt',
                 'position'   => '20',
             ],
         ];
@@ -29,13 +29,23 @@ final class Menu
         // Submenu entries point at the same admin page with a hash route, so
         // the React app navigates without a page load.
         $routes = [
-            ''               => __('Dashboard', 'seo-sentry'),
-            '#/pages'        => __('Monitored Pages', 'seo-sentry'),
-            '#/log'          => __('Flight Log', 'seo-sentry'),
-            '#/site'         => __('Site-wide', 'seo-sentry'),
-            '#/integrations' => __('Integrations', 'seo-sentry'),
-            '#/settings'     => __('Settings', 'seo-sentry'),
+            ''        => __('Dashboard', 'seo-sentry'),
+            '#/pages' => __('Monitored Pages', 'seo-sentry'),
+            '#/log'   => __('Change History', 'seo-sentry'),
+            '#/site'  => __('Site Checks', 'seo-sentry'),
         ];
+
+        /*
+         * Integrations is a pro screen. The React router only registers that
+         * route when the add-on is active, so listing it unconditionally here
+         * gave WordPress a submenu entry that opened a blank page. Same test
+         * the localized config uses to hide the tab in the app's own nav.
+         */
+        if (defined('SEO_CHANGE_MONITOR_PRO_VERSION')) {
+            $routes['#/integrations'] = __('Integrations', 'seo-sentry');
+        }
+
+        $routes['#/settings'] = __('Settings', 'seo-sentry');
 
         foreach ($routes as $route => $label) {
             $menu['submenu' . $route] = [

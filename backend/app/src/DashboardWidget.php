@@ -92,7 +92,7 @@ class DashboardWidget
         printf(
             '<a href="%s" class="button button-secondary">%s</a>',
             esc_url($logUrl),
-            esc_html__('Open the flight log', 'seo-sentry')
+            esc_html__('View all changes', 'seo-sentry')
         );
     }
 }
