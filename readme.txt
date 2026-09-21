@@ -166,11 +166,9 @@ Scheduled checks use WordPress functionality to request the pages and site resou
 
 SEO Sentry does not collect usage telemetry or send monitoring data to the plugin developer.
 
-= Source code =
+🔗 **Useful Links**
 
-See the full source code on GitHub
-
-https://github.com/alexmorgandev08/seo-sentry
+🚀 [Source code on GitHub](https://github.com/alexmorgandev08/seo-sentry)
 
 
 == Installation ==
