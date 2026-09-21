@@ -64,6 +64,7 @@ export default function SiteWidePage() {
   })
 
   const robots = data?.robots?.fields ?? {}
+  const robotsText = String(robots.raw ?? '').trim()
   const sitemap = data?.sitemap?.fields ?? {}
   const settings = data?.settings?.fields ?? {}
   const aiBots = (robots.ai_bots ?? {}) as Record<string, string>
@@ -100,9 +101,17 @@ export default function SiteWidePage() {
                     type="error"
                   />
                 )}
-                <pre className="scm-code max-h-56">
-                  {String(robots.raw ?? '').trim() || __('(empty file)')}
-                </pre>
+                {/* An empty file has nothing to show in a code block - the
+                    placeholder would read as though that text were its
+                    contents. It is also not a fault worth flagging: no rules
+                    means nothing is blocked. */}
+                {robotsText ? (
+                  <pre className="scm-code max-h-56">{robotsText}</pre>
+                ) : (
+                  <Placeholder
+                    text={__('This file is empty, so nothing is blocked from crawling.')}
+                  />
+                )}
               </div>
             )}
           </Card>

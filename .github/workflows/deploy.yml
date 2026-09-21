@@ -1,0 +1,92 @@
+name: Deploy to WordPress.org
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Build and simulate the SVN deploy without committing anything
+        type: boolean
+        default: true
+
+jobs:
+  deploy:
+    name: Deploy to WP.org
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # attach the zip to the GitHub release
+    env:
+      SLUG: seo-sentry
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+
+      # build-zip.mjs runs `composer install --no-dev` inside its staging copy.
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer:v2
+          coverage: none
+
+      - name: Install SVN
+        run: command -v svn || (sudo apt-get update && sudo apt-get install -y subversion)
+
+      # A release tagged 1.0.1 must ship a plugin that says 1.0.1 everywhere,
+      # or WP.org serves one version while the header claims another.
+      - name: Check versions match the tag
+        if: github.event_name == 'release'
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          HEADER=$(grep -m1 -E '^\s*\*\s*Version:' "$SLUG.php" | awk '{print $NF}')
+          STABLE=$(grep -m1 -E '^Stable tag:' readme.txt | awk '{print $NF}')
+          echo "tag=$TAG header=$HEADER stable=$STABLE"
+          if [ "$TAG" != "$HEADER" ] || [ "$TAG" != "$STABLE" ]; then
+            echo "::error::Tag $TAG does not match plugin header ($HEADER) and Stable tag ($STABLE). Run 'pnpm update-ver -v $TAG' and commit first."
+            exit 1
+          fi
+          echo "VERSION=$TAG" >> "$GITHUB_ENV"
+
+      - run: pnpm install --frozen-lockfile
+
+      # Reuses the same packaging as a manual release: allowlisted files only,
+      # vendor/ without dev packages, and a check that nothing forbidden slipped in.
+      - name: Build plugin zip
+        run: pnpm prod:free-zip
+
+      - name: Unpack zip into the build folder
+        id: package
+        run: |
+          ZIP=$(ls dist/$SLUG-*.zip | head -n1)
+          rm -rf build && mkdir build
+          unzip -q "$ZIP" -d build
+          test -f "build/$SLUG/$SLUG.php" || { echo "::error::build/$SLUG/$SLUG.php missing"; exit 1; }
+          echo "zip=$ZIP" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy to WordPress.org SVN
+        uses: 10up/action-wordpress-plugin-deploy@stable
+        with:
+          dry-run: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
+        env:
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+          SLUG: ${{ env.SLUG }}
+          BUILD_DIR: build/${{ env.SLUG }}
+          # Only the banner/icon folder, not .wordpress-org itself - that also
+          # holds README-assets.txt, which must not land in SVN assets/.
+          ASSETS_DIR: .wordpress-org/assets
+
+      - name: Attach zip to the GitHub release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ steps.package.outputs.zip }}
