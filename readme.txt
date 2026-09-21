@@ -322,6 +322,6 @@ Deleting the plugin removes its plugin-specific tables, options, scheduled event
 
 == Changelog ==
 
-= 1.0.1 =
+= 1.0.0 =
 
 * Initial release.
