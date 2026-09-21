@@ -26,7 +26,7 @@ class Commands
 {
     public static function register()
     {
-        WP_CLI::add_command('seo-monitor', self::class);
+        WP_CLI::add_command('seo-sentry', self::class);
     }
 
     /**
@@ -39,7 +39,7 @@ class Commands
      *
      * ## EXAMPLES
      *
-     *     wp seo-monitor check --wait
+     *     wp seo-sentry check --wait
      *
      * @when after_wp_load
      */
