@@ -170,7 +170,7 @@ SEO Sentry does not collect usage telemetry or send monitoring data to the plugi
 
 See the full source code on GitHub
 
-https://github.com/csemazharul/seo-sentry
+https://github.com/alexmorgandev08/seo-sentry
 
 
 == Installation ==
