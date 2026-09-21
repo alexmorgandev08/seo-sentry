@@ -32,7 +32,7 @@ const NAV = [
   {
     key: '/pages',
     icon: <UnorderedListOutlined />,
-    label: __('Monitored Pages')
+    label: __('Watched Pages')
   },
   { key: '/log', icon: <FileSearchOutlined />, label: __('Change History') },
   { key: '/site', icon: <GlobalOutlined />, label: __('Site Checks') },
@@ -128,7 +128,9 @@ export default function TopBar() {
 
   return (
     <header
-      className="shrink-0"
+      // The class is a measuring handle: toasts have to start below this bar,
+      // and antd sets their top as an inline style (see useAdminBarOffset).
+      className="scm-topbar shrink-0"
       style={{
         background: palette.surface,
         borderBottom: `1px solid ${palette.line}`

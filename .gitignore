@@ -33,3 +33,6 @@ build
 gha-creds-*.json
 CLAUDE.local.md
 dist/
+
+# Local SVN checkout of the published WP.org release - not part of the plugin source.
+seo-sentry-svn/

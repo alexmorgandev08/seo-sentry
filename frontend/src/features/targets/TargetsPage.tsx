@@ -78,7 +78,7 @@ export default function TargetsPage() {
             {__('Add page')}
           </Button>
         }
-        title={__('Monitored Pages')}
+        title={__('Watched Pages')}
       />
 
       <Card styles={{ body: { padding: 0 } }}>
@@ -179,8 +179,8 @@ export default function TargetsPage() {
               )
             },
             {
-              title: '',
-              width: 56,
+              title: __('Remove'),
+              width: 90,
               align: 'center',
               render: (_, target) => (
                 <Popconfirm

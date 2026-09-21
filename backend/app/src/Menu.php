@@ -30,7 +30,7 @@ final class Menu
         // the React app navigates without a page load.
         $routes = [
             ''        => __('Dashboard', 'seo-sentry'),
-            '#/pages' => __('Monitored Pages', 'seo-sentry'),
+            '#/pages' => __('Watched Pages', 'seo-sentry'),
             '#/log'   => __('Change History', 'seo-sentry'),
             '#/site'  => __('Site Checks', 'seo-sentry'),
         ];

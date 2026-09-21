@@ -12,9 +12,9 @@ captions in readme.txt, because that is the only thing tying an image to its
 description.
 
   screenshot-1.png   Dashboard
-  screenshot-2.png   Monitored Pages
-  screenshot-3.png   Flight Log
-  screenshot-4.png   Site-wide
+  screenshot-2.png   Watched Pages
+  screenshot-3.png   Change History
+  screenshot-4.png   Site Checks
   screenshot-5.png   Settings
 
 Roughly 1200x900 or wider; they are shown scaled down, so legible text matters

@@ -1,30 +1,127 @@
-import { App, Button, Card, Form, Input, InputNumber, Select, Space, Switch, Tabs, Tooltip } from 'antd'
-import { useEffect } from 'react'
+import {
+  ClockCircleOutlined,
+  FilterOutlined,
+  HistoryOutlined,
+  MailOutlined,
+  RobotOutlined,
+  SendOutlined
+} from '@ant-design/icons'
+import { App, Button, Card, Input, InputNumber, Select, Space, Switch, Tabs } from 'antd'
+import { useEffect, useState } from 'react'
 import { __ } from '@common/helpers/i18nWrap'
+import useDebounce from '@common/hooks/useDebounce'
 import { usePreviewReport, useSendReport, useSettings, useUpdateSettings } from '@/api/queries'
 import PageHeader from '@components/PageHeader'
 import config from '@config/config'
+import { palette } from '@config/theme'
 import type { Settings } from '@/api/types'
+import type { ReactNode } from 'react'
+
+/** Saving a half-typed address would only ever come back as a server error. */
+const isSavableEmail = (value: string) =>
+  value.trim() === '' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())
+
+/** Each row brings its own vertical padding; the card must not add a second helping. */
+const CARD_STYLES = { body: { paddingBlock: 4 } }
+
+interface RowProps {
+  children: ReactNode
+  description?: string
+  icon?: ReactNode
+  title: string
+}
+
+/**
+ * One setting per row: what it is on the left, the control on the right. Reads
+ * as a list of decisions rather than a form to fill in, which suits a screen
+ * that saves on its own.
+ *
+ * The divider is dropped on the last row by `last:`, so adding a row never
+ * means remembering to move a flag along with it.
+ */
+function SettingRow({ children, description, icon, title }: RowProps) {
+  return (
+    <div
+      className="flex flex-wrap items-start justify-between gap-x-6 gap-y-3 border-0 border-b border-solid py-4 last:border-b-0"
+      style={{ borderColor: palette.lineSoft }}
+    >
+      <div className="flex min-w-0 flex-1 items-start gap-3">
+        <span className="mt-0.5 shrink-0 text-base" style={{ color: palette.inkFaint }}>
+          {icon}
+        </span>
+        <div className="min-w-0">
+          <div className="text-sm font-medium" style={{ color: palette.ink }}>
+            {title}
+          </div>
+          {description ? (
+            <p className="m-0 mt-1 text-xs leading-relaxed" style={{ color: palette.inkMuted }}>
+              {description}
+            </p>
+          ) : null}
+        </div>
+      </div>
+      <div className="w-full shrink-0 sm:w-64">{children}</div>
+    </div>
+  )
+}
 
 export default function SettingsPage() {
-  const [form] = Form.useForm<Settings>()
   const { message } = App.useApp()
   const { data: settings, isLoading } = useSettings()
   const updateSettings = useUpdateSettings()
   const sendReport = useSendReport()
   const previewReport = usePreviewReport()
-  const emailEnabled = Form.useWatch('email_enabled', form)
-  const isEmailFieldDisabled = isLoading || !emailEnabled
 
+  const [draft, setDraft] = useState<Settings | undefined>(settings)
+
+  /*
+   * Seeded once, not kept in sync. Every save writes the server's response
+   * back into the settings cache, so re-syncing here would let a reply from
+   * one keystroke overwrite the characters typed while it was in flight.
+   */
   useEffect(() => {
-    if (settings) form.setFieldsValue(settings)
-  }, [settings, form])
+    setDraft(previous => previous ?? settings)
+  }, [settings])
 
-  const submit = (values: Settings) => {
-    updateSettings.mutate(values, {
-      onSuccess: () => message.success(__('Settings saved.')),
-      onError: error => message.error(error.message)
+  /**
+   * `revert` is for controls that show their own state - a switch left showing
+   * "on" after a failed save is a lie. A text field keeps what was typed
+   * instead, so the correction can be made in place.
+   */
+  const persist = (partial: Partial<Settings>, revert = false) => {
+    updateSettings.mutate(partial, {
+      // A shared key, so changing several settings in a row replaces the
+      // toast each time instead of stacking a pile of them up.
+      onSuccess: () => message.success({ content: __('Settings saved.'), key: 'settings-saved' }),
+      onError: error => {
+        message.error({ content: error.message, key: 'settings-saved' })
+        if (revert && settings) setDraft(settings)
+      }
     })
+  }
+
+  const persistDebounced = useDebounce(persist, 600)
+
+  const edit = <K extends keyof Settings>(key: K, value: Settings[K]) => {
+    setDraft(previous => (previous ? { ...previous, [key]: value } : previous))
+  }
+
+  /** Switches and selects: one deliberate click, so save it at once. */
+  const save = <K extends keyof Settings>(key: K, value: Settings[K]) => {
+    edit(key, value)
+    persist({ [key]: value }, true)
+  }
+
+  /** Typed fields: wait for the typing to stop. */
+  const saveTyped = <K extends keyof Settings>(key: K, value: Settings[K]) => {
+    edit(key, value)
+    persistDebounced({ [key]: value })
+  }
+
+  /** Held back until the address is complete, so typing never trips validation. */
+  const saveRecipient = (value: string) => {
+    edit('email_recipient', value)
+    if (isSavableEmail(value)) persistDebounced({ email_recipient: value.trim() })
   }
 
   const sendNow = () => {
@@ -52,21 +149,25 @@ export default function SettingsPage() {
     })
   }
 
+  const isEmailDisabled = isLoading || !draft?.email_enabled
+  const isReportDisabled = isLoading || !draft?.report_enabled
+
   const tabItems = [
     {
       key: 'checking',
       label: __('Checking'),
       children: (
-        <Card>
-          <Form.Item
-            className="mb-5 max-w-md"
-            extra={__(
-              'Checks also run automatically about 90 seconds after any plugin, theme or core update.'
-            )}
-            label={__('How often to check')}
-            name="frequency"
+        <Card styles={CARD_STYLES}>
+          <SettingRow
+            description={__('Also checks right after you update a plugin, theme, or WordPress.')}
+            icon={<ClockCircleOutlined />}
+            title={__('How often to check for changes')}
           >
             <Select
+              className="w-full"
+              disabled={isLoading}
+              value={draft?.frequency}
+              onChange={value => save('frequency', value)}
               options={[
                 { label: __('Every hour'), value: 'hourly' },
                 { label: __('Twice a day'), value: 'twicedaily' },
@@ -74,18 +175,25 @@ export default function SettingsPage() {
                 { label: __('Off (only when I click Check now)'), value: 'off' }
               ]}
             />
-          </Form.Item>
+          </SettingRow>
 
-          <Form.Item
-            className="mb-0 max-w-md"
-            extra={__(
-              '0 keeps everything forever. Unresolved critical findings are never deleted.'
+          <SettingRow
+            description={__(
+              "Set to 0 to keep everything forever. Critical changes you haven't fixed are never deleted."
             )}
-            label={__('Keep history for (days)')}
-            name="retention_days"
+            icon={<HistoryOutlined />}
+            title={__('How long to keep history')}
           >
-            <InputNumber className="w-40" max={3650} min={0} />
-          </Form.Item>
+            <InputNumber
+              addonAfter={__('days')}
+              className="w-full"
+              disabled={isLoading}
+              max={3650}
+              min={0}
+              value={draft?.retention_days}
+              onChange={value => saveTyped('retention_days', value ?? 0)}
+            />
+          </SettingRow>
         </Card>
       )
     },
@@ -93,44 +201,52 @@ export default function SettingsPage() {
       key: 'email',
       label: __('Email alerts'),
       children: (
-        <Card>
-          <Form.Item
-            className="mb-5"
-            label={__('Email me about changes')}
-            name="email_enabled"
-            valuePropName="checked"
+        <Card styles={CARD_STYLES}>
+          <SettingRow
+            description={__('Get one email after a check run finds something worth knowing.')}
+            icon={<MailOutlined />}
+            title={__('Turn on email alerts')}
           >
-            <Switch />
-          </Form.Item>
+            <Switch
+              checked={Boolean(draft?.email_enabled)}
+              disabled={isLoading}
+              onChange={value => save('email_enabled', value)}
+            />
+          </SettingRow>
 
-          <Form.Item
-            className="mb-5 max-w-md"
-            extra={__('Only changes at this severity or higher trigger an email.')}
-            label={__('Alert severity')}
-            name="email_threshold"
+          <SettingRow
+            description={__(
+              "Smaller changes are still recorded - you just won't get an email about them."
+            )}
+            icon={<FilterOutlined />}
+            title={__('Email me about')}
           >
             <Select
-              disabled={isEmailFieldDisabled}
+              className="w-full"
+              disabled={isEmailDisabled}
+              value={draft?.email_threshold}
+              onChange={value => save('email_threshold', value)}
               options={[
                 { label: __('Critical changes only'), value: 'critical' },
                 { label: __('Critical and warnings'), value: 'warning' },
                 { label: __('Everything, including info'), value: 'info' }
               ]}
             />
-          </Form.Item>
+          </SettingRow>
 
-          <Form.Item
-            className="mb-0 max-w-md"
-            extra={__('Leave empty to use the site admin email.')}
-            label={__('Send alerts to')}
-            name="email_recipient"
+          <SettingRow
+            description={__('Leave empty to use your WordPress admin email.')}
+            icon={<SendOutlined />}
+            title={__('Send emails to')}
           >
             <Input
-              disabled={isEmailFieldDisabled}
+              disabled={isEmailDisabled}
               placeholder={__('you@example.com')}
               type="email"
+              value={draft?.email_recipient}
+              onChange={event => saveRecipient(event.target.value)}
             />
-          </Form.Item>
+          </SettingRow>
         </Card>
       )
     },
@@ -143,10 +259,11 @@ export default function SettingsPage() {
             label: __('Client report'),
             children: (
               <Card
+                styles={CARD_STYLES}
                 extra={
                   <Space>
                     <Button
-                      disabled={isLoading}
+                      disabled={isReportDisabled}
                       loading={previewReport.isPending}
                       size="small"
                       onClick={preview}
@@ -154,7 +271,7 @@ export default function SettingsPage() {
                       {__('Preview')}
                     </Button>
                     <Button
-                      disabled={isLoading}
+                      disabled={isReportDisabled}
                       loading={sendReport.isPending}
                       size="small"
                       onClick={sendNow}
@@ -165,58 +282,71 @@ export default function SettingsPage() {
                 }
                 title={__('Weekly client report')}
               >
-                <Form.Item
-                  className="mb-5"
-                  extra={__('Sent every Monday morning. Your branding, not ours.')}
-                  label={__('Email a weekly summary')}
-                  name="report_enabled"
-                  valuePropName="checked"
+                <SettingRow
+                  description={__('Sent every Monday morning. Your branding, not ours.')}
+                  icon={<MailOutlined />}
+                  title={__('Email a weekly summary')}
                 >
-                  <Switch />
-                </Form.Item>
+                  <Switch
+                    checked={Boolean(draft?.report_enabled)}
+                    disabled={isLoading}
+                    onChange={value => save('report_enabled', value)}
+                  />
+                </SettingRow>
 
-                <Form.Item
-                  className="mb-5 max-w-lg"
-                  extra={__('Comma-separated. These addresses receive the report.')}
-                  label={__('Send to')}
-                  name="report_recipients"
+                <SettingRow
+                  description={__('Comma-separated. These addresses receive the report.')}
+                  icon={<SendOutlined />}
+                  title={__('Send the report to')}
                 >
-                  <Input placeholder={__('client@example.com, you@agency.com')} />
-                </Form.Item>
+                  <Input
+                    disabled={isReportDisabled}
+                    placeholder={__('client@example.com, you@agency.com')}
+                    value={draft?.report_recipients}
+                    onChange={event => saveTyped('report_recipients', event.target.value)}
+                  />
+                </SettingRow>
 
-                <div className="flex max-w-lg gap-3">
-                  <Form.Item
-                    className="mb-5 flex-1"
-                    label={__('Your business name')}
-                    name="report_brand_name"
-                  >
-                    <Input placeholder={__('Shown in place of the plugin name')} />
-                  </Form.Item>
-                  <Form.Item
-                    className="mb-5 w-32"
-                    label={__('Accent colour')}
-                    name="report_brand_color"
-                  >
-                    <Input placeholder="#3b5bdb" />
-                  </Form.Item>
-                </div>
-
-                <Form.Item
-                  className="mb-5 max-w-lg"
-                  label={__('Logo URL')}
-                  name="report_logo_url"
+                <SettingRow
+                  description={__('Shown in place of the plugin name.')}
+                  title={__('Your business name')}
                 >
-                  <Input placeholder="https://example.com/logo.png" />
-                </Form.Item>
+                  <Input
+                    disabled={isReportDisabled}
+                    value={draft?.report_brand_name}
+                    onChange={event => saveTyped('report_brand_name', event.target.value)}
+                  />
+                </SettingRow>
 
-                <Form.Item
-                  className="mb-0 max-w-lg"
-                  extra={__('Replaces the default line at the bottom of the report.')}
-                  label={__('Footer text')}
-                  name="report_footer"
+                <SettingRow description={__('Used for headings and links.')} title={__('Accent colour')}>
+                  <Input
+                    disabled={isReportDisabled}
+                    placeholder="#3b5bdb"
+                    value={draft?.report_brand_color}
+                    onChange={event => saveTyped('report_brand_color', event.target.value)}
+                  />
+                </SettingRow>
+
+                <SettingRow title={__('Logo URL')}>
+                  <Input
+                    disabled={isReportDisabled}
+                    placeholder="https://example.com/logo.png"
+                    value={draft?.report_logo_url}
+                    onChange={event => saveTyped('report_logo_url', event.target.value)}
+                  />
+                </SettingRow>
+
+                <SettingRow
+                  description={__('Replaces the default line at the bottom of the report.')}
+                  title={__('Footer text')}
                 >
-                  <Input placeholder={__('Prepared by Your Agency')} />
-                </Form.Item>
+                  <Input
+                    disabled={isReportDisabled}
+                    placeholder={__('Prepared by Your Agency')}
+                    value={draft?.report_footer}
+                    onChange={event => saveTyped('report_footer', event.target.value)}
+                  />
+                </SettingRow>
               </Card>
             )
           }
@@ -226,46 +356,35 @@ export default function SettingsPage() {
       key: 'ai',
       label: __('AI crawlers'),
       children: (
-        <Card>
-          <Form.Item
-            className="mb-0"
-            extra={__(
+        <Card styles={CARD_STYLES}>
+          <SettingRow
+            description={__(
               'Notes the date each known AI crawler last visited. Full-page caching can hide some visits.'
             )}
-            label={__('Record when AI crawlers visit')}
-            name="bot_tracking"
-            valuePropName="checked"
+            icon={<RobotOutlined />}
+            title={__('Record when AI crawlers visit')}
           >
-            <Switch />
-          </Form.Item>
+            <Switch
+              checked={Boolean(draft?.bot_tracking)}
+              disabled={isLoading}
+              onChange={value => save('bot_tracking', value)}
+            />
+          </SettingRow>
         </Card>
       )
     }
   ]
 
+  /*
+   * Capped, not full width. Stretched across a wide screen, a row puts its
+   * label hard left and its control hard right, and the eye loses the link
+   * between the two. Left-aligned rather than centred so it stays in line
+   * with every other screen's content.
+   */
   return (
-    <>
-      <PageHeader
-        actions={
-          <Tooltip title={__('Changes apply to the next scheduled check.')}>
-            {/* Sits outside the Form element, so it is neither a submit button
-                nor covered by the Form's disabled prop - both are wired by hand. */}
-            <Button
-              disabled={isLoading}
-              loading={updateSettings.isPending}
-              type="primary"
-              onClick={() => form.submit()}
-            >
-              {__('Save settings')}
-            </Button>
-          </Tooltip>
-        }
-        title={__('Settings')}
-      />
-
-      <Form disabled={isLoading} form={form} layout="vertical" onFinish={submit}>
-        <Tabs defaultActiveKey="checking" items={tabItems} />
-      </Form>
-    </>
+    <div className="max-w-4xl">
+      <PageHeader title={__('Settings')} />
+      <Tabs defaultActiveKey="checking" items={tabItems} />
+    </div>
   )
 }

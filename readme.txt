@@ -22,7 +22,7 @@ It does not replace your SEO plugin or change your SEO settings. It monitors the
 
 = Monitor individual WordPress pages =
 
-Add pages to Monitored Pages individually or in bulk.
+Add pages to Watched Pages individually or in bulk.
 
 You can:
 
@@ -177,7 +177,7 @@ https://github.com/csemazharul/seo-sentry
 
 1. Install SEO Sentry through **Plugins → Add New**, or upload it to `/wp-content/plugins/seo-sentry/`.
 2. Activate the plugin.
-3. Open **SEO Sentry → Monitored Pages**.
+3. Open **SEO Sentry → Watched Pages**.
 4. Add the WordPress pages or URLs you want to monitor.
 5. Allow the first successful check to create the SEO baseline for each page.
 6. Open **Settings** to choose the check frequency, email alert threshold, notification address, and history retention period.
