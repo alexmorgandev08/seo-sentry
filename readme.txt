@@ -4,7 +4,7 @@ Tags: seo, monitoring, xml sitemap, schema, robots.txt
 Requires at least: 5.9
 Tested up to: 7.1
 Requires PHP: 8.2
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -320,6 +320,13 @@ Deleting the plugin removes its plugin-specific tables, options, scheduled event
 
 == Changelog ==
 
-= 1.0.0 =
+= v1.0.1 (Sep 22, 2026) =
+
+* Improved: Settings now save on their own as you change them, with a short confirmation, so there is no Save button to forget.
+* Improved: Settings are laid out one per row with clearer labels and help text, in a narrower column that is easier to read on wide screens.
+* Improved: The Monitored Pages table now labels its Remove column.
+* Improved: An empty robots.txt now reads "nothing is blocked from crawling" instead of showing "(empty file)".
+
+= v1.0.0 (Sep 21, 2026) =
 
 * Initial release.
