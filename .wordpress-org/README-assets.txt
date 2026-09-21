@@ -12,7 +12,7 @@ captions in readme.txt, because that is the only thing tying an image to its
 description.
 
   screenshot-1.png   Dashboard
-  screenshot-2.png   Watched Pages
+  screenshot-2.png   Monitored Pages
   screenshot-3.png   Change History
   screenshot-4.png   Site Checks
   screenshot-5.png   Settings

@@ -32,7 +32,7 @@ const NAV = [
   {
     key: '/pages',
     icon: <UnorderedListOutlined />,
-    label: __('Watched Pages')
+    label: __('Monitored Pages')
   },
   { key: '/log', icon: <FileSearchOutlined />, label: __('Change History') },
   { key: '/site', icon: <GlobalOutlined />, label: __('Site Checks') },

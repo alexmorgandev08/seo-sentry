@@ -78,7 +78,7 @@ export default function TargetsPage() {
             {__('Add page')}
           </Button>
         }
-        title={__('Watched Pages')}
+        title={__('Monitored Pages')}
       />
 
       <Card styles={{ body: { padding: 0 } }}>
