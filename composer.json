@@ -1,5 +1,5 @@
 {
-  "name": "mi/seo-sentry",
+  "name": "alexmorgandev/seo-sentry",
   "description": "Monitors WordPress pages for SEO-affecting changes and alerts you when one lands.",
   "type": "wordpress-plugin",
   "license": "GPL-2.0-or-later",
