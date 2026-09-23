@@ -2,6 +2,7 @@
 import react from '@vitejs/plugin-react'
 import { checkSubmoduleUpdatesPlugin, generateBuildCodeNamePlugin } from 'bitapps-dev-utils'
 import { humanId } from 'human-id'
+import fs from 'node:fs'
 import path from 'node:path'
 import { defineConfig, loadEnv } from 'vite'
 import tsconfigPaths from 'vite-tsconfig-paths'
@@ -10,12 +11,39 @@ import tsconfigPaths from 'vite-tsconfig-paths'
 // import { viteStaticCopy } from 'vite-plugin-static-copy'
 // import incstr from 'incstr'
 
+/**
+ * .env is gitignored, so a CI build starts without one - and PLUGIN_SLUG and
+ * SERVER_VARIABLES are baked into the stylesheet's filename and into the global
+ * the app reads its config from, so an unset value ships a plugin whose CSS
+ * 404s and whose config is undefined. .env.example is committed and holds the
+ * same values, so it keeps a CI build identical to a local one.
+ */
+function envExampleValues(): Record<string, string> {
+  const file = path.join(process.cwd(), '.env.example')
+  if (!fs.existsSync(file)) return {}
+
+  const values: Record<string, string> = {}
+  for (const line of fs.readFileSync(file, 'utf8').split('\n')) {
+    const match = line.match(/^\s*([A-Z0-9_]+)\s*=\s*([^#]*)/)
+    if (match) values[match[1]] = match[2].trim()
+  }
+
+  return values
+}
+
 export default defineConfig(({ mode }) => {
-  const { DEV_SSL, DEV_SSL_CERT_PATH, DEV_SSL_KEY_PATH, PLUGIN_SLUG, SERVER_VARIABLES } = loadEnv(
-    mode,
-    process.cwd(),
-    ''
-  )
+  const env = loadEnv(mode, process.cwd(), '')
+  const fallback = envExampleValues()
+
+  const { DEV_SSL, DEV_SSL_CERT_PATH, DEV_SSL_KEY_PATH } = env
+  const PLUGIN_SLUG = env.PLUGIN_SLUG || fallback.PLUGIN_SLUG
+  const SERVER_VARIABLES = env.SERVER_VARIABLES || fallback.SERVER_VARIABLES
+
+  if (!PLUGIN_SLUG || !SERVER_VARIABLES) {
+    throw new Error(
+      'PLUGIN_SLUG and SERVER_VARIABLES must be set in .env or .env.example - without them the build produces a 404ing stylesheet and no server config.'
+    )
+  }
 
   const isDevelopment = mode === 'development' || mode === 'test'
   const isTest = mode === 'test'

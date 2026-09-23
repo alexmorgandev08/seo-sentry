@@ -110,14 +110,52 @@ function trimVendorCruft(vendorDir, depth = 0) {
   return removed
 }
 
+/**
+ * The admin page asks for two filenames built from the slug and the build code
+ * name. A build that ran without .env names the stylesheet after an empty slug,
+ * which only shows up as a 404 in a browser after release - so check here that
+ * the files PHP will request are the files the build actually produced.
+ */
+function verifyBuiltAssets(slug) {
+  const assets = path.join(root, 'assets')
+  if (!fs.existsSync(assets)) {
+    fail('assets/ is missing. Run `pnpm build:free` first, or use `pnpm prod:free-zip`.')
+  }
+
+  const codeNameFile = path.join(assets, 'build-code-name.txt')
+  if (!fs.existsSync(codeNameFile)) {
+    fail('assets/build-code-name.txt is missing. Run `pnpm build:free` to regenerate assets/.')
+  }
+
+  const codeName = fs.readFileSync(codeNameFile, 'utf8').trim()
+  const bundle = `main-${codeName}.js`
+
+  for (const file of [bundle, `main-${slug}-ba-assets-${codeName}.css`]) {
+    if (!fs.existsSync(path.join(assets, file))) {
+      fail(
+        `assets/${file} is missing, so the plugin would request a file that does not exist. ` +
+          `Built instead: ${fs.readdirSync(assets).join(', ')}. ` +
+          'A build with no PLUGIN_SLUG (no .env and no .env.example) causes this.'
+      )
+    }
+  }
+
+  if (fs.readFileSync(path.join(assets, bundle), 'utf8').includes('window.undefined')) {
+    fail(
+      'The bundle reads its config from `window.undefined`, so every admin screen would throw. ' +
+        'SERVER_VARIABLES was unset when vite built assets/.'
+    )
+  }
+
+  log(`  · assets verified (${codeName})`)
+}
+
 const plugin = readPluginHeader()
 if (!plugin) fail('No plugin file with a "Plugin Name:" header found in the project root.')
 
 log(`Packaging ${plugin.name} ${plugin.version} (slug: ${plugin.slug})`)
 
-if (!fs.existsSync(path.join(root, 'assets'))) {
-  fail('assets/ is missing. Run `pnpm build:free` first, or use `pnpm prod:free-zip`.')
-}
+verifyBuiltAssets(plugin.slug)
 
 // Stage under the slug so the zip expands to the right folder name.
 const stageRoot = fs.mkdtempSync(path.join(distDir.replace(/dist$/, ''), '.scm-package-'))
