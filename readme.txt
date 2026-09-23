@@ -320,6 +320,10 @@ Deleting the plugin removes its plugin-specific tables, options, scheduled event
 
 == Changelog ==
 
+= v1.0.2 (Sep 23, 2026) =
+
+* Fixed: Admin screens that loaded unstyled and blank in 1.0.1, because that release was packaged without its stylesheet and configuration.
+
 = v1.0.1 (Sep 22, 2026) =
 
 * Improved: Settings now save on their own as you change them, with a short confirmation, so there is no Save button to forget.
