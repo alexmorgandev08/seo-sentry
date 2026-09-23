@@ -21,7 +21,7 @@ class Config
 
     public const VAR_PREFIX = 'SEO_CHANGE_MONITOR_';
 
-    public const VERSION = '1.0.1';
+    public const VERSION = '1.0.2';
 
     public const DB_VERSION = '0.2.0';
 
