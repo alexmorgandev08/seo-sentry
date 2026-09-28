@@ -330,6 +330,10 @@ Deleting the plugin removes its plugin-specific tables, options, scheduled event
 
 == Changelog ==
 
+= v1.0.3 (Sep 28, 2026) =
+
+* Improved: Added screenshots and a short overview video to the plugin page.
+
 = v1.0.2 (Sep 23, 2026) =
 
 * Fixed: Admin screens that loaded unstyled and blank in 1.0.1, because that release was packaged without its stylesheet and configuration.
