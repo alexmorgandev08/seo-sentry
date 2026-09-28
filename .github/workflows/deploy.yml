@@ -81,9 +81,8 @@ jobs:
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
           SLUG: ${{ env.SLUG }}
           BUILD_DIR: build/${{ env.SLUG }}
-          # Only the banner/icon folder, not .wordpress-org itself - that also
-          # holds README-assets.txt, which must not land in SVN assets/.
-          ASSETS_DIR: .wordpress-org/assets
+          # ASSETS_DIR is left at its default, .wordpress-org, so that folder
+          # holds listing images only - anything else in it ships to SVN assets/.
 
       - name: Attach zip to the GitHub release
         if: github.event_name == 'release'

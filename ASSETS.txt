@@ -1,0 +1,41 @@
+WordPress.org listing assets
+============================
+
+The images in .wordpress-org/ are the plugin's listing on wordpress.org - the
+banner, the icon and the screenshots. They do NOT go in the plugin zip.
+
+WordPress.org serves them from the assets/ folder at the top level of the SVN
+repository, beside trunk/ and tags/. Nothing here is copied there by hand:
+.github/workflows/deploy.yml points 10up/action-wordpress-plugin-deploy at
+.wordpress-org (the action's default ASSETS_DIR) and it syncs the folder on
+every release. Because the whole folder is synced, keep images in it and
+nothing else - this file lives at the project root for that reason.
+
+Screenshots
+-----------
+Save the captures as PNG, in this order. The numbers must match the captions
+under "== Screenshots ==" in readme.txt, because that is the only thing tying
+an image to its description.
+
+  screenshot-1.png   Dashboard
+  screenshot-2.png   Monitored Pages
+  screenshot-3.png   Change History
+  screenshot-4.png   Site Checks
+  screenshot-5.png   Settings
+
+Roughly 1200x900 or wider; they are shown scaled down, so legible text matters
+more than exact size. Filenames must be lowercase - uppercase will not work.
+
+Banner and icon
+---------------
+  banner-772x250.png    top of the plugin page
+  banner-1544x500.png   same, for high-DPI screens
+  icon-128x128.png      search results and the plugin card
+  icon-256x256.png      same, for high-DPI screens
+  icon.svg              preferred over the PNGs where it is supported
+
+Updating them between releases
+------------------------------
+SVN assets/ is shared by every version, so replacing an image here and running
+the deploy workflow updates the live listing immediately. Captions are part of
+readme.txt, so changing those requires a release.
