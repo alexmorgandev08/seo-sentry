@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       SEO Sentry
  * Description:       Alerts you when a page goes noindex or its title, meta, canonical or schema changes — and explains what it means in plain English.
- * Version:     1.0.2
+ * Version:     1.0.3
  * Author:            Alex Morgan
  * Text Domain:       seo-sentry
  * Requires PHP:      8.2
