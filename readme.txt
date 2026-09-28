@@ -14,6 +14,8 @@ Monitor SEO changes to noindex, titles, meta descriptions, canonicals, schema, r
 
 SEO Sentry is an SEO change monitoring plugin for WordPress. It watches important SEO elements on your pages and across your site, records what changed, and alerts you when something may need attention.
 
+https://youtu.be/U3m7dL_zDV8
+
 A page can accidentally become noindex after an update. A canonical URL can change. Schema markup can disappear. A redirect can start pointing outside your site. Your robots.txt or XML sitemap can also change without anyone noticing.
 
 SEO Sentry creates a baseline of the SEO elements it monitors and compares future checks against that baseline. When something changes, it records the finding as critical, warning, or informational so you can quickly understand what happened.
@@ -317,6 +319,14 @@ Each site maintains its own monitored pages, findings, history, and settings.
 Deactivating the plugin keeps its stored data so monitoring can be resumed later.
 
 Deleting the plugin removes its plugin-specific tables, options, scheduled events, and cached values.
+
+== Screenshots ==
+
+1. The dashboard: open findings by severity, changes over the last 14 days, which change types are most common, and which AI crawlers have visited.
+2. Monitored Pages: every page being watched, when each was last checked, and a switch to pause monitoring on any of them.
+3. Change History: every change detected, with its severity and a plain-English explanation of what it means.
+4. Site Checks: your robots.txt and XML sitemap, plus what robots.txt says to each AI crawler and when that crawler was last seen.
+5. Settings: how often to check and how long to keep history, with separate tabs for email alerts and AI crawlers.
 
 == Changelog ==
 
