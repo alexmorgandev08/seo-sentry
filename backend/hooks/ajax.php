@@ -26,6 +26,7 @@ Route::group(
         Route::post('check/status', [CheckController::class, 'runStatus']);
 
         Route::post('findings/get', [FindingController::class, 'index']);
+        Route::post('findings/stats', [FindingController::class, 'stats']);
         Route::post('findings/show', [FindingController::class, 'show']);
         Route::post('findings/resolve', [FindingController::class, 'resolve']);
         Route::post('findings/mute', [FindingController::class, 'mute']);

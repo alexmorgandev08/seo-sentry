@@ -106,6 +106,21 @@ class Db
     }
 
     /**
+     * Rows of a SELECT the query builder cannot express, such as GROUP BY.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public static function results($sql, array $bindings = [])
+    {
+        global $wpdb;
+
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- callers pass a literal statement and bind every value.
+        $rows = $wpdb->get_results($bindings === [] ? $sql : $wpdb->prepare($sql, $bindings), ARRAY_A);
+
+        return \is_array($rows) ? $rows : [];
+    }
+
+    /**
      * Backticks a column name, refusing anything that is not a plain
      * identifier. Column names cannot be bound as parameters, so this is
      * what keeps them out of the SQL if a caller ever passes one through.
