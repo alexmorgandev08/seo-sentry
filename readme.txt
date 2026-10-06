@@ -330,6 +330,14 @@ Deleting the plugin removes its plugin-specific tables, options, scheduled event
 
 == Changelog ==
 
+= v1.1.0 (Oct 7, 2026) =
+
+* New: Switch the dashboard between the last 7 days, 30 days and 12 months.
+* Improved: Hovering the change-type chart now shows each type's count and share of all changes.
+* Improved: SEO Sentry now stores its data under its own name, so pages you monitored and their history before this update do not carry over; deactivate and reactivate the plugin after updating to set it up again.
+* Fixed: Dashboard charts now count every change, even when a period has more than 100.
+* Fixed: A stray box no longer appears in the search field when adding a page to monitor.
+
 = v1.0.3 (Sep 28, 2026) =
 
 * Improved: Added screenshots and a short overview video to the plugin page.
