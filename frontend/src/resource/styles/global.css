@@ -350,6 +350,17 @@ body .ant-select .ant-select-selection-search-input {
   background: var(--scm-line-soft);
 }
 
+/* TanStack Charts' tooltip, themed through the variables it reads. */
+.scm-chart-tooltip {
+  --ts-chart-tooltip-background: var(--scm-surface);
+  --ts-chart-tooltip-color: var(--scm-ink);
+  --ts-chart-tooltip-border: 1px solid var(--scm-line);
+  --ts-chart-tooltip-border-radius: 6px;
+  --ts-chart-tooltip-shadow: 0 1px 2px rgb(0 0 0 / 6%);
+  --ts-chart-tooltip-padding: 8px 12px;
+  --ts-chart-tooltip-font: 12px/1.5 var(--font-family);
+}
+
 /*
  * Drawers portal to <body>, so they land outside #seo-sentry-root and
  * start at viewport top. wp-admin's toolbar is fixed at z-index 99999, far above

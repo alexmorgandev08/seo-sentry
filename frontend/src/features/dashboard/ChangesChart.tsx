@@ -1,14 +1,17 @@
-import { useEffect, useRef, useState } from 'react'
+import { useMemo } from 'react'
+import { barY, defineChart, stack } from '@tanstack/charts'
+import { crosshair } from '@tanstack/charts/crosshair'
+import { Chart } from '@tanstack/charts/react'
+import { scaleBand } from '@tanstack/charts/scales/band'
+import { scaleLinear } from '@tanstack/charts/scales/linear'
+import { tooltip } from '@tanstack/charts/tooltip'
 import { __ } from '@common/helpers/i18nWrap'
-import { useFindings } from '@/api/queries'
 import { palette } from '@config/theme'
-import { WINDOW_DAYS as DAYS, recentDays } from './recentWindow'
-import type { Finding, Severity } from '@/api/types'
+import { type DashboardRange, RANGES, periodLabel, useRangeStats } from './dashboardRange'
+import type { FindingStats, Severity } from '@/api/types'
 
 const HEIGHT = 200
-const MARGIN = { top: 8, right: 8, bottom: 22, left: 30 }
 const MAX_COLUMN = 24
-const SEGMENT_GAP = 2
 
 /*
  * Stack order is deliberate: blue between amber and red. As adjacent marks the
@@ -26,223 +29,141 @@ export const CHART_SEVERITIES: { key: Severity; label: string; tone: string }[] 
 
 const BY_KEY = new Map(CHART_SEVERITIES.map(s => [s.key, s]))
 
-const dayLabel = (iso: string) =>
-  new Date(`${iso}T00:00:00Z`).toLocaleDateString(undefined, {
-    day: 'numeric',
-    month: 'short',
-    timeZone: 'UTC'
-  })
+/** Up to 1, 2, 3, 4, 5, 6 or 8 × 10^n, so the midline tick stays a round number. */
+const roundUpNice = (value: number) => {
+  const magnitude = 10 ** Math.floor(Math.log10(value))
 
-type DayBucket = { day: string } & Record<Severity, number>
+  return [1, 2, 3, 4, 5, 6, 8, 10].find(step => step * magnitude >= value)! * magnitude
+}
 
-function bucketByDay(items: Finding[], days: string[]): DayBucket[] {
-  const buckets = new Map<string, DayBucket>(
-    days.map(day => [day, { day, critical: 0, warning: 0, info: 0 }])
-  )
+/** One row per period and severity, zeros included, so every period can take focus. */
+interface PeriodCount {
+  period: string
+  severity: Severity
+  count: number
+}
 
-  for (const finding of items) {
-    const bucket = buckets.get((finding.created_at ?? '').slice(0, 10))
-    if (bucket) bucket[finding.severity] += 1
+function countByPeriod(stats: FindingStats['periods'], periods: string[]): PeriodCount[] {
+  const counts = new Map(periods.map(period => [period, { critical: 0, warning: 0, info: 0 }]))
+
+  for (const { period, severity, count } of stats) {
+    const bucket = counts.get(period)
+    if (bucket && severity in bucket) bucket[severity] += count
   }
 
-  return days.map(day => buckets.get(day)!)
+  return periods.flatMap(period =>
+    STACK.map(severity => ({ period, severity, count: counts.get(period)![severity] }))
+  )
 }
 
-/** Top segment gets the 4px rounded data-end; the baseline stays square. */
-const roundedTopRect = (x: number, y: number, w: number, h: number, r: number) => {
-  const radius = Math.min(r, h, w / 2)
+export default function ChangesChart({ range }: { range: DashboardRange }) {
+  const { periods, data } = useRangeStats(range)
+  const { labelEvery, empty, changesTitle } = RANGES[range]
 
-  return `M${x},${y + h} V${y + radius} Q${x},${y} ${x + radius},${y} H${x + w - radius} Q${x + w},${y} ${x + w},${y + radius} V${y + h} Z`
-}
+  const rows = useMemo(() => countByPeriod(data?.periods ?? [], periods), [data, periods])
+  const grandTotal = rows.reduce((sum, row) => sum + row.count, 0)
 
-export default function ChangesChart() {
-  const wrapRef = useRef<HTMLDivElement>(null)
-  const [width, setWidth] = useState(0)
-  const [hovered, setHovered] = useState<number | null>(null)
-  const [days] = useState(recentDays)
+  const definition = useMemo(() => {
+    const totals = periods.map(period =>
+      rows.filter(row => row.period === period).reduce((sum, row) => sum + row.count, 0)
+    )
+    const yMax = 2 * roundUpNice(Math.max(...totals, 4) / 2)
+    // Anchor labels to the newest period and step back evenly, so the right
+    // edge never carries two labels side by side.
+    const labelled = periods.filter((_, i) => (periods.length - 1 - i) % labelEvery === 0)
 
-  const { data } = useFindings({ date_from: days[0], per_page: 100 })
+    return defineChart({
+      marks: [
+        // Before the bars, so the hover band sits underneath them.
+        crosshair({
+          x: { band: { fill: 'var(--scm-line-soft)', fillOpacity: 0.6 } },
+          y: false
+        }),
+        barY(rows, {
+          x: 'period',
+          y: 'count',
+          z: 'severity',
+          color: 'severity',
+          layout: stack({ order: STACK }),
+          maxThickness: MAX_COLUMN,
+          radius: { end: 4 },
+          // A surface-coloured edge opens the 2px gap between stacked segments.
+          stroke: row => (row.count > 0 ? 'var(--scm-surface)' : 'none'),
+          strokeWidth: 2
+        })
+      ],
+      scales: {
+        // Configured instances, not factories: a factory's domain is re-inferred
+        // from the data, which collapses the axis when every count is zero.
+        x: {
+          scale: scaleBand<string>().domain(periods).padding(0.45),
+          axis: {
+            line: false,
+            ticks: { values: labelled, size: 0, format: period => periodLabel(period) },
+            tickLabels: { fontSize: 11 }
+          }
+        },
+        y: {
+          scale: scaleLinear().domain([0, yMax]),
+          grid: { stroke: 'var(--scm-line-soft)', strokeOpacity: 1 },
+          axis: {
+            line: false,
+            ticks: { values: [0, yMax / 2, yMax], size: 0, format: String },
+            tickLabels: { fontSize: 11 }
+          }
+        }
+      },
+      color: {
+        domain: STACK,
+        range: STACK.map(severity => BY_KEY.get(severity)!.tone)
+      },
+      theme: {
+        foreground: 'var(--scm-ink)',
+        muted: 'var(--scm-ink-muted)'
+      },
 
-  useEffect(() => {
-    const wrap = wrapRef.current
-    if (!wrap) return
+      // The whole day is the hover target, not just the painted column.
+      focus: 'group-x',
+      maxFocusDistance: Number.POSITIVE_INFINITY,
+      focusRing: false,
+      tooltip: {
+        use: tooltip,
+        className: 'scm-chart-tooltip',
+        anchor: { x: 'value', y: 'plot-top' },
+        placement: 'bottom',
+        content: points => {
+          const period = points[0]?.datum.period ?? ''
+          const counts = new Map(points.map(point => [point.datum.severity, point.datum.count]))
 
-    const observer = new ResizeObserver(entries => setWidth(entries[0].contentRect.width))
-    observer.observe(wrap)
-
-    return () => observer.disconnect()
-  }, [])
-
-  const buckets = bucketByDay(data?.items ?? [], days)
-  const totals = buckets.map(b => b.critical + b.warning + b.info)
-  const grandTotal = totals.reduce((sum, n) => sum + n, 0)
-  const maxTotal = Math.max(...totals, 4)
-  const yMax = Math.ceil(maxTotal / 2) * 2
-  const ticks = [0, yMax / 2, yMax]
-
-  const innerW = Math.max(width - MARGIN.left - MARGIN.right, 0)
-  const innerH = HEIGHT - MARGIN.top - MARGIN.bottom
-  const band = innerW / DAYS
-  const column = Math.min(MAX_COLUMN, band * 0.55)
-  const yOf = (value: number) => MARGIN.top + innerH - (value / yMax) * innerH
-
-  const hoveredBucket = hovered !== null ? buckets[hovered] : null
+          return {
+            title: periodLabel(period, true),
+            rows: CHART_SEVERITIES.map(({ key, label, tone }) => ({
+              label,
+              value: String(counts.get(key) ?? 0),
+              color: tone
+            }))
+          }
+        }
+      }
+    })
+  }, [rows, periods, labelEvery])
 
   return (
-    <div ref={wrapRef} className="relative">
+    <div className="relative">
       {grandTotal === 0 && data && (
         <p
           className="absolute inset-0 z-10 m-0 flex items-center justify-center pb-4 text-xs"
           style={{ color: palette.inkMuted }}
         >
-          {__('No changes recorded in the last 14 days.')}
+          {empty}
         </p>
       )}
 
-      {width > 0 && (
-        <svg
-          aria-label={__('Changes per day by severity, last 14 days')}
-          height={HEIGHT}
-          role="img"
-          width={width}
-          onMouseLeave={() => setHovered(null)}
-        >
-          {ticks.map(tick => (
-            <g key={tick}>
-              <line
-                stroke="var(--scm-line-soft)"
-                strokeWidth={1}
-                x1={MARGIN.left}
-                x2={width - MARGIN.right}
-                y1={yOf(tick)}
-                y2={yOf(tick)}
-              />
-              <text
-                className="tabular-nums"
-                fill="var(--scm-ink-muted)"
-                fontSize={11}
-                textAnchor="end"
-                x={MARGIN.left - 8}
-                y={yOf(tick) + 4}
-              >
-                {tick}
-              </text>
-            </g>
-          ))}
-
-          {buckets.map((bucket, i) => {
-            const xBand = MARGIN.left + i * band
-            const x = xBand + (band - column) / 2
-            // Anchor labels to the newest day and step back evenly, so the
-            // right edge never carries two labels side by side.
-            const showLabel = (DAYS - 1 - i) % 3 === 0
-
-            // Non-zero counts keep a 2px floor so a single change stays visible.
-            const heights = STACK.map(s =>
-              bucket[s] === 0 ? 0 : Math.max((bucket[s] / yMax) * innerH, 2)
-            )
-            let y = yOf(0)
-
-            return (
-              <g key={bucket.day}>
-                {hovered === i && (
-                  <rect
-                    fill="var(--scm-line-soft)"
-                    height={innerH}
-                    opacity={0.6}
-                    width={band}
-                    x={xBand}
-                    y={MARGIN.top}
-                  />
-                )}
-
-                {STACK.map((severity, s) => {
-                  const h = heights[s]
-                  if (h === 0) return null
-
-                  y -= h
-                  const top = y
-                  const isTopmost = heights.slice(s + 1).every(rest => rest === 0)
-                  y -= SEGMENT_GAP
-
-                  return isTopmost ? (
-                    <path
-                      key={severity}
-                      d={roundedTopRect(x, top, column, h, 4)}
-                      fill={BY_KEY.get(severity)!.tone}
-                    />
-                  ) : (
-                    <rect
-                      key={severity}
-                      fill={BY_KEY.get(severity)!.tone}
-                      height={h}
-                      width={column}
-                      x={x}
-                      y={top}
-                    />
-                  )
-                })}
-
-                {showLabel && (
-                  <text
-                    fill="var(--scm-ink-muted)"
-                    fontSize={11}
-                    textAnchor="middle"
-                    x={xBand + band / 2}
-                    y={HEIGHT - 6}
-                  >
-                    {dayLabel(bucket.day)}
-                  </text>
-                )}
-
-                {/* Hit target: the whole day band, not just the painted column. */}
-                <rect
-                  aria-label={`${dayLabel(bucket.day)}: ${CHART_SEVERITIES.map(
-                    ({ key, label }) => `${bucket[key]} ${label}`
-                  ).join(', ')}`}
-                  fill="transparent"
-                  height={innerH}
-                  tabIndex={0}
-                  width={band}
-                  x={xBand}
-                  y={MARGIN.top}
-                  onBlur={() => setHovered(null)}
-                  onFocus={() => setHovered(i)}
-                  onMouseEnter={() => setHovered(i)}
-                />
-              </g>
-            )
-          })}
-        </svg>
-      )}
-
-      {hoveredBucket && (
-        <div
-          className="pointer-events-none absolute z-20 rounded-md border border-solid px-3 py-2 shadow-sm"
-          style={{
-            background: palette.surface,
-            borderColor: palette.line,
-            left: Math.min(
-              Math.max(MARGIN.left + (hovered! + 0.5) * band - 60, 0),
-              Math.max(width - 130, 0)
-            ),
-            top: 0
-          }}
-        >
-          <p className="m-0 mb-1 text-xs font-medium" style={{ color: palette.ink }}>
-            {dayLabel(hoveredBucket.day)}
-          </p>
-          {CHART_SEVERITIES.map(({ key, label, tone }) => (
-            <p key={key} className="m-0 flex items-center gap-2 text-xs">
-              <span className="h-2.5 w-1 rounded-sm" style={{ background: tone }} />
-              <span className="font-semibold tabular-nums" style={{ color: palette.ink }}>
-                {hoveredBucket[key]}
-              </span>
-              <span style={{ color: palette.inkMuted }}>{label}</span>
-            </p>
-          ))}
-        </div>
-      )}
+      <Chart
+        ariaLabel={changesTitle}
+        definition={definition}
+        height={HEIGHT}
+      />
     </div>
   )
 }

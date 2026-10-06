@@ -156,6 +156,17 @@ export interface FindingFilters {
   per_page?: number
 }
 
+export interface FindingStatsFilters {
+  date_from: string
+  group: 'day' | 'month'
+}
+
+/** Server-side counts since date_from; periods are 'YYYY-MM-DD' or 'YYYY-MM'. */
+export interface FindingStats {
+  periods: { period: string; severity: Severity; count: number }[]
+  types: { change_type: string; count: number }[]
+}
+
 export interface SiteBot {
   slug: string
   label: string

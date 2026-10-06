@@ -8,6 +8,8 @@ import type {
   DashboardSummary,
   Finding,
   FindingFilters,
+  FindingStats,
+  FindingStatsFilters,
   FindingsPage,
   PostSearchResult,
   Settings,
@@ -18,6 +20,7 @@ import type {
 export const keys = {
   targets: ['targets'] as const,
   findings: (filters: FindingFilters) => ['findings', filters] as const,
+  findingStats: (filters: FindingStatsFilters) => ['findings', 'stats', filters] as const,
   runStatus: ['run-status'] as const,
   dashboard: ['dashboard-summary'] as const,
   settings: ['settings'] as const,
@@ -99,6 +102,12 @@ export const useFindings = (filters: FindingFilters) =>
   useQuery({
     queryKey: keys.findings(filters),
     queryFn: () => call<FindingsPage>('findings/get', filters)
+  })
+
+export const useFindingStats = (filters: FindingStatsFilters) =>
+  useQuery({
+    queryKey: keys.findingStats(filters),
+    queryFn: () => call<FindingStats>('findings/stats', filters)
   })
 
 export const useRunStatus = () =>

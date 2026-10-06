@@ -4,7 +4,8 @@ import {
   RightOutlined,
   SafetyCertificateOutlined
 } from '@ant-design/icons'
-import { Alert, App, Button, Card, Popconfirm, Tooltip } from 'antd'
+import { useState } from 'react'
+import { Alert, App, Button, Card, ConfigProvider, Popconfirm, Segmented, Tooltip } from 'antd'
 import { useNavigate } from 'react-router'
 import classNames from '@common/helpers/classNames'
 import { __, sprintf } from '@common/helpers/i18nWrap'
@@ -21,6 +22,7 @@ import PageHeader from '@components/PageHeader'
 import SeverityStrip from '@components/SeverityStrip'
 import ChangesChart, { CHART_SEVERITIES } from './ChangesChart'
 import CrawlerActivity from './CrawlerActivity'
+import { type DashboardRange, RANGES } from './dashboardRange'
 import TypeBreakdown from './TypeBreakdown'
 import When from '@components/When'
 import { palette } from '@config/theme'
@@ -34,8 +36,26 @@ const SEVERITY_TONE: Record<Severity, string> = {
   warning: palette.warning
 }
 
+const RANGE_OPTIONS = (Object.keys(RANGES) as DashboardRange[]).map(value => ({
+  value,
+  label: RANGES[value].label
+}))
+
+/** Selected option as a filled primary pill, scoped to this switch only. */
+const RANGE_SWITCH_THEME = {
+  components: {
+    Segmented: {
+      trackBg: palette.surface,
+      itemSelectedBg: palette.primary,
+      itemSelectedColor: '#fff',
+      itemColor: palette.inkMuted
+    }
+  }
+}
+
 export default function DashboardPage() {
   const navigate = useNavigate()
+  const [range, setRange] = useState<DashboardRange>('30d')
   const { message } = App.useApp()
   const showOnly = useFlightLogStore(state => state.showOnly)
 
@@ -116,6 +136,18 @@ export default function DashboardPage() {
             </Tooltip>
           </>
         }
+        filters={
+          <ConfigProvider theme={RANGE_SWITCH_THEME}>
+            <Segmented<DashboardRange>
+              aria-label={__('Time range')}
+              className="border border-solid"
+              options={RANGE_OPTIONS}
+              style={{ borderColor: palette.line }}
+              value={range}
+              onChange={setRange}
+            />
+          </ConfigProvider>
+        }
         title={__('Dashboard')}
       />
 
@@ -165,9 +197,9 @@ export default function DashboardPage() {
                   ))}
                 </div>
               }
-              title={__('Changes over the last 14 days')}
+              title={RANGES[range].changesTitle}
             >
-              <ChangesChart />
+              <ChangesChart range={range} />
             </Card>
 
             <Card
@@ -262,8 +294,8 @@ export default function DashboardPage() {
               </dl>
             </Card>
 
-            <Card title={__('Change types · last 14 days')}>
-              <TypeBreakdown />
+            <Card title={RANGES[range].typesTitle}>
+              <TypeBreakdown range={range} />
             </Card>
 
             <Card title={__('AI crawler visits')}>

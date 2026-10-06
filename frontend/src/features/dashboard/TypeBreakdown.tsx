@@ -1,12 +1,14 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
+import { defineChart } from '@tanstack/charts'
+import { pie, polar, radialArc } from '@tanstack/charts/polar'
+import { Chart } from '@tanstack/charts/react'
+import { tooltip } from '@tanstack/charts/tooltip'
 import { __, sprintf } from '@common/helpers/i18nWrap'
-import { useFindings } from '@/api/queries'
 import { changeLabel } from '@components/changeLabels'
 import { palette } from '@config/theme'
-import { recentDays } from './recentWindow'
+import { type DashboardRange, RANGES, useRangeStats } from './dashboardRange'
 
 const SIZE = 168
-const CENTRE = SIZE / 2
 const OUTER = 80
 const INNER = 58
 
@@ -25,135 +27,116 @@ interface Slice {
   tone: string
 }
 
-const polar = (r: number, angle: number) => ({
-  x: CENTRE + r * Math.cos(angle),
-  y: CENTRE + r * Math.sin(angle)
-})
+/** A slice drawn at 45% strength against the card, while another one is pointed out. */
+const faded = (tone: string) => `color-mix(in srgb, ${tone} 45%, var(--scm-surface))`
 
-/** Annular sector from startAngle to endAngle (radians, clockwise from 12 o'clock). */
-const slicePath = (start: number, end: number) => {
-  const large = end - start > Math.PI ? 1 : 0
-  const o1 = polar(OUTER, start)
-  const o2 = polar(OUTER, end)
-  const i1 = polar(INNER, end)
-  const i2 = polar(INNER, start)
+export default function TypeBreakdown({ range }: { range: DashboardRange }) {
+  // Two sources of emphasis: hovering a legend row restyles the ring, while
+  // focus inside the chart only marks the legend row. Restyling the ring on
+  // its own focus would rebuild the chart under the pointer and drop that focus.
+  const [legendHover, setLegendHover] = useState<number | null>(null)
+  const [chartFocus, setChartFocus] = useState<number | null>(null)
+  const { data } = useRangeStats(range)
 
-  return [
-    `M${o1.x},${o1.y}`,
-    `A${OUTER},${OUTER} 0 ${large} 1 ${o2.x},${o2.y}`,
-    `L${i1.x},${i1.y}`,
-    `A${INNER},${INNER} 0 ${large} 0 ${i2.x},${i2.y}`,
-    'Z'
-  ].join(' ')
-}
+  const slices = useMemo(() => {
+    // The server returns these already sorted, largest first.
+    const ranked = data?.types ?? []
+    const top: Slice[] = ranked.slice(0, SLOTS.length).map(({ change_type, count }, i) => ({
+      label: changeLabel(change_type),
+      count,
+      tone: SLOTS[i]
+    }))
+    const rest = ranked.slice(SLOTS.length).reduce((sum, type) => sum + type.count, 0)
 
-export default function TypeBreakdown() {
-  const [days] = useState(recentDays)
-  const [hovered, setHovered] = useState<number | null>(null)
-  const { data } = useFindings({ date_from: days[0], per_page: 100 })
-
-  const countByType = new Map<string, number>()
-  for (const finding of data?.items ?? []) {
-    countByType.set(finding.change_type, (countByType.get(finding.change_type) ?? 0) + 1)
-  }
-
-  const ranked = [...countByType.entries()].sort((a, b) => b[1] - a[1])
-  const top = ranked.slice(0, SLOTS.length)
-  const rest = ranked.slice(SLOTS.length).reduce((sum, [, n]) => sum + n, 0)
-
-  const slices: Slice[] = top.map(([type, count], i) => ({
-    label: changeLabel(type),
-    count,
-    tone: SLOTS[i]
-  }))
-  if (rest > 0) slices.push({ label: __('Other'), count: rest, tone: palette.inkFaint })
+    return rest > 0 ? [...top, { label: __('Other'), count: rest, tone: palette.inkFaint }] : top
+  }, [data])
 
   const total = slices.reduce((sum, s) => sum + s.count, 0)
 
-  // Arc geometry ahead of the JSX, so the render below never mutates state.
-  let acc = -Math.PI / 2
-  const arcs = slices.map(slice => {
-    const start = acc
-    acc += (slice.count / total) * Math.PI * 2
+  const definition = useMemo(() => {
+    // No data: one neutral slice keeps the ring as a track around the zero.
+    const isEmpty = total === 0
+    const source = isEmpty ? [{ label: '', count: 1, tone: palette.lineSoft }] : slices
 
-    return { ...slice, path: slicePath(start, acc) }
-  })
+    return defineChart({
+      marks: [
+        polar({
+          inset: SIZE / 2 - OUTER,
+          radiusRatio: 1,
+          marks: [
+            radialArc(pie(source, { value: 'count' }), {
+              innerRadius: ({ radius }) => (radius * INNER) / OUTER,
+              key: 'label',
+              fill: slice =>
+                legendHover === null || slice.label === slices[legendHover]?.label
+                  ? slice.tone
+                  : faded(slice.tone),
+              // The 2px surface stroke is the gap between touching slices.
+              stroke: 'var(--scm-surface)',
+              strokeWidth: 2
+            })
+          ],
+          scales: { angle: null, radius: null }
+        })
+      ],
+      scales: { x: null, y: null },
+
+      keyboard: !isEmpty,
+      pointer: !isEmpty,
+      focusRing: false,
+      tooltip: {
+        use: tooltip,
+        className: 'scm-chart-tooltip',
+        content: points => {
+          const slice = points[0]?.datum
+
+          return {
+            rows: slice
+              ? [
+                  {
+                    label: slice.label,
+                    value: sprintf(__('%d (%d%%)'), slice.count, Math.round(slice.fraction * 100)),
+                    color: slice.tone
+                  }
+                ]
+              : []
+          }
+        }
+      }
+    })
+  }, [slices, total, legendHover])
+
+  const highlighted = chartFocus ?? legendHover
 
   return (
     <div className="flex flex-wrap items-center gap-5">
-      <svg
-        aria-label={__('Changes by type, last 14 days')}
-        height={SIZE}
-        role="img"
-        viewBox={`0 0 ${SIZE} ${SIZE}`}
-        width={SIZE}
-        onMouseLeave={() => setHovered(null)}
-      >
-        {slices.length === 0 ? (
-          // No data: the ring stays as a neutral track around the zero.
-          <circle
-            cx={CENTRE}
-            cy={CENTRE}
-            fill="none"
-            r={(OUTER + INNER) / 2}
-            stroke={palette.lineSoft}
-            strokeWidth={OUTER - INNER}
-          />
-        ) : slices.length === 1 ? (
-          <circle
-            cx={CENTRE}
-            cy={CENTRE}
-            fill="none"
-            r={(OUTER + INNER) / 2}
-            stroke={slices[0].tone}
-            strokeWidth={OUTER - INNER}
-          />
-        ) : (
-          arcs.map((slice, i) => (
-            <path
-              key={slice.label}
-              aria-label={sprintf(__('%s: %d of %d'), slice.label, slice.count, total)}
-              d={slice.path}
-              fill={slice.tone}
-              opacity={hovered === null || hovered === i ? 1 : 0.45}
-              // The 2px surface stroke is the gap between touching slices.
-              stroke={palette.surface}
-              strokeWidth={2}
-              tabIndex={0}
-              onBlur={() => setHovered(null)}
-              onFocus={() => setHovered(i)}
-              onMouseEnter={() => setHovered(i)}
-            />
-          ))
-        )}
-
-        <text
-          fill="var(--scm-ink)"
-          fontSize={26}
-          fontWeight={600}
-          textAnchor="middle"
-          x={CENTRE}
-          y={CENTRE + 2}
-        >
-          {total}
-        </text>
-        <text
-          fill="var(--scm-ink-muted)"
-          fontSize={11}
-          textAnchor="middle"
-          x={CENTRE}
-          y={CENTRE + 18}
-        >
-          {total === 1 ? __('change') : __('changes')}
-        </text>
-      </svg>
+      <div className="relative shrink-0" style={{ width: SIZE, height: SIZE }}>
+        <Chart
+          ariaLabel={RANGES[range].typesTitle}
+          definition={definition}
+          height={SIZE}
+          width={SIZE}
+          onFocusChange={point =>
+            setChartFocus(point ? slices.findIndex(s => s.label === point.datum.label) : null)
+          }
+        />
+        {/* Centre total, laid over the hole; it never takes the pointer. */}
+        <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+          <span className="text-[26px] font-semibold leading-none" style={{ color: palette.ink }}>
+            {total}
+          </span>
+          <span className="mt-1 text-[11px]" style={{ color: palette.inkMuted }}>
+            {total === 1 ? __('change') : __('changes')}
+          </span>
+        </div>
+      </div>
 
       {total === 0 ? (
         <p
           className="m-0 min-w-0 flex-1 text-xs leading-relaxed"
           style={{ color: palette.inkMuted }}
         >
-          {__('No changes recorded in the last 14 days.')}{' '}
+          {RANGES[range].empty}{' '}
           {__('When something on your pages changes, the breakdown by type appears here.')}
         </p>
       ) : (
@@ -163,9 +146,9 @@ export default function TypeBreakdown() {
             <li
               key={slice.label}
               className="flex items-center gap-2.5 rounded-md px-1.5 py-1"
-              style={{ background: hovered === i ? palette.lineSoft : 'transparent' }}
-              onMouseEnter={() => setHovered(i)}
-              onMouseLeave={() => setHovered(null)}
+              style={{ background: highlighted === i ? palette.lineSoft : 'transparent' }}
+              onMouseEnter={() => setLegendHover(i)}
+              onMouseLeave={() => setLegendHover(null)}
             >
               <span
                 className="h-2.5 w-2.5 shrink-0 rounded-sm"
