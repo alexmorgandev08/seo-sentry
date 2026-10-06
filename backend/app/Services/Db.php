@@ -1,13 +1,13 @@
 <?php
 
-namespace SEOChangeMonitor\Services;
+namespace SeoSentry\Services;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\Config;
-use SEOChangeMonitor\Deps\BitApps\WPDatabase\Connection;
+use SeoSentry\Config;
+use SeoSentry\Deps\BitApps\WPDatabase\Connection;
 
 /**
  * Workarounds for the bundled query builder, kept in one place.

@@ -1,14 +1,14 @@
 <?php
 
-namespace SEOChangeMonitor\Providers;
+namespace SeoSentry\Providers;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\Config;
-use SEOChangeMonitor\Deps\BitApps\WPKit\Hooks\Hooks;
-use SEOChangeMonitor\Deps\BitApps\WPKit\Installer;
+use SeoSentry\Config;
+use SeoSentry\Deps\BitApps\WPKit\Hooks\Hooks;
+use SeoSentry\Deps\BitApps\WPKit\Installer;
 
 final class InstallerProvider
 {
@@ -79,13 +79,13 @@ final class InstallerProvider
         return [
             'path'       => Config::get('BASEDIR') . DIRECTORY_SEPARATOR . 'db' . DIRECTORY_SEPARATOR . 'Migrations' . DIRECTORY_SEPARATOR,
             'migrations' => [
-                'SEOChangeMonitorPluginOptions',
-                'SEOChangeMonitorTargets',
-                'SEOChangeMonitorSnapshots',
-                'SEOChangeMonitorFindings',
-                'SEOChangeMonitorSiteEvents',
-                'SEOChangeMonitorCheckRuns',
-                'SEOChangeMonitorBotVisits',
+                'SeoSentryPluginOptions',
+                'SeoSentryTargets',
+                'SeoSentrySnapshots',
+                'SeoSentryFindings',
+                'SeoSentrySiteEvents',
+                'SeoSentryCheckRuns',
+                'SeoSentryBotVisits',
             ],
         ];
     }

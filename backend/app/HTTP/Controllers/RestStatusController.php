@@ -1,18 +1,18 @@
 <?php
 
-namespace SEOChangeMonitor\HTTP\Controllers;
+namespace SeoSentry\HTTP\Controllers;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\Deps\BitApps\WPKit\Http\Response;
-use SEOChangeMonitor\Models\CheckRun;
-use SEOChangeMonitor\Models\Finding;
-use SEOChangeMonitor\Models\Target;
-use SEOChangeMonitor\Providers\CronProvider;
-use SEOChangeMonitor\Services\ImpairedState;
-use SEOChangeMonitor\Services\Settings;
+use SeoSentry\Deps\BitApps\WPKit\Http\Response;
+use SeoSentry\Models\CheckRun;
+use SeoSentry\Models\Finding;
+use SeoSentry\Models\Target;
+use SeoSentry\Providers\CronProvider;
+use SeoSentry\Services\ImpairedState;
+use SeoSentry\Services\Settings;
 
 /**
  * Read-only status for external monitoring. Admin-only; exposes no page content

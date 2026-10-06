@@ -1,13 +1,13 @@
 <?php
 
-namespace SEOChangeMonitor\src;
+namespace SeoSentry\src;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\Config;
-use SEOChangeMonitor\Views\Body;
+use SeoSentry\Config;
+use SeoSentry\Views\Body;
 
 final class Menu
 {
@@ -41,7 +41,7 @@ final class Menu
          * gave WordPress a submenu entry that opened a blank page. Same test
          * the localized config uses to hide the tab in the app's own nav.
          */
-        if (defined('SEO_CHANGE_MONITOR_PRO_VERSION')) {
+        if (defined('SEO_SENTRY_PRO_VERSION')) {
             $routes['#/integrations'] = __('Integrations', 'seo-sentry');
         }
 

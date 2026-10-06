@@ -1,17 +1,17 @@
 <?php
 
-namespace SEOChangeMonitor\HTTP\Controllers;
+namespace SeoSentry\HTTP\Controllers;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\Deps\BitApps\WPKit\Http\Request\Request;
-use SEOChangeMonitor\Deps\BitApps\WPKit\Http\Response;
-use SEOChangeMonitor\Models\Finding;
-use SEOChangeMonitor\Models\Target;
-use SEOChangeMonitor\Services\Db;
-use SEOChangeMonitor\Services\Findings\ExplanationRegistry;
+use SeoSentry\Deps\BitApps\WPKit\Http\Request\Request;
+use SeoSentry\Deps\BitApps\WPKit\Http\Response;
+use SeoSentry\Models\Finding;
+use SeoSentry\Models\Target;
+use SeoSentry\Services\Db;
+use SeoSentry\Services\Findings\ExplanationRegistry;
 
 class FindingController
 {

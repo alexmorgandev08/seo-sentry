@@ -1,19 +1,19 @@
 <?php
 
-namespace SEOChangeMonitor\Services\Alerts;
+namespace SeoSentry\Services\Alerts;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\Config;
-use SEOChangeMonitor\Models\CheckRun;
-use SEOChangeMonitor\Models\Finding;
-use SEOChangeMonitor\Models\Target;
-use SEOChangeMonitor\Services\Db;
-use SEOChangeMonitor\Services\Findings\ExplanationRegistry;
-use SEOChangeMonitor\Services\ImpairedState;
-use SEOChangeMonitor\Services\Settings;
+use SeoSentry\Config;
+use SeoSentry\Models\CheckRun;
+use SeoSentry\Models\Finding;
+use SeoSentry\Models\Target;
+use SeoSentry\Services\Db;
+use SeoSentry\Services\Findings\ExplanationRegistry;
+use SeoSentry\Services\ImpairedState;
+use SeoSentry\Services\Settings;
 
 /**
  * One email per check run, never one per finding.

@@ -1,12 +1,12 @@
 <?php
 
-namespace SEOChangeMonitor\Services\CheckEngine;
+namespace SeoSentry\Services\CheckEngine;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\Models\Target;
+use SeoSentry\Models\Target;
 
 /**
  * The three site-wide checks: robots.txt, XML sitemap, and the site's own

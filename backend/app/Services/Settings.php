@@ -1,12 +1,12 @@
 <?php
 
-namespace SEOChangeMonitor\Services;
+namespace SeoSentry\Services;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\Config;
+use SeoSentry\Config;
 
 class Settings
 {

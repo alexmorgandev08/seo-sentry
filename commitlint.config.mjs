@@ -3,7 +3,7 @@ export default {
   prompt: {
     questions: {
       body: {
-        description: 'SEOChangeMonitorProvide a longer description of the change'
+        description: 'Provide a longer description of the change'
       },
       breaking: {
         description: 'Describe the breaking changes'
@@ -95,7 +95,7 @@ export default {
           wip: {
             description: 'Work in progress',
             emoji: '🚧',
-            title: 'Work In SEOChangeMonitorProgress'
+            title: 'Work In Progress'
           }
         }
       }

@@ -1,17 +1,17 @@
 <?php
 
-namespace SEOChangeMonitor\Providers;
+namespace SeoSentry\Providers;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\Config;
-use SEOChangeMonitor\Deps\BitApps\WPKit\Hooks\Hooks;
-use SEOChangeMonitor\Services\CheckEngine\CheckRunner;
-use SEOChangeMonitor\Services\Maintenance\BotSilenceChecker;
-use SEOChangeMonitor\Services\Maintenance\RetentionPruner;
-use SEOChangeMonitor\Services\Settings;
+use SeoSentry\Config;
+use SeoSentry\Deps\BitApps\WPKit\Hooks\Hooks;
+use SeoSentry\Services\CheckEngine\CheckRunner;
+use SeoSentry\Services\Maintenance\BotSilenceChecker;
+use SeoSentry\Services\Maintenance\RetentionPruner;
+use SeoSentry\Services\Settings;
 
 /**
  * Owns every scheduled event the plugin uses.

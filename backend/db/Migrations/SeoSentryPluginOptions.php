@@ -1,14 +1,14 @@
 <?php
 
-use SEOChangeMonitor\Config;
-use SEOChangeMonitor\Deps\BitApps\WPDatabase\Connection as DB;
-use SEOChangeMonitor\Deps\BitApps\WPKit\Migration\Migration;
+use SeoSentry\Config;
+use SeoSentry\Deps\BitApps\WPDatabase\Connection as DB;
+use SeoSentry\Deps\BitApps\WPKit\Migration\Migration;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-final class SEOChangeMonitorPluginOptions extends Migration
+final class SeoSentryPluginOptions extends Migration
 {
     public function up(): void
     {

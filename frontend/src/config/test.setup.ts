@@ -9,7 +9,7 @@
   pluginSlug: 'seo-sentry',
   restNonce: 'test-rest-nonce',
   rootURL: 'http://localhost/',
-  routePrefix: 'SEO_CHANGE_MONITOR_',
+  routePrefix: 'seo_sentry_',
   settings: '',
   siteBaseURL: 'http://localhost',
   siteURL: 'http://localhost',

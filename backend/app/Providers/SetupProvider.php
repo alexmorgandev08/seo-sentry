@@ -1,15 +1,15 @@
 <?php
 
-namespace SEOChangeMonitor\Providers;
+namespace SeoSentry\Providers;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\Config;
-use SEOChangeMonitor\Deps\BitApps\WPKit\Hooks\Hooks;
-use SEOChangeMonitor\Models\Target;
-use SEOChangeMonitor\Services\Settings;
+use SeoSentry\Config;
+use SeoSentry\Deps\BitApps\WPKit\Hooks\Hooks;
+use SeoSentry\Models\Target;
+use SeoSentry\Services\Settings;
 
 /**
  * Activation seeding and uninstall cleanup.

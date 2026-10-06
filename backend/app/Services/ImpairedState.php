@@ -1,14 +1,14 @@
 <?php
 
-namespace SEOChangeMonitor\Services;
+namespace SeoSentry\Services;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\Config;
-use SEOChangeMonitor\Models\Finding;
-use SEOChangeMonitor\Services\CheckEngine\ChangeTypes;
+use SeoSentry\Config;
+use SeoSentry\Models\Finding;
+use SeoSentry\Services\CheckEngine\ChangeTypes;
 
 /**
  * Tracks whether the plugin can fetch this site's own pages at all.

@@ -1,12 +1,12 @@
 <?php
 
-namespace SEOChangeMonitor\Services\Findings;
+namespace SeoSentry\Services\Findings;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\Services\CheckEngine\ChangeTypes;
+use SeoSentry\Services\CheckEngine\ChangeTypes;
 
 /**
  * Pre-written plain-language explanations for every change type.

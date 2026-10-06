@@ -1,6 +1,6 @@
 <?php
 
-namespace SEOChangeMonitor;
+namespace SeoSentry;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -8,24 +8,24 @@ if (!defined('ABSPATH')) {
 
 // Prevent direct script access
 
-use SEOChangeMonitor\Deps\BitApps\WPKit\Hooks\Hooks;
-use SEOChangeMonitor\Deps\BitApps\WPKit\Http\RequestType;
-use SEOChangeMonitor\Deps\BitApps\WPKit\Migration\MigrationHelper;
-use SEOChangeMonitor\Deps\BitApps\WPKit\Utils\Capabilities;
-use SEOChangeMonitor\HTTP\Middleware\AdminCheckerMiddleware;
-use SEOChangeMonitor\HTTP\Middleware\NonceCheckerMiddleware;
-use SEOChangeMonitor\Providers\BotTrackerProvider;
-use SEOChangeMonitor\Providers\CronProvider;
-use SEOChangeMonitor\Providers\EventRecorderProvider;
-use SEOChangeMonitor\Providers\HookProvider;
-use SEOChangeMonitor\Providers\InstallerProvider;
-use SEOChangeMonitor\Providers\SetupProvider;
-use SEOChangeMonitor\src\DashboardWidget;
-use SEOChangeMonitor\src\NetworkDashboard;
-use SEOChangeMonitor\src\SiteHealth;
-use SEOChangeMonitor\Views\HtmlTagModifier;
-use SEOChangeMonitor\Views\Layout;
-use SEOChangeMonitor\Views\PluginPageActions;
+use SeoSentry\Deps\BitApps\WPKit\Hooks\Hooks;
+use SeoSentry\Deps\BitApps\WPKit\Http\RequestType;
+use SeoSentry\Deps\BitApps\WPKit\Migration\MigrationHelper;
+use SeoSentry\Deps\BitApps\WPKit\Utils\Capabilities;
+use SeoSentry\HTTP\Middleware\AdminCheckerMiddleware;
+use SeoSentry\HTTP\Middleware\NonceCheckerMiddleware;
+use SeoSentry\Providers\BotTrackerProvider;
+use SeoSentry\Providers\CronProvider;
+use SeoSentry\Providers\EventRecorderProvider;
+use SeoSentry\Providers\HookProvider;
+use SeoSentry\Providers\InstallerProvider;
+use SeoSentry\Providers\SetupProvider;
+use SeoSentry\src\DashboardWidget;
+use SeoSentry\src\NetworkDashboard;
+use SeoSentry\src\SiteHealth;
+use SeoSentry\Views\HtmlTagModifier;
+use SeoSentry\Views\Layout;
+use SeoSentry\Views\PluginPageActions;
 
 final class Plugin
 {

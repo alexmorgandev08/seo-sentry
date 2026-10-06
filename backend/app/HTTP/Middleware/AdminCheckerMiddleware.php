@@ -1,13 +1,13 @@
 <?php
 
-namespace SEOChangeMonitor\HTTP\Middleware;
+namespace SeoSentry\HTTP\Middleware;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\Deps\BitApps\WPKit\Http\Response;
-use SEOChangeMonitor\Deps\BitApps\WPKit\Utils\Capabilities;
+use SeoSentry\Deps\BitApps\WPKit\Http\Response;
+use SeoSentry\Deps\BitApps\WPKit\Utils\Capabilities;
 
 class AdminCheckerMiddleware
 {

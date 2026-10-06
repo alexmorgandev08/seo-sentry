@@ -1,12 +1,12 @@
 <?php
 
-namespace SEOChangeMonitor\Services\CheckEngine;
+namespace SeoSentry\Services\CheckEngine;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\Models\Finding;
+use SeoSentry\Models\Finding;
 
 class SeverityClassifier
 {

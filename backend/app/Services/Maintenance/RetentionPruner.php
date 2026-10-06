@@ -1,14 +1,14 @@
 <?php
 
-namespace SEOChangeMonitor\Services\Maintenance;
+namespace SeoSentry\Services\Maintenance;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\Models\Finding;
-use SEOChangeMonitor\Services\Db;
-use SEOChangeMonitor\Services\Settings;
+use SeoSentry\Models\Finding;
+use SeoSentry\Services\Db;
+use SeoSentry\Services\Settings;
 
 /**
  * Trims history to the retention the user chose.

@@ -1,14 +1,14 @@
 <?php
 
-namespace SEOChangeMonitor\HTTP\Controllers;
+namespace SeoSentry\HTTP\Controllers;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\Deps\BitApps\WPKit\Http\Response;
-use SEOChangeMonitor\Models\CheckRun;
-use SEOChangeMonitor\Services\CheckEngine\CheckRunner;
+use SeoSentry\Deps\BitApps\WPKit\Http\Response;
+use SeoSentry\Models\CheckRun;
+use SeoSentry\Services\CheckEngine\CheckRunner;
 
 class CheckController
 {

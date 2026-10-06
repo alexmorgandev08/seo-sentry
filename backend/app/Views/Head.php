@@ -1,13 +1,13 @@
 <?php
 
-namespace SEOChangeMonitor\Views;
+namespace SeoSentry\Views;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\Config;
-use SEOChangeMonitor\Deps\BitApps\WPKit\Helpers\DateTimeHelper;
+use SeoSentry\Config;
+use SeoSentry\Deps\BitApps\WPKit\Helpers\DateTimeHelper;
 
 class Head
 {
@@ -74,9 +74,9 @@ class Head
 
                 // The app hides pro-only screens unless the add-on is active,
                 // so this is the single source of truth for that.
-                'isSeoChangeMonitorProExist' => defined('SEO_CHANGE_MONITOR_PRO_VERSION') ? '1' : '0',
-                'proPluginVersion'           => defined('SEO_CHANGE_MONITOR_PRO_VERSION')
-                    ? SEO_CHANGE_MONITOR_PRO_VERSION
+                'isSeoSentryProExist' => defined('SEO_SENTRY_PRO_VERSION') ? '1' : '0',
+                'proPluginVersion'    => defined('SEO_SENTRY_PRO_VERSION')
+                    ? SEO_SENTRY_PRO_VERSION
                     : '',
             ]
         );

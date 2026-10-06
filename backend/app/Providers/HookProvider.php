@@ -1,16 +1,16 @@
 <?php
 
-namespace SEOChangeMonitor\Providers;
+namespace SeoSentry\Providers;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\Config;
-use SEOChangeMonitor\Deps\BitApps\WPKit\Hooks\Hooks;
-use SEOChangeMonitor\Deps\BitApps\WPKit\Http\RequestType;
-use SEOChangeMonitor\Deps\BitApps\WPKit\Http\Router\Router;
-use SEOChangeMonitor\Plugin;
+use SeoSentry\Config;
+use SeoSentry\Deps\BitApps\WPKit\Hooks\Hooks;
+use SeoSentry\Deps\BitApps\WPKit\Http\RequestType;
+use SeoSentry\Deps\BitApps\WPKit\Http\Router\Router;
+use SeoSentry\Plugin;
 
 class HookProvider
 {

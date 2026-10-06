@@ -1,7 +1,7 @@
 <?php
 
-use SEOChangeMonitor\Deps\BitApps\WPKit\Http\Router\Route;
-use SEOChangeMonitor\HTTP\Controllers\RestStatusController;
+use SeoSentry\Deps\BitApps\WPKit\Http\Router\Route;
+use SeoSentry\HTTP\Controllers\RestStatusController;
 
 if (!defined('ABSPATH')) {
     exit;

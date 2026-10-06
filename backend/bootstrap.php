@@ -1,8 +1,8 @@
 <?php
 
-use SEOChangeMonitor\Dotenv;
-use SEOChangeMonitor\Plugin;
-use SEOChangeMonitor\src\CLI\Commands;
+use SeoSentry\Dotenv;
+use SeoSentry\Plugin;
+use SeoSentry\src\CLI\Commands;
 
 if (!defined('ABSPATH')) {
     exit;

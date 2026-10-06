@@ -1,20 +1,20 @@
 <?php
 
-namespace SEOChangeMonitor\Services\Maintenance;
+namespace SeoSentry\Services\Maintenance;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\Models\BotVisit;
-use SEOChangeMonitor\Models\Finding;
-use SEOChangeMonitor\Services\CheckEngine\AiBots;
-use SEOChangeMonitor\Services\CheckEngine\Change;
-use SEOChangeMonitor\Services\CheckEngine\ChangeTypes;
-use SEOChangeMonitor\Services\CheckEngine\DiffContext;
-use SEOChangeMonitor\Services\Db;
-use SEOChangeMonitor\Services\Findings\FindingRecorder;
-use SEOChangeMonitor\Services\Settings;
+use SeoSentry\Models\BotVisit;
+use SeoSentry\Models\Finding;
+use SeoSentry\Services\CheckEngine\AiBots;
+use SeoSentry\Services\CheckEngine\Change;
+use SeoSentry\Services\CheckEngine\ChangeTypes;
+use SeoSentry\Services\CheckEngine\DiffContext;
+use SeoSentry\Services\Db;
+use SeoSentry\Services\Findings\FindingRecorder;
+use SeoSentry\Services\Settings;
 
 /**
  * Flags AI crawlers that used to visit and have since gone quiet.

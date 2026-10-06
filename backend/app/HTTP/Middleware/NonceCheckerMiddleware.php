@@ -1,14 +1,14 @@
 <?php
 
-namespace SEOChangeMonitor\HTTP\Middleware;
+namespace SeoSentry\HTTP\Middleware;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\Config;
-use SEOChangeMonitor\Deps\BitApps\WPKit\Http\Request\Request;
-use SEOChangeMonitor\Deps\BitApps\WPKit\Http\Response;
+use SeoSentry\Config;
+use SeoSentry\Deps\BitApps\WPKit\Http\Request\Request;
+use SeoSentry\Deps\BitApps\WPKit\Http\Response;
 
 class NonceCheckerMiddleware
 {

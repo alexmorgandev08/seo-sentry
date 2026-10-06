@@ -1,13 +1,13 @@
 <?php
-namespace SEOChangeMonitor;
+namespace SeoSentry;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\src\Menu;
-use SEOChangeMonitor\Views\Body;
-use SEOChangeMonitor\Views\PluginPageActions;
+use SeoSentry\src\Menu;
+use SeoSentry\Views\Body;
+use SeoSentry\Views\PluginPageActions;
 
 class Config
 {
@@ -19,11 +19,11 @@ class Config
 
     public const TITLE = 'SEO Sentry';
 
-    public const VAR_PREFIX = 'SEO_CHANGE_MONITOR_';
+    public const VAR_PREFIX = 'seo_sentry_';
 
     public const VERSION = '1.0.3';
 
-    public const DB_VERSION = '0.2.0';
+    public const DB_VERSION = '1.0.0';
 
     public const REQUIRED_PHP_VERSION = '8.2';
 
@@ -33,11 +33,7 @@ class Config
 
     public const APP_BASE = '../../' . self::SLUG . '.php';
 
-    public const CLASS_PREFIX = 'SEOChangeMonitor';
-
     public const ASSETS_FOLDER = 'assets';
-
-    public const PRO_PLUGIN_NAMESPACE = 'SEOChangeMonitorPro\\';
 
     public static function get($type, $default = null)
     {

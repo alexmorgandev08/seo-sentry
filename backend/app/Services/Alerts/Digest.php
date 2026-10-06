@@ -1,13 +1,13 @@
 <?php
 
-namespace SEOChangeMonitor\Services\Alerts;
+namespace SeoSentry\Services\Alerts;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\Models\Finding;
-use SEOChangeMonitor\Services\Db;
+use SeoSentry\Models\Finding;
+use SeoSentry\Services\Db;
 
 /**
  * What each notification channel reports on.
