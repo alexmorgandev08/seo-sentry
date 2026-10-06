@@ -174,8 +174,12 @@ body.toplevel_page_seo-sentry #wpfooter {
  * own reset for it, so a small boxed sliver shows up at the caret position
  * once the control is focused - most visible when the Select is empty and
  * that input is the only thing occupying the row.
+ *
+ * Not scoped to #seo-sentry-root: a Select inside a modal or drawer is
+ * portalled to <body>. `body .ant-select` is what outranks wp-admin's
+ * `input[type=search]:focus`.
  */
-#seo-sentry-root .ant-select-selection-search-input {
+body .ant-select .ant-select-selection-search-input {
   background: transparent;
   border: none;
   box-shadow: none;
