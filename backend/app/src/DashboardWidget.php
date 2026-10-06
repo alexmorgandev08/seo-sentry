@@ -1,16 +1,16 @@
 <?php
 
-namespace SEOChangeMonitor\src;
+namespace SeoSentry\src;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\Config;
-use SEOChangeMonitor\Deps\BitApps\WPKit\Hooks\Hooks;
-use SEOChangeMonitor\Models\CheckRun;
-use SEOChangeMonitor\Models\Finding;
-use SEOChangeMonitor\Services\ImpairedState;
+use SeoSentry\Config;
+use SeoSentry\Deps\BitApps\WPKit\Hooks\Hooks;
+use SeoSentry\Models\CheckRun;
+use SeoSentry\Models\Finding;
+use SeoSentry\Services\ImpairedState;
 
 /**
  * The plugin's only presence outside its own screens: one dashboard widget,
@@ -30,7 +30,7 @@ class DashboardWidget
         }
 
         wp_add_dashboard_widget(
-            'seo_change_monitor_summary',
+            'seo_sentry_summary',
             __('SEO Sentry', 'seo-sentry'),
             [$this, 'render']
         );

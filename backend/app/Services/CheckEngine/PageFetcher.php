@@ -1,12 +1,12 @@
 <?php
 
-namespace SEOChangeMonitor\Services\CheckEngine;
+namespace SeoSentry\Services\CheckEngine;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\Config;
+use SeoSentry\Config;
 
 class PageFetcher
 {
@@ -19,7 +19,7 @@ class PageFetcher
             [
                 'timeout'     => 15,
                 'redirection' => 0, // record the redirect target, never follow it
-                'user-agent'  => 'SEOChangeMonitor/' . Config::VERSION . '; ' . home_url('/'),
+                'user-agent'  => 'SeoSentry/' . Config::VERSION . '; ' . home_url('/'),
                 // Certificates are verified. A site behind a self-signed cert -
                 // staging, or a local install - can switch that off here rather
                 // than through WordPress's own https_ssl_verify.

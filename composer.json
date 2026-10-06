@@ -29,13 +29,13 @@
   },
   "autoload": {
     "psr-4": {
-      "SEOChangeMonitor\\": "./backend/app"
+      "SeoSentry\\": "./backend/app"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "SEOChangeMonitor\\CLI\\": "./cli",
-      "SEOChangeMonitor\\Fixers\\": "./custom-fixers"
+      "SeoSentry\\CLI\\": "./cli",
+      "SeoSentry\\Fixers\\": "./custom-fixers"
     }
   },
   "scripts": {
@@ -65,7 +65,7 @@
   },
   "extra": {
     "imposter": {
-      "namespace": "SEOChangeMonitor\\Deps\\"
+      "namespace": "SeoSentry\\Deps\\"
     }
   }
 }

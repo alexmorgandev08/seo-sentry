@@ -1,14 +1,14 @@
 <?php
 
-namespace SEOChangeMonitor\Providers;
+namespace SeoSentry\Providers;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\Config;
-use SEOChangeMonitor\Deps\BitApps\WPKit\Hooks\Hooks;
-use SEOChangeMonitor\Services\Events\EventRecorder;
+use SeoSentry\Config;
+use SeoSentry\Deps\BitApps\WPKit\Hooks\Hooks;
+use SeoSentry\Services\Events\EventRecorder;
 
 /**
  * Listens for the site changes that most often break SEO output.

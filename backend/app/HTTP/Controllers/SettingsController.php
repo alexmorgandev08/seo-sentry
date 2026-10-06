@@ -1,15 +1,15 @@
 <?php
 
-namespace SEOChangeMonitor\HTTP\Controllers;
+namespace SeoSentry\HTTP\Controllers;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\Config;
-use SEOChangeMonitor\Deps\BitApps\WPKit\Http\Request\Request;
-use SEOChangeMonitor\Deps\BitApps\WPKit\Http\Response;
-use SEOChangeMonitor\Services\Settings;
+use SeoSentry\Config;
+use SeoSentry\Deps\BitApps\WPKit\Http\Request\Request;
+use SeoSentry\Deps\BitApps\WPKit\Http\Response;
+use SeoSentry\Services\Settings;
 
 class SettingsController
 {

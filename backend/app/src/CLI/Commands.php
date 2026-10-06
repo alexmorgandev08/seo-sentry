@@ -1,22 +1,22 @@
 <?php
 
-namespace SEOChangeMonitor\src\CLI;
+namespace SeoSentry\src\CLI;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\Models\CheckRun;
-use SEOChangeMonitor\Models\Finding;
-use SEOChangeMonitor\Models\Target;
-use SEOChangeMonitor\Providers\CronProvider;
-use SEOChangeMonitor\Services\Baseline\BaselineManager;
-use SEOChangeMonitor\Services\CheckEngine\CheckRunner;
-use SEOChangeMonitor\Services\Db;
-use SEOChangeMonitor\Services\Findings\ExplanationRegistry;
-use SEOChangeMonitor\Services\ImpairedState;
-use SEOChangeMonitor\Services\Maintenance\RetentionPruner;
-use SEOChangeMonitor\Services\Settings;
+use SeoSentry\Models\CheckRun;
+use SeoSentry\Models\Finding;
+use SeoSentry\Models\Target;
+use SeoSentry\Providers\CronProvider;
+use SeoSentry\Services\Baseline\BaselineManager;
+use SeoSentry\Services\CheckEngine\CheckRunner;
+use SeoSentry\Services\Db;
+use SeoSentry\Services\Findings\ExplanationRegistry;
+use SeoSentry\Services\ImpairedState;
+use SeoSentry\Services\Maintenance\RetentionPruner;
+use SeoSentry\Services\Settings;
 use WP_CLI;
 
 /**

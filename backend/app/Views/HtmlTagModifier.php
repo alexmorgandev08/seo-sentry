@@ -1,13 +1,13 @@
 <?php
 
-namespace SEOChangeMonitor\Views;
+namespace SeoSentry\Views;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\Config;
-use SEOChangeMonitor\Deps\BitApps\WPKit\Hooks\Hooks;
+use SeoSentry\Config;
+use SeoSentry\Deps\BitApps\WPKit\Hooks\Hooks;
 
 final class HtmlTagModifier
 {

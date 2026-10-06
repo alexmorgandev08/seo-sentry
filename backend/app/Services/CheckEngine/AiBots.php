@@ -1,6 +1,6 @@
 <?php
 
-namespace SEOChangeMonitor\Services\CheckEngine;
+namespace SeoSentry\Services\CheckEngine;
 
 if (!defined('ABSPATH')) {
     exit;

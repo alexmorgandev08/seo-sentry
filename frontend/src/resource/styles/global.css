@@ -174,8 +174,12 @@ body.toplevel_page_seo-sentry #wpfooter {
  * own reset for it, so a small boxed sliver shows up at the caret position
  * once the control is focused - most visible when the Select is empty and
  * that input is the only thing occupying the row.
+ *
+ * Not scoped to #seo-sentry-root: a Select inside a modal or drawer is
+ * portalled to <body>. `body .ant-select` is what outranks wp-admin's
+ * `input[type=search]:focus`.
  */
-#seo-sentry-root .ant-select-selection-search-input {
+body .ant-select .ant-select-selection-search-input {
   background: transparent;
   border: none;
   box-shadow: none;
@@ -344,6 +348,17 @@ body.toplevel_page_seo-sentry #wpfooter {
 /* Themed row hover, since a Tailwind colour class cannot follow the palette. */
 #seo-sentry-root .scm-hover:hover {
   background: var(--scm-line-soft);
+}
+
+/* TanStack Charts' tooltip, themed through the variables it reads. */
+.scm-chart-tooltip {
+  --ts-chart-tooltip-background: var(--scm-surface);
+  --ts-chart-tooltip-color: var(--scm-ink);
+  --ts-chart-tooltip-border: 1px solid var(--scm-line);
+  --ts-chart-tooltip-border-radius: 6px;
+  --ts-chart-tooltip-shadow: 0 1px 2px rgb(0 0 0 / 6%);
+  --ts-chart-tooltip-padding: 8px 12px;
+  --ts-chart-tooltip-font: 12px/1.5 var(--font-family);
 }
 
 /*

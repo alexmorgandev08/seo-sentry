@@ -1,13 +1,13 @@
 <?php
 
-namespace SEOChangeMonitor\Models;
+namespace SeoSentry\Models;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\Config;
-use SEOChangeMonitor\Deps\BitApps\WPDatabase\Model;
+use SeoSentry\Config;
+use SeoSentry\Deps\BitApps\WPDatabase\Model;
 
 class BotVisit extends Model
 {

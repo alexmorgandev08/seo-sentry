@@ -1,14 +1,14 @@
 <?php
 
-namespace SEOChangeMonitor\Views;
+namespace SeoSentry\Views;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\Config;
-use SEOChangeMonitor\Deps\BitApps\WPKit\Hooks\Hooks;
-use SEOChangeMonitor\Deps\BitApps\WPKit\Utils\Capabilities;
+use SeoSentry\Config;
+use SeoSentry\Deps\BitApps\WPKit\Hooks\Hooks;
+use SeoSentry\Deps\BitApps\WPKit\Utils\Capabilities;
 
 final class Layout
 {

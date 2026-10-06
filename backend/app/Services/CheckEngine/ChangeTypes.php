@@ -1,12 +1,12 @@
 <?php
 
-namespace SEOChangeMonitor\Services\CheckEngine;
+namespace SeoSentry\Services\CheckEngine;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\Models\Finding;
+use SeoSentry\Models\Finding;
 
 /**
  * Single source of truth for every change type the plugin can detect.

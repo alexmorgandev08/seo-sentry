@@ -1,22 +1,22 @@
 <?php
 
-namespace SEOChangeMonitor\Services\CheckEngine;
+namespace SeoSentry\Services\CheckEngine;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\Config;
-use SEOChangeMonitor\Models\CheckRun;
-use SEOChangeMonitor\Models\Finding;
-use SEOChangeMonitor\Models\Snapshot;
-use SEOChangeMonitor\Models\Target;
-use SEOChangeMonitor\Services\Alerts\AlertMailer;
-use SEOChangeMonitor\Services\Baseline\BaselineManager;
-use SEOChangeMonitor\Services\Db;
-use SEOChangeMonitor\Services\Events\Attribution;
-use SEOChangeMonitor\Services\Findings\FindingRecorder;
-use SEOChangeMonitor\Services\ImpairedState;
+use SeoSentry\Config;
+use SeoSentry\Models\CheckRun;
+use SeoSentry\Models\Finding;
+use SeoSentry\Models\Snapshot;
+use SeoSentry\Models\Target;
+use SeoSentry\Services\Alerts\AlertMailer;
+use SeoSentry\Services\Baseline\BaselineManager;
+use SeoSentry\Services\Db;
+use SeoSentry\Services\Events\Attribution;
+use SeoSentry\Services\Findings\FindingRecorder;
+use SeoSentry\Services\ImpairedState;
 
 /**
  * Owns a check run: queues the targets, processes them in chunks small enough

@@ -1,17 +1,17 @@
 <?php
 
-namespace SEOChangeMonitor\Providers;
+namespace SeoSentry\Providers;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\Config;
-use SEOChangeMonitor\Deps\BitApps\WPKit\Hooks\Hooks;
-use SEOChangeMonitor\Models\BotVisit;
-use SEOChangeMonitor\Services\CheckEngine\AiBots;
-use SEOChangeMonitor\Services\Db;
-use SEOChangeMonitor\Services\Settings;
+use SeoSentry\Config;
+use SeoSentry\Deps\BitApps\WPKit\Hooks\Hooks;
+use SeoSentry\Models\BotVisit;
+use SeoSentry\Services\CheckEngine\AiBots;
+use SeoSentry\Services\Db;
+use SeoSentry\Services\Settings;
 
 /**
  * Notes when a known AI crawler visits, so the plugin can later point out that

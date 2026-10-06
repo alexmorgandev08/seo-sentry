@@ -1,17 +1,17 @@
 <?php
 
-namespace SEOChangeMonitor\src;
+namespace SeoSentry\src;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\Config;
-use SEOChangeMonitor\Deps\BitApps\WPKit\Hooks\Hooks;
-use SEOChangeMonitor\Models\CheckRun;
-use SEOChangeMonitor\Models\Finding;
-use SEOChangeMonitor\Services\ImpairedState;
-use SEOChangeMonitor\Services\Settings;
+use SeoSentry\Config;
+use SeoSentry\Deps\BitApps\WPKit\Hooks\Hooks;
+use SeoSentry\Models\CheckRun;
+use SeoSentry\Models\Finding;
+use SeoSentry\Services\ImpairedState;
+use SeoSentry\Services\Settings;
 
 class SiteHealth
 {
@@ -24,12 +24,12 @@ class SiteHealth
 
     public function registerTests($tests)
     {
-        $tests['direct']['seo_change_monitor_operational'] = [
+        $tests['direct']['seo_sentry_operational'] = [
             'label' => __('SEO change monitoring is working', 'seo-sentry'),
             'test'  => [$this, 'testOperational'],
         ];
 
-        $tests['direct']['seo_change_monitor_criticals'] = [
+        $tests['direct']['seo_sentry_criticals'] = [
             'label' => __('SEO critical findings', 'seo-sentry'),
             'test'  => [$this, 'testCriticals'],
         ];
@@ -45,7 +45,7 @@ class SiteHealth
             'badge'       => ['label' => __('SEO', 'seo-sentry'), 'color' => 'blue'],
             'description' => '<p>' . esc_html__('Checks are running on schedule and the site can fetch its own pages.', 'seo-sentry') . '</p>',
             'actions'     => '',
-            'test'        => 'seo_change_monitor_operational',
+            'test'        => 'seo_sentry_operational',
         ];
 
         if (ImpairedState::isImpaired()) {
@@ -90,7 +90,7 @@ class SiteHealth
             'badge'       => ['label' => __('SEO', 'seo-sentry'), 'color' => 'blue'],
             'description' => '<p>' . esc_html__('Nothing critical has changed on your monitored pages.', 'seo-sentry') . '</p>',
             'actions'     => '',
-            'test'        => 'seo_change_monitor_criticals',
+            'test'        => 'seo_sentry_criticals',
         ];
 
         if ($count > 0) {

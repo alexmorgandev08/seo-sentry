@@ -21,9 +21,8 @@ function seo_sentry_uninstall_site()
 {
     global $wpdb;
 
-    // Matches SEOChangeMonitor\Config::VAR_PREFIX. The plugin was renamed after
-    // this prefix was set; the stored data still carries the original one.
-    $prefix = 'SEO_CHANGE_MONITOR_';
+    // Matches SeoSentry\Config::VAR_PREFIX.
+    $prefix = 'seo_sentry_';
 
     // Every hook CronProvider schedules, including ones only older versions used.
     $hooks = ['scheduled_check', 'run_tick', 'post_change_check', 'daily_maintenance', 'weekly_report'];

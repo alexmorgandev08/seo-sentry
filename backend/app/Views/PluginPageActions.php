@@ -1,12 +1,12 @@
 <?php
 
-namespace SEOChangeMonitor\Views;
+namespace SeoSentry\Views;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\Config;
+use SeoSentry\Config;
 
 class PluginPageActions
 {

@@ -1,16 +1,16 @@
 <?php
 
-namespace SEOChangeMonitor\Services\Findings;
+namespace SeoSentry\Services\Findings;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\Models\Finding;
-use SEOChangeMonitor\Services\CheckEngine\Change;
-use SEOChangeMonitor\Services\Db;
-use SEOChangeMonitor\Services\CheckEngine\ChangeTypes;
-use SEOChangeMonitor\Services\CheckEngine\DiffContext;
+use SeoSentry\Models\Finding;
+use SeoSentry\Services\CheckEngine\Change;
+use SeoSentry\Services\Db;
+use SeoSentry\Services\CheckEngine\ChangeTypes;
+use SeoSentry\Services\CheckEngine\DiffContext;
 
 class FindingRecorder
 {

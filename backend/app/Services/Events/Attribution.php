@@ -1,15 +1,15 @@
 <?php
 
-namespace SEOChangeMonitor\Services\Events;
+namespace SeoSentry\Services\Events;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\Models\CheckRun;
-use SEOChangeMonitor\Models\SiteEvent;
-use SEOChangeMonitor\Services\CheckEngine\DiffContext;
-use SEOChangeMonitor\Services\Db;
+use SeoSentry\Models\CheckRun;
+use SeoSentry\Models\SiteEvent;
+use SeoSentry\Services\CheckEngine\DiffContext;
+use SeoSentry\Services\Db;
 
 /**
  * Ties detected changes to the site events that happened just before them.

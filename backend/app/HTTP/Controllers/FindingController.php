@@ -1,17 +1,17 @@
 <?php
 
-namespace SEOChangeMonitor\HTTP\Controllers;
+namespace SeoSentry\HTTP\Controllers;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\Deps\BitApps\WPKit\Http\Request\Request;
-use SEOChangeMonitor\Deps\BitApps\WPKit\Http\Response;
-use SEOChangeMonitor\Models\Finding;
-use SEOChangeMonitor\Models\Target;
-use SEOChangeMonitor\Services\Db;
-use SEOChangeMonitor\Services\Findings\ExplanationRegistry;
+use SeoSentry\Deps\BitApps\WPKit\Http\Request\Request;
+use SeoSentry\Deps\BitApps\WPKit\Http\Response;
+use SeoSentry\Models\Finding;
+use SeoSentry\Models\Target;
+use SeoSentry\Services\Db;
+use SeoSentry\Services\Findings\ExplanationRegistry;
 
 class FindingController
 {
@@ -57,6 +57,53 @@ class FindingController
                 'total'    => $total,
                 'page'     => $page,
                 'per_page' => $perPage,
+            ]
+        );
+    }
+
+    /**
+     * Counts since date_from, per day or month and severity, and per change
+     * type. Grouped in SQL because the dashboard charts span up to a year,
+     * far past one page of findings.
+     */
+    public function stats(Request $request)
+    {
+        $from = (string) $request->get('date_from');
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $from)) {
+            return Response::error(__('Pick a valid start date.', 'seo-sentry'));
+        }
+
+        // created_at is 'Y-m-d H:i:s' in UTC, so its prefix is the period key.
+        $periodLength = $request->get('group') === 'month' ? 7 : 10;
+        $table        = Db::table('findings');
+        $since        = $from . ' 00:00:00';
+
+        $periods = Db::results(
+            "SELECT LEFT(`created_at`, {$periodLength}) AS period, `severity`, COUNT(*) AS total
+             FROM `{$table}` WHERE `created_at` >= %s GROUP BY period, `severity`",
+            [$since]
+        );
+
+        $types = Db::results(
+            "SELECT `change_type`, COUNT(*) AS total
+             FROM `{$table}` WHERE `created_at` >= %s GROUP BY `change_type` ORDER BY total DESC",
+            [$since]
+        );
+
+        return Response::success(
+            [
+                'periods' => array_map(
+                    static fn ($row) => [
+                        'period'   => $row['period'],
+                        'severity' => $row['severity'],
+                        'count'    => (int) $row['total'],
+                    ],
+                    $periods
+                ),
+                'types' => array_map(
+                    static fn ($row) => ['change_type' => $row['change_type'], 'count' => (int) $row['total']],
+                    $types
+                ),
             ]
         );
     }

@@ -1,13 +1,13 @@
 <?php
 
-namespace SEOChangeMonitor\Services\Events;
+namespace SeoSentry\Services\Events;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\Config;
-use SEOChangeMonitor\Models\SiteEvent;
+use SeoSentry\Config;
+use SeoSentry\Models\SiteEvent;
 
 /**
  * Records the site changes that could explain an SEO regression, and arms the

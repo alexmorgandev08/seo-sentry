@@ -158,13 +158,11 @@ wp plugin check seo-sentry
 
 ## Architecture notes
 
-**Storage prefix.** Tables and options use `SEO_CHANGE_MONITOR_`, and the PHP namespace is
-`SEOChangeMonitor\`. The plugin was renamed to SEO Sentry after those were set; they
-were deliberately left alone, because changing the namespace would mean regenerating the
-whole Imposter-prefixed `vendor/` tree, and changing the storage prefix would orphan
-existing installs' data. Only the public identity — name, slug, text domain — was renamed.
+**Storage prefix.** Tables and options use `SEO_SENTRY_`, and the PHP namespace is
+`SeoSentry\` (`SeoSentryPro\` for pro). Changing the namespace means rebuilding the
+Imposter-prefixed `vendor/` tree from scratch (`rm -rf vendor && composer install`).
 
-**Vendor isolation.** Composer dependencies are namespaced under `SEOChangeMonitor\Deps\`
+**Vendor isolation.** Composer dependencies are namespaced under `SeoSentry\Deps\`
 by [Imposter](https://github.com/TypistTech/imposter-plugin), so a different plugin
 bundling the same library cannot collide.
 

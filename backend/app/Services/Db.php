@@ -1,13 +1,13 @@
 <?php
 
-namespace SEOChangeMonitor\Services;
+namespace SeoSentry\Services;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\Config;
-use SEOChangeMonitor\Deps\BitApps\WPDatabase\Connection;
+use SeoSentry\Config;
+use SeoSentry\Deps\BitApps\WPDatabase\Connection;
 
 /**
  * Workarounds for the bundled query builder, kept in one place.
@@ -103,6 +103,21 @@ class Db
 
         // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- callers pass a literal statement and bind every value.
         return $wpdb->query($bindings === [] ? $sql : $wpdb->prepare($sql, $bindings));
+    }
+
+    /**
+     * Rows of a SELECT the query builder cannot express, such as GROUP BY.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public static function results($sql, array $bindings = [])
+    {
+        global $wpdb;
+
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- callers pass a literal statement and bind every value.
+        $rows = $wpdb->get_results($bindings === [] ? $sql : $wpdb->prepare($sql, $bindings), ARRAY_A);
+
+        return \is_array($rows) ? $rows : [];
     }
 
     /**

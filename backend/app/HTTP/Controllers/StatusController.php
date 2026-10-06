@@ -1,24 +1,24 @@
 <?php
 
-namespace SEOChangeMonitor\HTTP\Controllers;
+namespace SeoSentry\HTTP\Controllers;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\Deps\BitApps\WPKit\Http\Response;
-use SEOChangeMonitor\Models\BotVisit;
-use SEOChangeMonitor\Models\CheckRun;
-use SEOChangeMonitor\Models\Finding;
-use SEOChangeMonitor\Models\SiteEvent;
-use SEOChangeMonitor\Models\Snapshot;
-use SEOChangeMonitor\Models\Target;
-use SEOChangeMonitor\Providers\CronProvider;
-use SEOChangeMonitor\Services\Baseline\BaselineManager;
-use SEOChangeMonitor\Services\CheckEngine\AiBots;
-use SEOChangeMonitor\Services\Db;
-use SEOChangeMonitor\Services\ImpairedState;
-use SEOChangeMonitor\Services\Settings;
+use SeoSentry\Deps\BitApps\WPKit\Http\Response;
+use SeoSentry\Models\BotVisit;
+use SeoSentry\Models\CheckRun;
+use SeoSentry\Models\Finding;
+use SeoSentry\Models\SiteEvent;
+use SeoSentry\Models\Snapshot;
+use SeoSentry\Models\Target;
+use SeoSentry\Providers\CronProvider;
+use SeoSentry\Services\Baseline\BaselineManager;
+use SeoSentry\Services\CheckEngine\AiBots;
+use SeoSentry\Services\Db;
+use SeoSentry\Services\ImpairedState;
+use SeoSentry\Services\Settings;
 
 class StatusController
 {

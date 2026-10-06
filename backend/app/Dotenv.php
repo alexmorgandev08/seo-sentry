@@ -1,11 +1,11 @@
 <?php
-namespace SEOChangeMonitor;
+namespace SeoSentry;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\Config;
+use SeoSentry\Config;
 
 final class Dotenv
 {

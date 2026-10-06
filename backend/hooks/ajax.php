@@ -1,11 +1,11 @@
 <?php
 
-use SEOChangeMonitor\Deps\BitApps\WPKit\Http\Router\Route;
-use SEOChangeMonitor\HTTP\Controllers\CheckController;
-use SEOChangeMonitor\HTTP\Controllers\FindingController;
-use SEOChangeMonitor\HTTP\Controllers\SettingsController;
-use SEOChangeMonitor\HTTP\Controllers\StatusController;
-use SEOChangeMonitor\HTTP\Controllers\TargetController;
+use SeoSentry\Deps\BitApps\WPKit\Http\Router\Route;
+use SeoSentry\HTTP\Controllers\CheckController;
+use SeoSentry\HTTP\Controllers\FindingController;
+use SeoSentry\HTTP\Controllers\SettingsController;
+use SeoSentry\HTTP\Controllers\StatusController;
+use SeoSentry\HTTP\Controllers\TargetController;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -26,6 +26,7 @@ Route::group(
         Route::post('check/status', [CheckController::class, 'runStatus']);
 
         Route::post('findings/get', [FindingController::class, 'index']);
+        Route::post('findings/stats', [FindingController::class, 'stats']);
         Route::post('findings/show', [FindingController::class, 'show']);
         Route::post('findings/resolve', [FindingController::class, 'resolve']);
         Route::post('findings/mute', [FindingController::class, 'mute']);

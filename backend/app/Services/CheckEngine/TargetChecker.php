@@ -1,14 +1,14 @@
 <?php
 
-namespace SEOChangeMonitor\Services\CheckEngine;
+namespace SeoSentry\Services\CheckEngine;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\Models\Snapshot;
-use SEOChangeMonitor\Models\Target;
-use SEOChangeMonitor\Services\Db;
+use SeoSentry\Models\Snapshot;
+use SeoSentry\Models\Target;
+use SeoSentry\Services\Db;
 
 /**
  * Fetches one target, extracts its fields, and stores the snapshot.

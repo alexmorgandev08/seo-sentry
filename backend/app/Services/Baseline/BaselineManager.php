@@ -1,15 +1,15 @@
 <?php
 
-namespace SEOChangeMonitor\Services\Baseline;
+namespace SeoSentry\Services\Baseline;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\Config;
-use SEOChangeMonitor\Models\Target;
-use SEOChangeMonitor\Services\CheckEngine\TargetChecker;
-use SEOChangeMonitor\Services\Db;
+use SeoSentry\Config;
+use SeoSentry\Models\Target;
+use SeoSentry\Services\CheckEngine\TargetChecker;
+use SeoSentry\Services\Db;
 
 /**
  * "Arm before you update": snapshots every monitored page as a known-good

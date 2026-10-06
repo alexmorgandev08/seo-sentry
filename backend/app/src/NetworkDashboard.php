@@ -1,17 +1,17 @@
 <?php
 
-namespace SEOChangeMonitor\src;
+namespace SeoSentry\src;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-use SEOChangeMonitor\Config;
-use SEOChangeMonitor\Deps\BitApps\WPKit\Hooks\Hooks;
-use SEOChangeMonitor\Models\CheckRun;
-use SEOChangeMonitor\Models\Finding;
-use SEOChangeMonitor\Models\Target;
-use SEOChangeMonitor\Services\ImpairedState;
+use SeoSentry\Config;
+use SeoSentry\Deps\BitApps\WPKit\Hooks\Hooks;
+use SeoSentry\Models\CheckRun;
+use SeoSentry\Models\Finding;
+use SeoSentry\Models\Target;
+use SeoSentry\Services\ImpairedState;
 
 /**
  * Network-admin overview across every site in a WordPress multisite install.
