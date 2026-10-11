@@ -41,6 +41,7 @@ Each successful first check creates a baseline. Later checks are compared with t
 SEO Sentry checks important on-page and technical SEO signals, including:
 
 * **Robots meta tags**: detects noindex, nofollow, and other robots meta changes
+* **X-Robots-Tag header**: detects noindex sent by your server, which never appears in the page source
 * **SEO titles**: detects changed or removed page titles
 * **Meta descriptions**: detects changed or removed meta descriptions
 * **Canonical URLs**: detects changed or removed canonicals, including canonicals pointing to another domain
