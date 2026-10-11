@@ -5,8 +5,8 @@ import { useEffect } from 'react'
 import { HashRouter, Route, Routes } from 'react-router'
 import useAdminBarOffset from '@common/helpers/useAdminBarOffset'
 import useWpMenuHighlight from '@common/helpers/useWpMenuHighlight'
+import { ProGateProvider } from '@components/pro/ProGate'
 import TopBar from '@components/TopBar'
-import config from '@config/config'
 import { buildTheme, palette } from '@config/theme'
 import { useThemeStore } from '@/store/themeStore'
 import DashboardPage from '@features/dashboard/DashboardPage'
@@ -39,7 +39,7 @@ function Shell() {
             <Route element={<TargetsPage />} path="/pages" />
             <Route element={<FlightLogPage />} path="/log" />
             <Route element={<SiteWidePage />} path="/site" />
-            {config.IS_PRO_EXIST && <Route element={<IntegrationsPage />} path="/integrations" />}
+            <Route element={<IntegrationsPage />} path="/integrations" />
             <Route element={<SettingsPage />} path="/settings" />
           </Routes>
         </div>
@@ -74,7 +74,9 @@ export default function App() {
         <AntApp message={{ top: toastTop }}>
           <QueryClientProvider client={queryClient}>
             <HashRouter>
-              <Shell />
+              <ProGateProvider>
+                <Shell />
+              </ProGateProvider>
             </HashRouter>
           </QueryClientProvider>
         </AntApp>

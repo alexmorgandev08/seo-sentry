@@ -1,3 +1,4 @@
+import { LockOutlined } from '@ant-design/icons'
 import {
   App,
   Button,
@@ -6,19 +7,28 @@ import {
   Empty,
   Input,
   Modal,
+  Select,
   Space,
   Tag,
   Timeline,
   Typography
 } from 'antd'
-import { useEffect, useState } from 'react'
-import { __ } from '@common/helpers/i18nWrap'
-import { useExplainWithAi, useReopenFinding, useResolveFinding, useSettings } from '@/api/queries'
+import { useState } from 'react'
+import { __, sprintf } from '@common/helpers/i18nWrap'
+import {
+  useAddSuppression,
+  useFindingCauses,
+  useReopenFinding,
+  useResolveFinding
+} from '@/api/queries'
 import { changeLabel, eventLabel } from '@components/changeLabels'
 import SeverityTag from '@components/SeverityTag'
+import { useProGate } from '@components/pro/ProGate'
+import { ProBadge } from '@components/pro/ProUpsell'
 import When from '@components/When'
+import config from '@config/config'
 import { palette } from '@config/theme'
-import type { AiExplanation, Finding } from '@/api/types'
+import type { Finding, LikelyCause } from '@/api/types'
 
 const renderValue = (value: unknown) => {
   if (value === null || value === undefined || value === '') {
@@ -41,35 +51,127 @@ interface Props {
   onClose: () => void
 }
 
+/** How long a mute lasts. 'once' is the free behaviour: only this finding closes. */
+type QuietFor = 'once' | 7 | 30 | 90 | 'always'
+
+/** Snoozing and ignoring are pro; without it they carry a badge and open the upgrade. */
+const quietOption = (label: string, value: QuietFor) => ({
+  value,
+  label:
+    config.IS_PRO || value === 'once' ? (
+      label
+    ) : (
+      <span className="flex items-center justify-between gap-2">
+        {label}
+        <ProBadge />
+      </span>
+    )
+})
+
+const QUIET_OPTIONS = [
+  quietOption(__('Only this finding'), 'once'),
+  quietOption(__('Snooze for 7 days'), 7),
+  quietOption(__('Snooze for 30 days'), 30),
+  quietOption(__('Snooze for 90 days'), 90),
+  quietOption(__('Always ignore'), 'always')
+]
+
+const CAUSE_TAG: Record<LikelyCause['label'], { color: string; text: string }> = {
+  likely: { color: 'orange', text: __('Likely') },
+  possible: { color: 'default', text: __('Possible') }
+}
+
+/**
+ * Pro: the events above, ranked by how well each explains this change. Only
+ * ones that score well are shown, so an empty result shows nothing at all.
+ */
+function LikelyCauses({ causes }: { causes: LikelyCause[] }) {
+  return (
+    <Card size="small" title={causes.length === 1 ? __('Likely cause') : __('Likely causes')}>
+      <div className="flex flex-col gap-3">
+        {causes.map(cause => (
+          <div
+            key={`${cause.type}-${cause.subject}-${cause.at}`}
+            className="flex items-start gap-2"
+          >
+            <Tag className="mt-0.5 shrink-0" color={CAUSE_TAG[cause.label].color}>
+              {CAUSE_TAG[cause.label].text}
+            </Tag>
+            <span className="text-sm">{cause.reason}</span>
+          </div>
+        ))}
+        <Typography.Text type="secondary" className="text-xs">
+          {__(
+            'Ranked by timing and by what each kind of plugin or setting can change. A strong lead, not proof.'
+          )}
+        </Typography.Text>
+      </div>
+    </Card>
+  )
+}
+
+/** Without pro: says the events below can be ranked, and offers the upgrade. */
+function LockedCauses({ onUnlock }: { onUnlock: () => void }) {
+  return (
+    <Card
+      size="small"
+      title={
+        <span className="flex items-center gap-2">
+          {__('Likely cause')}
+          <ProBadge />
+        </span>
+      }
+    >
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <span className="text-sm" style={{ color: palette.inkMuted }}>
+          {__('SEO Sentry Pro ranks the events below by how well each one explains this change.')}
+        </span>
+        <Button icon={<LockOutlined />} size="small" onClick={onUnlock}>
+          {__('Unlock with Pro')}
+        </Button>
+      </div>
+    </Card>
+  )
+}
+
 export default function FindingDrawer({ finding, onClose }: Props) {
   const { message } = App.useApp()
   const [note, setNote] = useState('')
   const [pendingAction, setPendingAction] = useState<'mute' | 'resolve' | null>(null)
-  const [aiText, setAiText] = useState<AiExplanation | null>(null)
+  const [quietFor, setQuietFor] = useState<QuietFor>('once')
   const resolveFinding = useResolveFinding()
+  const addSuppression = useAddSuppression()
   const reopenFinding = useReopenFinding()
-  const explainWithAi = useExplainWithAi()
-  const { data: settings } = useSettings()
-
-  const aiAvailable = Boolean(settings?.ai_enabled && settings?.ai_api_key_set)
-
-  // Each finding carries its own interpretation; clear it when the drawer moves.
-  useEffect(() => setAiText(null), [finding?.id])
+  const { requirePro } = useProGate()
+  // Pro only, and only when there is something to rank.
+  const hasSuspects = Boolean(
+    finding && (finding.attributed_events.length > 0 || finding.is_expected)
+  )
+  const { data: causes } = useFindingCauses(finding?.id ?? 0, config.IS_PRO && hasSuspects)
 
   if (!finding) return null
 
-  const runExplain = (refresh: boolean) => {
-    explainWithAi.mutate(
-      { id: finding.id, refresh },
+  const isClosed = finding.status !== 'open'
+
+  // A lasting mute needs a page to attach to; site-wide findings stay one-off.
+  // Without pro the choices still show, and picking one offers the upgrade.
+  const canSuppress = finding.target_id !== null
+
+  const closeFinding = () => {
+    resolveFinding.mutate(
+      { id: finding.id, note, action: pendingAction as 'mute' | 'resolve' },
       {
-        onSuccess: setAiText,
-        // A failure leaves the written explanation above untouched.
+        onSuccess: () => {
+          message.success(pendingAction === 'mute' ? __('Muted.') : __('Marked resolved.'))
+          setNote('')
+          setQuietFor('once')
+          setPendingAction(null)
+          onClose()
+        },
         onError: error => message.error(error.message)
       }
     )
   }
-
-  const isClosed = finding.status !== 'open'
 
   const confirm = () => {
     if (note.trim() === '') {
@@ -78,17 +180,17 @@ export default function FindingDrawer({ finding, onClose }: Props) {
       return
     }
 
-    resolveFinding.mutate(
-      { id: finding.id, note, action: pendingAction as 'mute' | 'resolve' },
-      {
-        onSuccess: () => {
-          message.success(pendingAction === 'mute' ? __('Muted.') : __('Marked resolved.'))
-          setNote('')
-          setPendingAction(null)
-          onClose()
-        },
-        onError: error => message.error(error.message)
-      }
+    if (pendingAction !== 'mute' || !canSuppress || quietFor === 'once') {
+      closeFinding()
+
+      return
+    }
+
+    // The rule goes first: if it fails, the finding stays open rather than
+    // looking silenced while the next change would still alert.
+    addSuppression.mutate(
+      { finding_id: finding.id, days: quietFor === 'always' ? null : quietFor, note },
+      { onSuccess: closeFinding, onError: error => message.error(error.message) }
     )
   }
 
@@ -187,37 +289,9 @@ export default function FindingDrawer({ finding, onClose }: Props) {
             </div>
           </Card>
 
-          {aiAvailable && (
-            <Card
-              size="small"
-              title={__('AI interpretation')}
-              extra={
-                <Button
-                  loading={explainWithAi.isPending}
-                  size="small"
-                  onClick={() => runExplain(Boolean(aiText))}
-                >
-                  {aiText ? __('Regenerate') : __('Explain this')}
-                </Button>
-              }
-            >
-              {aiText ? (
-                <>
-                  <p className="m-0 text-sm">{aiText.text}</p>
-                  <p className="mb-0 mt-2 text-xs" style={{ color: palette.inkFaint }}>
-                    {__('Written by')} {aiText.model}
-                    {aiText.cached ? ` · ${__('cached, no new API call')}` : ''} ·{' '}
-                    {__('an interpretation of the values above, not a measurement')}
-                  </p>
-                </>
-              ) : (
-                <p className="m-0 text-sm" style={{ color: palette.inkMuted }}>
-                  {__(
-                    'Ask your AI provider to interpret this specific change. Only the values above and the site events are sent, never your page content.'
-                  )}
-                </p>
-              )}
-            </Card>
+          {causes && causes.length > 0 && <LikelyCauses causes={causes} />}
+          {!config.IS_PRO && hasSuspects && (
+            <LockedCauses onUnlock={() => requirePro('likelyCause')} />
           )}
 
           <Card size="small" title={__('Site events just before this change')}>
@@ -256,13 +330,35 @@ export default function FindingDrawer({ finding, onClose }: Props) {
       </Drawer>
 
       <Modal
-        confirmLoading={resolveFinding.isPending}
+        confirmLoading={resolveFinding.isPending || addSuppression.isPending}
         okText={pendingAction === 'mute' ? __('Mute') : __('Resolve')}
         open={pendingAction !== null}
         title={pendingAction === 'mute' ? __('Mute this finding') : __('Mark as resolved')}
         onCancel={() => setPendingAction(null)}
         onOk={confirm}
       >
+        {pendingAction === 'mute' && canSuppress && (
+          <div className="mb-4">
+            <Select
+              className="w-full"
+              options={QUIET_OPTIONS}
+              value={quietFor}
+              onChange={value =>
+                value === 'once'
+                  ? setQuietFor(value)
+                  : requirePro('ignoreRules', () => setQuietFor(value))
+              }
+            />
+            {quietFor !== 'once' && (
+              <Typography.Paragraph type="secondary" className="mb-0 mt-2 text-sm">
+                {sprintf(
+                  __('New "%s" changes on this page will not be recorded or emailed.'),
+                  changeLabel(finding.change_type)
+                )}
+              </Typography.Paragraph>
+            )}
+          </div>
+        )}
         <Typography.Paragraph type="secondary" className="text-sm">
           {__('Leave a short note so you remember why, when you look back at this later.')}
         </Typography.Paragraph>

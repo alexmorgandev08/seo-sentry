@@ -1,4 +1,4 @@
-import { DeleteOutlined, PlusOutlined } from '@ant-design/icons'
+import { DeleteOutlined, HistoryOutlined, PlusOutlined } from '@ant-design/icons'
 import { App, Button, Card, Popconfirm, Space, Switch, Table, Tag, Tooltip } from 'antd'
 import { useState } from 'react'
 import { __, sprintf } from '@common/helpers/i18nWrap'
@@ -12,8 +12,10 @@ import {
 import { resultLabel } from '@components/changeLabels'
 import PageHeader from '@components/PageHeader'
 import When from '@components/When'
+import { useProGate } from '@components/pro/ProGate'
 import { palette } from '@config/theme'
 import AddTargetModal from './AddTargetModal'
+import HistoryDrawer from './HistoryDrawer'
 import type { Target } from '@/api/types'
 
 const RESULT_TONE: Record<string, string> = {
@@ -26,6 +28,8 @@ const RESULT_TONE: Record<string, string> = {
 export default function TargetsPage() {
   const [isAdding, setIsAdding] = useState(false)
   const [selectedIds, setSelectedIds] = useState<number[]>([])
+  const [historyId, setHistoryId] = useState<null | number>(null)
+  const { requirePro } = useProGate()
   const { message } = App.useApp()
   const { data: targets, isLoading } = useTargets()
   const updateTarget = useUpdateTarget()
@@ -178,6 +182,24 @@ export default function TargetsPage() {
                 />
               )
             },
+            // Pro: the timeline endpoint exists only while the add-on is
+            // active, so without it the button offers the upgrade instead.
+            {
+              title: __('History'),
+              width: 90,
+              align: 'center',
+              render: (_, target) => (
+                <Tooltip title={__('See how this page changed over time')}>
+                  <Button
+                    aria-label={__('History')}
+                    icon={<HistoryOutlined />}
+                    size="small"
+                    type="text"
+                    onClick={() => requirePro('pageHistory', () => setHistoryId(target.id))}
+                  />
+                </Tooltip>
+              )
+            },
             {
               title: __('Remove'),
               width: 90,
@@ -207,6 +229,11 @@ export default function TargetsPage() {
       </Card>
 
       <AddTargetModal open={isAdding} onClose={() => setIsAdding(false)} />
+      <HistoryDrawer
+        key={historyId ?? 'closed'}
+        targetId={historyId}
+        onClose={() => setHistoryId(null)}
+      />
     </>
   )
 }

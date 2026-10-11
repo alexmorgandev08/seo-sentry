@@ -21,7 +21,6 @@ declare const SERVER_VARIABLES: {
   }
   assetsURL: string
   dateFormat: string
-  isSeoSentryPro: string
   isSeoSentryProExist?: string
   key?: string
   loggedInUserName: string

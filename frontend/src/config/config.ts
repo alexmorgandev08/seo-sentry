@@ -23,11 +23,11 @@ interface ConfigType {
   FREE_VERSION: string
   IS_DEV: boolean
   IS_PRO: boolean
-  IS_PRO_EXIST: boolean
   NONCE: string
   PLUGIN_ADMIN_URL: string
   PLUGIN_SLUG: string
   PRO_SLUG?: string
+  PRO_URL: string
   PRO_VERSION?: string
   PRODUCT_NAME: string
   REDIRECT_URI: string
@@ -50,12 +50,14 @@ const config = {
   DATE_FORMAT: getServerVariable('dateFormat', 'F j, Y'),
   FREE_VERSION: getServerVariable('version'),
   IS_DEV: import.meta.env.DEV,
-  IS_PRO: SERVER_VARIABLES?.isSeoSentryPro === '1',
-  IS_PRO_EXIST: getServerVariable('isSeoSentryProExist', '0') === '1',
+  // The one pro switch the UI reads: is the SEO Sentry Pro plugin active?
+  IS_PRO: getServerVariable('isSeoSentryProExist', '0') === '1',
   NONCE: getServerVariable('nonce', ''),
   PLUGIN_ADMIN_URL: getServerVariable('pluginAdminURL'),
   PLUGIN_SLUG: getServerVariable('pluginSlug', 'seo-sentry'),
   PRO_SLUG: getServerVariable('proSlug'),
+  // Where "Get SEO Sentry Pro" leads. Placeholder until the pro page is live.
+  PRO_URL: 'https://wordpress.org/plugins/seo-sentry/',
   PRO_VERSION: getServerVariable('proPluginVersion'),
   PRODUCT_NAME: 'seo-sentry',
   REDIRECT_URI: getServerVariable('redirectUri'),

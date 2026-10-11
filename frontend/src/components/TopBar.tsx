@@ -15,17 +15,8 @@ import { __, sprintf } from '@common/helpers/i18nWrap'
 import { absoluteTime, relativeTime } from '@common/helpers/datetime'
 import ThemeSwitch from '@components/ThemeSwitch'
 import { useDashboardSummary, useRunStatus } from '@/api/queries'
-import config from '@config/config'
 import { palette } from '@config/theme'
 import type { ReactNode } from 'react'
-
-/*
- * Integrations is a pro screen: webhooks, Slack and AI explanations all need
- * the add-on's endpoints, so the tab only appears when it is installed.
- */
-const PRO_NAV = config.IS_PRO_EXIST
-  ? [{ key: '/integrations', icon: <ApiOutlined />, label: __('Integrations') }]
-  : []
 
 const NAV = [
   { key: '/', icon: <DashboardOutlined />, label: __('Dashboard') },
@@ -36,7 +27,8 @@ const NAV = [
   },
   { key: '/log', icon: <FileSearchOutlined />, label: __('Change History') },
   { key: '/site', icon: <GlobalOutlined />, label: __('Site Checks') },
-  ...PRO_NAV,
+  // A pro screen, listed either way: without pro it explains what it adds.
+  { key: '/integrations', icon: <ApiOutlined />, label: __('Integrations') },
   { key: '/settings', icon: <SettingOutlined />, label: __('Settings') }
 ]
 

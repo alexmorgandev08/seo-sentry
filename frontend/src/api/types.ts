@@ -49,6 +49,122 @@ export interface Finding {
   explanation: Explanation
 }
 
+/** A pro rule that silences one change type on one page; `until: null` is permanent. */
+export interface SuppressionRule {
+  id: string
+  target_id: number
+  target_label: null | string
+  target_url: null | string
+  change_type: string
+  until: null | string
+  note: string
+  created_at: string
+}
+
+/** Pro: a rule-based set of pages, e.g. post type "product" or URL "/shop/*". */
+export interface PageGroup {
+  id: string
+  name: string
+  post_types: string[]
+  url_patterns: string[]
+  /** 'inherit' follows the site-wide check frequency. */
+  frequency: GroupFrequency
+}
+
+export type GroupFrequency = 'inherit' | 'hourly' | 'twicedaily' | 'daily' | 'weekly'
+
+export type AlertScope = 'any' | 'site' | 'group'
+
+export type AlertMode = 'immediate' | 'daily'
+
+/** Pro: who hears about which findings, and when. */
+export interface AlertRule {
+  id: string
+  name: string
+  enabled: boolean
+  min_severity: Severity
+  change_types: string[]
+  scope: AlertScope
+  group_id: null | string
+  emails: string[]
+  webhook: boolean
+  mode: AlertMode
+}
+
+export interface AlertMeta {
+  post_types: { value: string; label: string }[]
+  change_types: string[]
+}
+
+export interface ExpectedChecks {
+  index: null | 'index' | 'noindex'
+  follow: null | 'follow' | 'nofollow'
+  status_200: boolean
+  self_canonical: boolean
+  schema_types: string[]
+}
+
+/** Pro: how a page (or group, or every page) must look, checked on every run. */
+export interface ExpectedRule {
+  id: string
+  name: string
+  enabled: boolean
+  scope: 'page' | 'group' | 'all'
+  target_id: null | number
+  group_id: null | string
+  checks: ExpectedChecks
+  severity: 'critical' | 'warning'
+}
+
+/** A rule run against each covered page's latest check, before saving. */
+export interface ExpectationTest {
+  covered: number
+  failing: { label: string; url: string; failures: string[] }[]
+}
+
+/** Pro: a scored suspect for a finding. Correlation, so "likely" at most - never "the cause". */
+export interface LikelyCause {
+  type: string
+  subject: string
+  at: null | string
+  score: number
+  label: 'likely' | 'possible'
+  reason: string
+}
+
+/** Pro: one distinct state of a page, collapsed from every check that saw it unchanged. */
+export interface PageVersion {
+  id: number
+  first_seen: string
+  last_seen: string
+  checks: number
+  is_baseline: boolean
+  /** Field keys that differ from the version before; empty for the oldest. */
+  changed: string[]
+  fields: Record<string, unknown>
+}
+
+export interface PageHistory {
+  target: { id: number; label: string; url: string }
+  versions: PageVersion[]
+  snapshots: number
+  failed_checks: number
+}
+
+export interface AutoMonitorOptions {
+  post_types: { value: string; label: string }[]
+  terms: { value: number; label: string }[]
+}
+
+/** What a sync would do; `over_cap` pages match but would exceed the page limit. */
+export interface AutoMonitorPreview {
+  matching: number
+  to_add: number
+  over_cap: number
+  monitored: number
+  cap: number
+}
+
 export interface FindingsPage {
   items: Finding[]
   total: number
@@ -80,38 +196,19 @@ export interface Settings {
   webhook_urls: string[]
   webhook_threshold: Severity
   webhook_secret: string
-  ai_enabled: boolean
-  ai_provider: 'anthropic' | 'openai'
-  ai_api_key: string
-  ai_api_key_set?: boolean
-  ai_api_key_clear?: boolean
-  ai_model: string
-  ai_monthly_cap: number
-  slack_enabled: boolean
-  slack_webhook_url: string
-  slack_threshold: Severity
   report_enabled: boolean
+  report_frequency: 'weekly' | 'monthly'
   report_recipients: string
   report_brand_name: string
   report_brand_color: string
   report_logo_url: string
   report_footer: string
-}
-
-export interface AiUsage {
-  month: string
-  calls: number
-  cost: number
-}
-
-export interface AiExplanation {
-  text: string
-  provider: string
-  model: string
-  generated_at: string
-  cached: boolean
-  cost?: number
-  usage?: AiUsage
+  auto_monitor_enabled: boolean
+  auto_monitor_post_types: string[]
+  auto_monitor_include_terms: number[]
+  auto_monitor_exclude_terms: number[]
+  auto_monitor_exclude_patterns: string[]
+  auto_monitor_max_pages: number
 }
 
 export interface SiteEventSummary {
