@@ -6,6 +6,8 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+use SeoSentry\Config;
+
 /**
  * Compares two extracted field arrays for a page target and emits Changes.
  * Site-wide targets (robots/sitemap/site settings) have their own comparators
@@ -26,6 +28,7 @@ class SnapshotDiffer
         $this->diffText($changes, $before, $after, 'title', ChangeTypes::TITLE_CHANGED, ChangeTypes::TITLE_REMOVED);
         $this->diffText($changes, $before, $after, 'meta_description', ChangeTypes::META_DESCRIPTION_CHANGED, ChangeTypes::META_DESCRIPTION_REMOVED);
         $this->diffRobots($changes, $before, $after);
+        $this->diffXRobotsTag($changes, $before, $after);
         $this->diffCanonical($changes, $before, $after);
         $this->diffSchema($changes, $before, $after);
         $this->diffMap($changes, $before, $after, 'og', ChangeTypes::OG_CHANGED);
@@ -34,7 +37,8 @@ class SnapshotDiffer
         $this->diffHttp($changes, $before, $after);
         $this->diffWordCount($changes, $before, $after);
 
-        return $changes;
+        // Lets an add-on compare the fields it added through page_fields.
+        return (array) apply_filters(Config::withPrefix('page_changes'), $changes, $before, $after);
     }
 
     private function diffText(array &$changes, $before, $after, $key, $changedType, $removedType)
@@ -85,6 +89,36 @@ class SnapshotDiffer
         if (!$emitted) {
             $changes[] = new Change(ChangeTypes::META_ROBOTS_CHANGED, $old ?: null, $new ?: null);
         }
+    }
+
+    private function diffXRobotsTag(array &$changes, $before, $after)
+    {
+        // Snapshots taken before this field existed do not have it at all.
+        // That is "unknown", not "no header": treating it as empty would
+        // report every page already sending the header as newly noindexed on
+        // the first run after updating.
+        if (!\array_key_exists('x_robots_tag', $before)) {
+            return;
+        }
+
+        $old = (array) ($before['x_robots_tag'] ?? []);
+        $new = (array) ($after['x_robots_tag'] ?? []);
+
+        if ($old === $new) {
+            return;
+        }
+
+        $was = XRobotsTag::blocksIndexing($old);
+        $now = XRobotsTag::blocksIndexing($new);
+
+        $type = ChangeTypes::X_ROBOTS_TAG_CHANGED;
+        if (!$was && $now) {
+            $type = ChangeTypes::HEADER_NOINDEX_ADDED;
+        } elseif ($was && !$now) {
+            $type = ChangeTypes::HEADER_NOINDEX_REMOVED;
+        }
+
+        $changes[] = new Change($type, implode('; ', $old) ?: null, implode('; ', $new) ?: null);
     }
 
     private function robotsTokens($value)

@@ -16,7 +16,7 @@ use DOMXPath;
 class SnapshotExtractor
 {
     /**
-     * @return array The 11 monitored fields (plus fetch metadata carried on the snapshot row).
+     * @return array The 12 monitored fields (plus fetch metadata carried on the snapshot row).
      */
     public function extract(FetchResult $result)
     {
@@ -33,6 +33,9 @@ class SnapshotExtractor
             'http_status'      => $result->status,
             'redirect_target'  => $result->redirectTarget,
             'word_count'       => 0,
+            // Read here, before the empty-body return below: an error page or
+            // a bodyless redirect still carries its headers.
+            'x_robots_tag'     => XRobotsTag::fromHeaders((array) $result->headers),
         ];
 
         if ($result->body === '' || $result->isTransportError()) {

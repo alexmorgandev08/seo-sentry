@@ -6,6 +6,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+use SeoSentry\Config;
 use SeoSentry\Services\CheckEngine\ChangeTypes;
 
 /**
@@ -25,7 +26,10 @@ class ExplanationRegistry
     {
         $all = self::templates($context);
 
-        return $all[$type] ?? [
+        // An add-on explains the change types it registered itself.
+        $explanation = $all[$type] ?? apply_filters(Config::withPrefix('explanation'), null, $type, $context);
+
+        return $explanation ?? [
             'what'  => __('Something monitored on this page changed.', 'seo-sentry'),
             'why'   => __('Any unplanned change to SEO output is worth a look.', 'seo-sentry'),
             'check' => __('Compare the before and after values above.', 'seo-sentry'),
@@ -74,6 +78,21 @@ class ExplanationRegistry
                 'what'  => __('This page stopped telling search engines to skip it, so it is now indexable again.', 'seo-sentry'),
                 'why'   => __('If the page was meant to be hidden (a thank-you or checkout page, say), it can now appear in Google. If it was noindexed by mistake, this is good news.', 'seo-sentry'),
                 'check' => __('Confirm this page should be visible in search results.', 'seo-sentry'),
+            ],
+            ChangeTypes::HEADER_NOINDEX_ADDED => [
+                'what'  => __('Your server now tells search engines not to index this page, through an X-Robots-Tag header.', 'seo-sentry'),
+                'why'   => __('Google will drop it from search results, just as with a noindex tag. This one is harder to spot: it is sent with the response, not written in the page, so the page source still looks fine.', 'seo-sentry'),
+                'check' => __('Your SEO plugin settings will not show this. Check security, caching or CDN plugins, your host\'s server rules (.htaccess or nginx config), and any recent server change.', 'seo-sentry'),
+            ],
+            ChangeTypes::HEADER_NOINDEX_REMOVED => [
+                'what'  => __('Your server stopped sending a noindex instruction for this page in its X-Robots-Tag header.', 'seo-sentry'),
+                'why'   => __('The page can be indexed again. If it was meant to stay hidden, it can now appear in Google.', 'seo-sentry'),
+                'check' => __('Confirm this page should be visible in search results.', 'seo-sentry'),
+            ],
+            ChangeTypes::X_ROBOTS_TAG_CHANGED => [
+                'what'  => __('The X-Robots-Tag header your server sends for this page changed.', 'seo-sentry'),
+                'why'   => __('It carries the same instructions as the robots meta tag, such as nofollow or noarchive, but from the server rather than the page.', 'seo-sentry'),
+                'check' => __('Compare the old and new values below. If nobody changed the server setup, a security, caching or CDN plugin is the usual source.', 'seo-sentry'),
             ],
             ChangeTypes::NOFOLLOW_ADDED => [
                 'what'  => __('This page now tells search engines not to follow any of its links ("nofollow").', 'seo-sentry'),

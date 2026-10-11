@@ -83,9 +83,28 @@ class CronProvider
         }
     }
 
+    /** WordPress schedules a recurring check can use; 'weekly' only through an add-on. */
+    public const SCHEDULABLE = ['hourly', 'twicedaily', 'daily', 'weekly'];
+
+    /**
+     * How often the recurring check fires. Normally the user's setting; an
+     * add-on with faster per-page cadences raises it through this filter and
+     * then narrows each run to the pages that are due (target_interval).
+     */
+    public static function effectiveFrequency($frequency = null)
+    {
+        return (string) apply_filters(Config::withPrefix('schedule_frequency'), $frequency ?? Settings::get('frequency'));
+    }
+
+    /** For add-ons whose own settings change the cadence. */
+    public static function reschedule()
+    {
+        self::scheduleRecurringCheck(self::effectiveFrequency());
+    }
+
     public static function scheduleAll()
     {
-        self::scheduleRecurringCheck(Settings::get('frequency'));
+        self::scheduleRecurringCheck(self::effectiveFrequency());
 
         $maintenance = Config::withPrefix(self::HOOK_MAINTENANCE);
         if (!wp_next_scheduled($maintenance)) {
@@ -107,17 +126,24 @@ class CronProvider
             ? $settings['frequency']
             : Settings::get('frequency');
 
-        self::scheduleRecurringCheck($frequency);
+        self::scheduleRecurringCheck(self::effectiveFrequency($frequency));
     }
 
     public static function scheduleRecurringCheck($frequency)
     {
         $hook = Config::withPrefix(self::HOOK_SCHEDULED);
+
+        // Already on this cadence: leave it. Every settings save lands here,
+        // and re-creating the event would push the next check out to five
+        // minutes from now each time, whatever setting was changed.
+        if (wp_next_scheduled($hook) && wp_get_schedule($hook) === $frequency) {
+            return;
+        }
+
         wp_unschedule_hook($hook);
 
-        // 'off' is a valid choice that simply means no recurring check. Reading
-        // the rest from Settings keeps this in step if a frequency is ever added.
-        if ($frequency === 'off' || !\in_array($frequency, Settings::FREQUENCIES, true)) {
+        // 'off' is a valid choice that simply means no recurring check.
+        if ($frequency === 'off' || !\in_array($frequency, self::SCHEDULABLE, true)) {
             return;
         }
 

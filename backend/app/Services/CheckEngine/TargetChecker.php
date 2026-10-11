@@ -6,6 +6,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+use SeoSentry\Config;
 use SeoSentry\Models\Snapshot;
 use SeoSentry\Models\Target;
 use SeoSentry\Services\Db;
@@ -55,6 +56,11 @@ class TargetChecker
             $result   = $this->fetcher->fetch($target->url);
             $fields   = $this->extractor->extract($result);
             $status   = $result->status;
+
+            // Lets an add-on measure more about the page. Unhooked, the fields
+            // are exactly what the extractor produced.
+            $fields = (array) apply_filters(Config::withPrefix('page_fields'), $fields, $result, $target);
+
             $error    = $result->error;
             $redirect = $result->redirectTarget;
             $body     = $result->body;

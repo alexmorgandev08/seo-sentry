@@ -67,7 +67,7 @@ class SettingsController
         }
 
         /*
-         * Pro's own keys - webhooks, Slack, AI and the client report - are
+         * Pro's own keys - webhooks, the client report, auto-monitoring - are
          * validated by whatever registers this filter. Returning a WP_Error
          * lets an add-on reject a value with its own message.
          */

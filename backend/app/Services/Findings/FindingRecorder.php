@@ -11,6 +11,7 @@ use SeoSentry\Services\CheckEngine\Change;
 use SeoSentry\Services\Db;
 use SeoSentry\Services\CheckEngine\ChangeTypes;
 use SeoSentry\Services\CheckEngine\DiffContext;
+use SeoSentry\Services\CheckEngine\XRobotsTag;
 
 class FindingRecorder
 {
@@ -113,6 +114,9 @@ class FindingRecorder
 
             case ChangeTypes::NOINDEX_ADDED:
                 return str_contains($robots, 'noindex');
+
+            case ChangeTypes::HEADER_NOINDEX_ADDED:
+                return XRobotsTag::blocksIndexing((array) ($fields['x_robots_tag'] ?? []));
 
             case ChangeTypes::CANONICAL_REMOVED:
                 return $canonical === '';

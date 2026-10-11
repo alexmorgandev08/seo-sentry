@@ -6,6 +6,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+use SeoSentry\Config;
 use SeoSentry\Models\Target;
 
 /**
@@ -16,6 +17,15 @@ class SiteChecker
 {
     /** Guard against enormous sitemap indexes. */
     public const MAX_CHILD_SITEMAPS = 10;
+
+    /** A memory guard: past this many URLs the list handed to add-ons is marked incomplete. */
+    public const MAX_COLLECTED_URLS = 10000;
+
+    /** @var null|string[] the sitemap's URLs, collected only while an add-on asks for them */
+    private $collected;
+
+    /** @var bool true when the collected list stopped short of the whole sitemap */
+    private $incomplete = false;
 
     /** @var PageFetcher */
     private $fetcher;
@@ -84,19 +94,29 @@ class SiteChecker
             return ['fields' => [], 'error' => $result->error, 'status' => null];
         }
 
+        $tracking         = (bool) has_filter(Config::withPrefix('sitemap_fields'));
+        $this->collected  = $tracking ? [] : null;
+        $this->incomplete = false;
+
         $reachable = $result->status === 200 && $result->body !== '';
         $parsed    = $reachable ? $this->parseSitemap($result->body, 0) : ['valid' => false, 'count' => 0];
 
-        return [
-            'fields' => [
-                'url'       => $url,
-                'reachable' => $reachable,
-                'valid'     => $parsed['valid'],
-                'url_count' => $parsed['count'],
-            ],
-            'error'  => null,
-            'status' => $result->status,
+        $fields = [
+            'url'       => $url,
+            'reachable' => $reachable,
+            'valid'     => $parsed['valid'],
+            'url_count' => $parsed['count'],
         ];
+
+        // Hands an add-on every URL the check read, and whether that was all
+        // of them, so it can record what it needs about the URL set.
+        if ($tracking && $reachable && $parsed['valid']) {
+            $fields = (array) apply_filters(Config::withPrefix('sitemap_fields'), $fields, $this->collected, !$this->incomplete);
+        }
+
+        $this->collected = null;
+
+        return ['fields' => $fields, 'error' => null, 'status' => $result->status];
     }
 
     public function checkSiteSettings()
@@ -118,12 +138,15 @@ class SiteChecker
      */
     public function diff($type, array $before, array $after)
     {
-        return match ($type) {
+        $changes = match ($type) {
             Target::TYPE_ROBOTS => $this->diffRobots($before, $after),
             Target::TYPE_SITEMAP => $this->diffSitemap($before, $after),
             Target::TYPE_SITE_SETTINGS => $this->diffSiteSettings($before, $after),
             default => [],
         };
+
+        // Lets an add-on compare what it recorded through sitemap_fields.
+        return (array) apply_filters(Config::withPrefix('site_changes'), $changes, $type, $before, $after);
     }
 
     private function diffRobots(array $before, array $after)
@@ -263,6 +286,21 @@ class SiteChecker
         $name = $xml->getName();
 
         if ($name === 'urlset') {
+            if ($this->collected !== null) {
+                foreach ($xml->url as $entry) {
+                    if (\count($this->collected) >= self::MAX_COLLECTED_URLS) {
+                        $this->incomplete = true;
+
+                        break;
+                    }
+
+                    $loc = trim((string) $entry->loc);
+                    if ($loc !== '') {
+                        $this->collected[] = $loc;
+                    }
+                }
+            }
+
             return ['valid' => true, 'count' => \count($xml->url)];
         }
 
@@ -274,6 +312,8 @@ class SiteChecker
         $fetched = 0;
         foreach ($xml->sitemap as $child) {
             if ($fetched >= self::MAX_CHILD_SITEMAPS) {
+                $this->incomplete = true; // the rest was never read
+
                 break;
             }
 

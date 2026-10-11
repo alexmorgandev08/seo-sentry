@@ -12,7 +12,7 @@ use SeoSentry\Services\Db;
 /**
  * What each notification channel reports on.
  *
- * Email, Slack and webhooks all answer the same two questions: which findings
+ * Email and webhooks both answer the same two questions: which findings
  * from this run clear the user's severity threshold, and which criticals cleared
  * while it ran. Only the delivery differs, so the selection lives here.
  */

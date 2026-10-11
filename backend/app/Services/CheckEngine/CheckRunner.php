@@ -73,7 +73,13 @@ class CheckRunner
             return false;
         }
 
-        $targets = $this->queueableTargets();
+        $targets = $this->queueableTargets($trigger);
+
+        // A scheduled run can find nothing due when pages have their own
+        // cadences; no point recording an empty run for it.
+        if ($targets === [] && $trigger === 'scheduled') {
+            return false;
+        }
 
         $run = CheckRun::insert(
             [
@@ -213,6 +219,15 @@ class CheckRunner
 
             foreach ($changes as $change) {
                 $severity = $this->classifier->classify($change, $context);
+
+                // Lets an add-on regrade a change, or drop it by returning an
+                // empty value - the snapshot is already saved, so a dropped
+                // change still moves the comparison point forward.
+                $severity = apply_filters(Config::withPrefix('finding_severity'), $severity, $change, $target, $context);
+                if (empty($severity)) {
+                    continue;
+                }
+
                 $this->recorder->record($runId, $target->id, $change, $severity, $context);
             }
 
@@ -222,6 +237,11 @@ class CheckRunner
         }
 
         $this->recorder->autoResolve($target->id, $currentFields);
+
+        // The page's current state, whether or not anything changed - so an
+        // add-on can judge the page as it is, including on its first check,
+        // when there is nothing yet to compare against.
+        do_action(Config::withPrefix('target_checked'), $target, $runId, $currentFields);
     }
 
     /**
@@ -290,9 +310,14 @@ class CheckRunner
         return CheckRun::findOne(['id' => $runId]);
     }
 
-    private function queueableTargets()
+    /** Scheduled runs check only what is due; manual and post-update runs check everything. */
+    private function queueableTargets($trigger = 'manual')
     {
         $targets = Db::rows(Target::where('is_active', 1)->orderBy('id')->asc()->get());
+
+        if ($trigger === 'scheduled') {
+            $targets = array_values(array_filter($targets, [$this, 'isDue']));
+        }
 
         // System targets first: a site-wide problem explains page-level ones.
         usort(
@@ -301,6 +326,28 @@ class CheckRunner
         );
 
         return $targets;
+    }
+
+    /**
+     * Has this target's own interval passed since it was last checked? Free
+     * gives no target an interval, so every scheduled run checks everything,
+     * as before. An add-on sets one per target through target_interval.
+     *
+     * 15% slack, so a page meant to be checked hourly - last checked at 10:02
+     * because the run took two minutes to reach it - is still due at 11:00
+     * rather than slipping to every other hour.
+     */
+    private function isDue($target)
+    {
+        $interval = apply_filters(Config::withPrefix('target_interval'), null, $target);
+
+        if ($interval === null || !$target->last_checked_at) {
+            return true;
+        }
+
+        $elapsed = time() - (int) strtotime($target->last_checked_at . ' UTC');
+
+        return $elapsed >= (int) $interval * 0.85;
     }
 
     private function hasLiveQueue()

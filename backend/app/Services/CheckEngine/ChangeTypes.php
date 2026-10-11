@@ -6,6 +6,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+use SeoSentry\Config;
 use SeoSentry\Models\Finding;
 
 /**
@@ -30,6 +31,12 @@ class ChangeTypes
     public const NOINDEX_REMOVED          = 'noindex_removed';
 
     public const NOFOLLOW_ADDED           = 'nofollow_added';
+
+    public const HEADER_NOINDEX_ADDED     = 'header_noindex_added';
+
+    public const HEADER_NOINDEX_REMOVED   = 'header_noindex_removed';
+
+    public const X_ROBOTS_TAG_CHANGED     = 'x_robots_tag_changed';
 
     public const CANONICAL_CHANGED        = 'canonical_changed';
 
@@ -95,6 +102,11 @@ class ChangeTypes
         self::NOINDEX_ADDED            => Finding::SEVERITY_CRITICAL,
         self::NOINDEX_REMOVED          => Finding::SEVERITY_INFO,
         self::NOFOLLOW_ADDED           => Finding::SEVERITY_WARNING,
+        // Header rules come from server config, never a page edit, so none of
+        // these are in EXPECTED_DOWNGRADABLE below.
+        self::HEADER_NOINDEX_ADDED     => Finding::SEVERITY_CRITICAL,
+        self::HEADER_NOINDEX_REMOVED   => Finding::SEVERITY_INFO,
+        self::X_ROBOTS_TAG_CHANGED     => Finding::SEVERITY_WARNING,
         self::CANONICAL_CHANGED        => Finding::SEVERITY_WARNING,
         self::CANONICAL_REMOVED        => Finding::SEVERITY_CRITICAL,
         self::CANONICAL_OFFSITE        => Finding::SEVERITY_CRITICAL,
@@ -142,8 +154,19 @@ class ChangeTypes
         self::SCHEMA_TYPE_ADDED,
     ];
 
+    /**
+     * Every known change type and its base severity. Add-ons register their
+     * own types through the change_type_severities filter.
+     *
+     * @return array<string, string>
+     */
+    public static function severities()
+    {
+        return (array) apply_filters(Config::withPrefix('change_type_severities'), self::SEVERITY);
+    }
+
     public static function baseSeverity($type)
     {
-        return self::SEVERITY[$type] ?? Finding::SEVERITY_INFO;
+        return self::severities()[$type] ?? Finding::SEVERITY_INFO;
     }
 }
