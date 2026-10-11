@@ -72,9 +72,10 @@ class Head
                 'version'        => Config::VERSION,
                 'lang'           => get_locale(),
 
-                // The app's one pro switch (config.IS_PRO): without the add-on
-                // its screens stay visible but locked behind an upgrade prompt.
-                'isSeoSentryProExist' => defined('SEO_SENTRY_PRO_VERSION') ? '1' : '0',
+                // The app's one pro switch (config.IS_PRO): without a pro
+                // license its screens stay visible but locked behind an
+                // upgrade prompt.
+                'isSeoSentryProExist' => Config::hasProLicense() ? '1' : '0',
                 'proPluginVersion'    => defined('SEO_SENTRY_PRO_VERSION')
                     ? SEO_SENTRY_PRO_VERSION
                     : '',

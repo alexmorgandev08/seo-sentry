@@ -151,6 +151,18 @@ class Config
         return isset($_ENV[Config::VAR_PREFIX . $keyName]) ? sanitize_text_field($_ENV[Config::VAR_PREFIX . $keyName]) : false;
     }
 
+    /**
+     * Whether pro's features are on. The pro add-on answers this filter only
+     * while its license or trial is valid, so an installed but unlicensed pro
+     * counts as off. Drives the app's pro switch and the menu title.
+     *
+     * @return bool
+     */
+    public static function hasProLicense()
+    {
+        return (bool) apply_filters(self::withPrefix('is_pro'), false);
+    }
+
     public static function isProActivated()
     {
         if (class_exists(ProConfig::class)) {
