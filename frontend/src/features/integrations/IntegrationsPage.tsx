@@ -64,7 +64,11 @@ function IntegrationsForm() {
   const webhookEnabled = Form.useWatch('webhook_enabled', form)
 
   useEffect(() => {
-    if (settings) form.setFieldsValue(settings)
+    if (!settings) return
+
+    // One endpoint. The server keeps a list, so the field edits its first
+    // entry; an empty one is dropped on save.
+    form.setFieldsValue({ ...settings, webhook_urls: [settings.webhook_urls?.[0] ?? ''] })
   }, [settings, form])
 
   const submit = (values: Settings) => {
@@ -74,20 +78,17 @@ function IntegrationsForm() {
     })
   }
 
-  /** Tests the first endpoint currently in the field, saved or not. */
+  /** Tests the endpoint on screen, saved or not. */
   const sendWebhookTest = () => {
-    const urls: unknown = form.getFieldValue('webhook_urls')
-    const first = (
-      Array.isArray(urls) ? String(urls[0] ?? '') : String(urls ?? '').split('\n')[0]
-    ).trim()
+    const url = String(form.getFieldValue(['webhook_urls', 0]) ?? '').trim()
 
-    if (first === '') {
+    if (url === '') {
       message.warning(__('Add an endpoint URL first.'))
 
       return
     }
 
-    testWebhook.mutate(first, {
+    testWebhook.mutate(url, {
       onSuccess: () => message.success(__('Your endpoint accepted the test delivery.')),
       onError: error => message.error(error.message)
     })
@@ -122,13 +123,14 @@ function IntegrationsForm() {
         Each card's switch sits in its header and its settings only show while
         it is on; a card that is off keeps its saved values, because saving
         sends only the fields on screen and the server merges the rest.
-        Cards in a row share one height (the grid's default stretch), so
-        descriptions of different lengths still line up edge to edge.
+        Each card is only as tall as its own content (items-start): with the
+        grid's default stretch, switching Webhooks on stretched the Slack and
+        AI cards beside it to match, so they looked opened too.
         Spacing lives on the grid, not the cards: antd's cssinjs runs at high
         hash priority, so a margin utility on .ant-card loses to its reset.
       */}
       <Form
-        className="grid grid-cols-1 gap-4 lg:grid-cols-2 2xl:grid-cols-3"
+        className="grid grid-cols-1 items-start gap-4 lg:grid-cols-2 2xl:grid-cols-3"
         disabled={isLoading}
         form={form}
         layout="vertical"
@@ -154,7 +156,7 @@ function IntegrationsForm() {
             style={{ color: palette.inkMuted }}
           >
             {__(
-              'Posts each check result as JSON to your own endpoints, so you can pipe findings anywhere.'
+              'Posts each check result as JSON to your own endpoint, so you can pipe findings anywhere.'
             )}
           </p>
 
@@ -162,20 +164,11 @@ function IntegrationsForm() {
             <>
               <Form.Item
                 className="mb-5"
-                extra={__('One URL per line, up to 10.')}
-                label={__('Endpoint URLs')}
-                name="webhook_urls"
-                getValueProps={value => ({
-                  value: Array.isArray(value) ? value.join('\n') : value
-                })}
-                normalize={value =>
-                  String(value ?? '')
-                    .split('\n')
-                    .map(line => line.trim())
-                    .filter(Boolean)
-                }
+                label={__('Endpoint URL')}
+                name={['webhook_urls', 0]}
+                rules={[{ type: 'url', message: __('Enter a full URL, starting with https://') }]}
               >
-                <Input.TextArea placeholder="https://example.com/hooks/seo" rows={3} />
+                <Input placeholder="https://example.com/hooks/seo" type="url" />
               </Form.Item>
 
               <Form.Item className="mb-5" label={__('Only send')} name="webhook_threshold">

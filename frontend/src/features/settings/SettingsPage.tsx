@@ -7,7 +7,18 @@ import {
   RobotOutlined,
   SendOutlined
 } from '@ant-design/icons'
-import { App, Button, Card, Input, InputNumber, Select, Space, Switch, Tabs } from 'antd'
+import {
+  App,
+  Button,
+  Card,
+  ColorPicker,
+  Input,
+  InputNumber,
+  Select,
+  Space,
+  Switch,
+  Tabs
+} from 'antd'
 import { useEffect, useState } from 'react'
 import { __ } from '@common/helpers/i18nWrap'
 import useDebounce from '@common/hooks/useDebounce'
@@ -22,7 +33,20 @@ import AlertRulesSettings from './alerts/AlertRulesSettings'
 import AutoMonitorSettings from './AutoMonitorSettings'
 import ExpectedStateSettings from './expectations/ExpectedStateSettings'
 import IgnoreRules from './IgnoreRules'
+import LogoPicker from './LogoPicker'
 import SettingRow, { CARD_STYLES } from './SettingRow'
+
+/** Swatches for the report's accent colour; the first is pro's default. */
+const BRAND_COLORS = [
+  '#1d4ed8',
+  '#0f766e',
+  '#15803d',
+  '#b45309',
+  '#b91c1c',
+  '#be185d',
+  '#7e22ce',
+  '#111827'
+]
 
 /** Saving a half-typed address would only ever come back as a server error. */
 const isSavableEmail = (value: string) =>
@@ -309,20 +333,33 @@ export default function SettingsPage() {
         </SettingRow>
 
         <SettingRow description={__('Used for headings and links.')} title={__('Accent colour')}>
-          <Input
+          {/* Dragging only previews; the colour is saved once it is let go. No
+              alpha: the server accepts plain hex (#rrggbb) only. */}
+          <ColorPicker
+            disabledAlpha
+            showText
+            className="w-full"
             disabled={isReportDisabled}
-            placeholder="#3b5bdb"
-            value={draft?.report_brand_color}
-            onChange={event => saveTyped('report_brand_color', event.target.value)}
+            format="hex"
+            presets={[{ label: __('Suggested colours'), colors: BRAND_COLORS }]}
+            // Inline: antd's own styles outrank a utility class here.
+            style={{ justifyContent: 'flex-start' }}
+            value={draft?.report_brand_color || BRAND_COLORS[0]}
+            onChange={color => edit('report_brand_color', color.toHexString())}
+            onChangeComplete={color => save('report_brand_color', color.toHexString())}
           />
         </SettingRow>
 
-        <SettingRow title={__('Logo URL')}>
-          <Input
+        <SettingRow
+          description={__(
+            'Shown at the top of the report. Pick one from your Media Library or upload a new one.'
+          )}
+          title={__('Logo')}
+        >
+          <LogoPicker
             disabled={isReportDisabled}
-            placeholder="https://example.com/logo.png"
             value={draft?.report_logo_url}
-            onChange={event => saveTyped('report_logo_url', event.target.value)}
+            onPick={url => save('report_logo_url', url)}
           />
         </SettingRow>
 
