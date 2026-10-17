@@ -43,7 +43,7 @@ export default function ExpectedStateSettings() {
   const scopeLabel = (rule: ExpectedRule) => {
     if (rule.scope === 'all') return __('Every monitored page')
     if (rule.scope === 'group') {
-      return groups.find(group => group.id === rule.group_id)?.name ?? __('(missing group)')
+      return groups.find(group => group.id === rule.group_id)?.name ?? __('(page group not found)')
     }
 
     return targets.find(target => target.id === rule.target_id)?.label ?? __('(page removed)')
@@ -54,7 +54,7 @@ export default function ExpectedStateSettings() {
       <Alert
         showIcon
         message={__(
-          'Change alerts only notice a page that changes. An expectation is checked against the page as it is on every run, so it also catches a page that was wrong from the start. It alerts once, then stays open until the page is fixed.'
+          'Change alerts find only pages that change. During each check, SEO Sentry also compares each page with its expected state rules. This finds pages that were incorrect from the start. SEO Sentry sends 1 alert, and the change stays open until the page is correct.'
         )}
         type="info"
       />
@@ -62,7 +62,7 @@ export default function ExpectedStateSettings() {
       <Card
         extra={
           <Button type="primary" onClick={() => setEditing({})}>
-            {__('Add expectation')}
+            {__('Add rule')}
           </Button>
         }
         title={__('Expected state')}
@@ -74,7 +74,7 @@ export default function ExpectedStateSettings() {
             emptyText: (
               <Empty
                 description={__(
-                  'No expectations yet. Example: the homepage must stay indexable, return HTTP 200 and carry Organization schema.'
+                  'There are no expected state rules. For example: the homepage must stay indexable, return HTTP 200 and contain Organization schema.'
                 )}
                 image={Empty.PRESENTED_IMAGE_SIMPLE}
               />
@@ -94,7 +94,7 @@ export default function ExpectedStateSettings() {
                 </Button>,
                 <Popconfirm
                   key="delete"
-                  title={__('Delete this expectation?')}
+                  title={__('Delete this expected state rule?')}
                   onConfirm={() => deleteRule.mutate({ id: rule.id }, { onError })}
                 >
                   <Button danger size="small">

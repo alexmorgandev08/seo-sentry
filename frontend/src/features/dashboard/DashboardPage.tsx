@@ -82,7 +82,7 @@ export default function DashboardPage() {
 
   const runCheck = () => {
     checkNow.mutate(undefined, {
-      onSuccess: () => message.success(__('Check complete.')),
+      onSuccess: () => message.success(__('The check is complete.')),
       onError: error => message.error(error.message)
     })
   }
@@ -92,7 +92,9 @@ export default function DashboardPage() {
       onSuccess: data =>
         message.success(
           sprintf(
-            __('Snapshot saved for %d pages. Run your updates, then check again.'),
+            __(
+              'SEO Sentry saved a snapshot of %d pages. Make your updates, then check the pages again.'
+            ),
             data.targets
           )
         ),
@@ -107,17 +109,17 @@ export default function DashboardPage() {
           <>
             {summary?.baseline ? (
               <Popconfirm
-                cancelText={__('Keep it')}
-                okText={__('Discard')}
-                title={__('Discard the saved snapshot?')}
+                cancelText={__('Keep snapshot')}
+                okText={__('Delete')}
+                title={__('Delete the saved snapshot?')}
                 onConfirm={() => disarmBaseline.mutate()}
               >
-                <Button loading={disarmBaseline.isPending}>{__('Discard snapshot')}</Button>
+                <Button loading={disarmBaseline.isPending}>{__('Delete snapshot')}</Button>
               </Popconfirm>
             ) : (
               <Tooltip
                 title={__(
-                  'Takes a snapshot of every monitored page right now. Use this just before a theme, plugin or content update: the next check compares against this snapshot instead of the last one, so you see exactly what the update changed. It expires on its own after 24 hours.'
+                  'Saves a snapshot of all monitored pages now. Use this immediately before you update a theme, a plugin or content. The next check compares the pages with this snapshot, not with the last check. Then you can see what the update changed. The snapshot expires automatically after 24 hours.'
                 )}
               >
                 <Button
@@ -125,12 +127,21 @@ export default function DashboardPage() {
                   loading={armBaseline.isPending}
                   onClick={arm}
                 >
-                  {__('Snapshot now')}
+                  {__('Save snapshot')}
                 </Button>
               </Tooltip>
             )}
-            <Tooltip title={__('Runs every check immediately, instead of waiting for the next scheduled run.')}>
-              <Button icon={<ReloadOutlined />} loading={isRunning} type="primary" onClick={runCheck}>
+            <Tooltip
+              title={__(
+                'Starts all checks now. You do not have to wait for the next scheduled check.'
+              )}
+            >
+              <Button
+                icon={<ReloadOutlined />}
+                loading={isRunning}
+                type="primary"
+                onClick={runCheck}
+              >
                 {__('Check now')}
               </Button>
             </Tooltip>
@@ -160,7 +171,7 @@ export default function DashboardPage() {
             description={
               summary?.impaired?.reason ??
               __(
-                'This plugin could not fetch your pages on the last run, so no all-clear can be given.'
+                'SEO Sentry could not get your pages during the last check. SEO Sentry cannot say that your pages are OK.'
               )
             }
             message={__('Monitoring impaired')}
@@ -172,9 +183,9 @@ export default function DashboardPage() {
           <Alert
             showIcon
             description={__(
-              'The next check compares against this snapshot instead of the last run, so anything your updates break shows up clearly. It expires on its own after 24 hours.'
+              'The next check compares the pages with this snapshot, not with the last check. Then you can easily see the problems that your updates cause. The snapshot expires automatically after 24 hours.'
             )}
-            message={__('Snapshot saved. Go ahead and run your updates')}
+            message={__('Snapshot saved. You can make your updates now.')}
             type="info"
           />
         )}
@@ -216,10 +227,10 @@ export default function DashboardPage() {
                 <div className="flex flex-col items-center gap-1 px-4 py-10 text-center">
                   <CheckCircleFilled style={{ color: palette.success, fontSize: 22 }} />
                   <p className="m-0 mt-2 text-sm font-medium" style={{ color: palette.ink }}>
-                    {__('Nothing unexpected has changed.')}
+                    {__('There are no unexpected changes.')}
                   </p>
                   <p className="m-0 max-w-xs text-xs" style={{ color: palette.inkMuted }}>
-                    {__('We will tell you the moment something does.')}
+                    {__('SEO Sentry will tell you immediately when something changes.')}
                   </p>
                 </div>
               ) : (
@@ -271,7 +282,7 @@ export default function DashboardPage() {
           <div className="flex flex-col gap-4 lg:col-span-2">
             <Card title={__('Monitoring status')}>
               <dl className="m-0 flex flex-col gap-2.5 text-sm">
-                <Row label={__('Pages monitored')} value={String(summary?.active_targets ?? 0)} />
+                <Row label={__('Monitored pages')} value={String(summary?.active_targets ?? 0)} />
                 <Row
                   label={__('Last check')}
                   value={<When fallback={__('never')} value={summary?.last_run?.finished_at} />}
@@ -280,16 +291,16 @@ export default function DashboardPage() {
                   label={__('Next check')}
                   value={
                     summary?.frequency === 'off' ? (
-                      __('scheduling is off')
+                      __('scheduled checks are off')
                     ) : (
                       <When fallback={__('not scheduled')} value={summary?.next_run_at} />
                     )
                   }
                 />
                 <Row
-                  label={__('Last run')}
+                  label={__('Last check status')}
                   tone={isImpaired ? palette.warning : undefined}
-                  value={summary?.last_run?.status ?? __('never run')}
+                  value={summary?.last_run?.status ?? __('no check yet')}
                 />
               </dl>
             </Card>
@@ -302,10 +313,10 @@ export default function DashboardPage() {
               <CrawlerActivity />
             </Card>
 
-            <Card title={__('Recent site activity')}>
+            <Card title={__('Recent site events')}>
               {events.length === 0 ? (
                 <p className="m-0 py-2 text-xs" style={{ color: palette.inkMuted }}>
-                  {__('Nothing has changed on this site lately.')}
+                  {__('There are no recent site events.')}
                 </p>
               ) : (
                 <ul className="m-0 flex list-none flex-col gap-2.5 p-0">

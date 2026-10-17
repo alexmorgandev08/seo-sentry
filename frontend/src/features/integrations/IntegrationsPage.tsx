@@ -10,8 +10,8 @@ import type { Settings } from '@/api/types'
 
 const THRESHOLD_OPTIONS = [
   { label: __('Critical changes only'), value: 'critical' },
-  { label: __('Critical and warnings'), value: 'warning' },
-  { label: __('Everything, including info'), value: 'info' }
+  { label: __('Critical and Warning changes'), value: 'warning' },
+  { label: __('All changes, including Info'), value: 'info' }
 ]
 
 /** A service that is announced but not released: nothing to switch on yet. */
@@ -83,13 +83,13 @@ function IntegrationsForm() {
     const url = String(form.getFieldValue(['webhook_urls', 0]) ?? '').trim()
 
     if (url === '') {
-      message.warning(__('Add an endpoint URL first.'))
+      message.warning(__('Enter an endpoint URL first.'))
 
       return
     }
 
     testWebhook.mutate(url, {
-      onSuccess: () => message.success(__('Your endpoint accepted the test delivery.')),
+      onSuccess: () => message.success(__('Your endpoint accepted the test message.')),
       onError: error => message.error(error.message)
     })
   }
@@ -100,7 +100,7 @@ function IntegrationsForm() {
         actions={
           <>
             <span className="hidden text-xs sm:inline" style={{ color: palette.inkMuted }}>
-              {__('Each service is off until you switch it on.')}
+              {__('All services are off until you turn them on.')}
             </span>
             {/* Outside the <Form>, so it submits through the form instance. */}
             <Button
@@ -156,7 +156,7 @@ function IntegrationsForm() {
             style={{ color: palette.inkMuted }}
           >
             {__(
-              'Posts each check result as JSON to your own endpoint, so you can pipe findings anywhere.'
+              'Sends the result of each check to your endpoint as JSON. Use this to send changes to other tools.'
             )}
           </p>
 
@@ -166,7 +166,7 @@ function IntegrationsForm() {
                 className="mb-5"
                 label={__('Endpoint URL')}
                 name={['webhook_urls', 0]}
-                rules={[{ type: 'url', message: __('Enter a full URL, starting with https://') }]}
+                rules={[{ type: 'url', message: __('Enter a full URL that starts with https://') }]}
               >
                 <Input placeholder="https://example.com/hooks/seo" type="url" />
               </Form.Item>
@@ -178,14 +178,14 @@ function IntegrationsForm() {
               <Form.Item
                 className="mb-0"
                 extra={__(
-                  'Optional. When set, each request carries an X-SEO-Monitor-Signature header so your endpoint can verify it came from this site.'
+                  'Optional. If you enter a secret, each request has an X-SEO-Monitor-Signature header. Your endpoint can use this header to make sure that the request comes from this site.'
                 )}
                 label={__('Signing secret')}
                 name="webhook_secret"
               >
                 <Input.Password
                   autoComplete="off"
-                  placeholder={__('Leave empty for no signature')}
+                  placeholder={__('Leave this field empty to send no signature')}
                 />
               </Form.Item>
             </>
@@ -194,7 +194,7 @@ function IntegrationsForm() {
 
         <ComingSoonCard
           description={__(
-            'Post critical and warning findings to a Slack channel, with what changed and why it matters.'
+            'Send Critical and Warning changes to a Slack channel. Each alert shows what changed and why this is important.'
           )}
           title={__('Slack')}
         />
@@ -203,7 +203,7 @@ function IntegrationsForm() {
           // Spans the row on medium screens rather than sitting alone at half width.
           className="lg:col-span-2 2xl:col-span-1"
           description={__(
-            'Explain any finding in plain English with your own OpenAI or Anthropic key: what changed, the SEO risk, the likely cause and what to do next.'
+            'Use your OpenAI or Anthropic key to explain a change in simple English. The explanation shows what changed, the SEO risk, the likely cause and what to do next.'
           )}
           title={__('AI explanations')}
         />

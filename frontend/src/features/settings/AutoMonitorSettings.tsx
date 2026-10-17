@@ -43,7 +43,7 @@ export default function AutoMonitorSettings({ draft, isLoading, save, saveTyped 
         message.success(
           result.added === 0
             ? __('Every matching page is already monitored.')
-            : sprintf(__('%d pages added to monitoring.'), result.added)
+            : sprintf(__('SEO Sentry now monitors %d more pages.'), result.added)
         ),
       onError: error => message.error(error.message)
     })
@@ -53,7 +53,7 @@ export default function AutoMonitorSettings({ draft, isLoading, save, saveTyped 
       <Card styles={CARD_STYLES}>
         <SettingRow
           description={__(
-            'Posts that match the rules below are monitored the moment they are published. Nobody has to remember to add them.'
+            'When you publish a post that matches the rules below, SEO Sentry starts to monitor it. You do not have to add these posts yourself.'
           )}
           icon={<SyncOutlined />}
           title={__('Monitor new content automatically')}
@@ -72,14 +72,14 @@ export default function AutoMonitorSettings({ draft, isLoading, save, saveTyped 
             mode="multiple"
             optionFilterProp="label"
             options={options?.post_types ?? []}
-            placeholder={__('e.g. Posts, Products')}
+            placeholder={__('For example: Posts, Products')}
             value={postTypes}
             onChange={value => save('auto_monitor_post_types', value)}
           />
         </SettingRow>
 
         <SettingRow
-          description={__('Leave empty to include everything of the chosen types.')}
+          description={__('Leave this field empty to include all content of the selected types.')}
           icon={<TagsOutlined />}
           title={__('Only with these categories or tags')}
         >
@@ -111,9 +111,11 @@ export default function AutoMonitorSettings({ draft, isLoading, save, saveTyped 
         </SettingRow>
 
         <SettingRow
-          description={__('Use * as a wildcard. Start with / to match the path, e.g. /archive/*')}
+          description={__(
+            'Use * as a wildcard. Start with / to match the path, for example: /archive/*'
+          )}
           icon={<LinkOutlined />}
-          title={__('Skip URLs matching')}
+          title={__('Skip URLs that match')}
         >
           <Select
             className="w-full"
@@ -129,7 +131,7 @@ export default function AutoMonitorSettings({ draft, isLoading, save, saveTyped 
 
         <SettingRow
           description={__(
-            'Every monitored page is checked on every run, so this protects your server. Auto-monitoring stops adding pages once this many are active.'
+            'SEO Sentry checks all monitored pages each time. This limit protects your server. When you reach this limit, auto-monitoring does not add more pages.'
           )}
           icon={<StopOutlined />}
           title={__('Page limit')}
@@ -154,7 +156,7 @@ export default function AutoMonitorSettings({ draft, isLoading, save, saveTyped 
             <div className="text-sm">
               {sprintf(
                 __(
-                  '%1$d published pages match these rules. %2$d of your %3$d-page limit are in use.'
+                  '%1$d published pages match these rules. You use %2$d of your limit of %3$d pages.'
                 ),
                 preview.matching,
                 preview.monitored,
@@ -178,7 +180,7 @@ export default function AutoMonitorSettings({ draft, isLoading, save, saveTyped 
               className="mt-4"
               message={sprintf(
                 __(
-                  '%d more pages match but would go over your page limit. Raise the limit to include them.'
+                  '%d more pages match, but they are more than your page limit. Increase the limit to include these pages.'
                 ),
                 preview.over_cap
               )}

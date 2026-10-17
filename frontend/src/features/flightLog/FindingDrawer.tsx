@@ -69,7 +69,7 @@ const quietOption = (label: string, value: QuietFor) => ({
 })
 
 const QUIET_OPTIONS = [
-  quietOption(__('Only this finding'), 'once'),
+  quietOption(__('Only this change'), 'once'),
   quietOption(__('Snooze for 7 days'), 7),
   quietOption(__('Snooze for 30 days'), 30),
   quietOption(__('Snooze for 90 days'), 90),
@@ -102,7 +102,7 @@ function LikelyCauses({ causes }: { causes: LikelyCause[] }) {
         ))}
         <Typography.Text type="secondary" className="text-xs">
           {__(
-            'Ranked by timing and by what each kind of plugin or setting can change. A strong lead, not proof.'
+            'SEO Sentry ranks these causes by time and by what each type of plugin or setting can change. This result is probably correct, but it is not proof.'
           )}
         </Typography.Text>
       </div>
@@ -124,10 +124,12 @@ function LockedCauses({ onUnlock }: { onUnlock: () => void }) {
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
         <span className="text-sm" style={{ color: palette.inkMuted }}>
-          {__('SEO Sentry Pro ranks the events below by how well each one explains this change.')}
+          {__(
+            'SEO Sentry Pro ranks the site events below by how well each one explains this change.'
+          )}
         </span>
         <Button icon={<LockOutlined />} size="small" onClick={onUnlock}>
-          {__('Unlock with Pro')}
+          {__('Get Pro')}
         </Button>
       </div>
     </Card>
@@ -162,7 +164,7 @@ export default function FindingDrawer({ finding, onClose }: Props) {
       { id: finding.id, note, action: pendingAction as 'mute' | 'resolve' },
       {
         onSuccess: () => {
-          message.success(pendingAction === 'mute' ? __('Muted.') : __('Marked resolved.'))
+          message.success(pendingAction === 'mute' ? __('Change muted.') : __('Change resolved.'))
           setNote('')
           setQuietFor('once')
           setPendingAction(null)
@@ -175,7 +177,7 @@ export default function FindingDrawer({ finding, onClose }: Props) {
 
   const confirm = () => {
     if (note.trim() === '') {
-      message.warning(__('Please add a short note explaining why.'))
+      message.warning(__('Write a short note that gives the reason.'))
 
       return
     }
@@ -215,7 +217,7 @@ export default function FindingDrawer({ finding, onClose }: Props) {
               size="small"
               onClick={() =>
                 reopenFinding.mutate(finding.id, {
-                  onSuccess: () => message.success(__('Reopened.'))
+                  onSuccess: () => message.success(__('Change reopened.'))
                 })
               }
             >
@@ -279,11 +281,11 @@ export default function FindingDrawer({ finding, onClose }: Props) {
                 <p className="mb-0 mt-1">{finding.explanation.what}</p>
               </div>
               <div>
-                <Typography.Text strong>{__('Why it matters')}</Typography.Text>
+                <Typography.Text strong>{__('Why it is important')}</Typography.Text>
                 <p className="mb-0 mt-1">{finding.explanation.why}</p>
               </div>
               <div>
-                <Typography.Text strong>{__('What to check')}</Typography.Text>
+                <Typography.Text strong>{__('What to examine')}</Typography.Text>
                 <p className="mb-0 mt-1">{finding.explanation.check}</p>
               </div>
             </div>
@@ -294,17 +296,17 @@ export default function FindingDrawer({ finding, onClose }: Props) {
             <LockedCauses onUnlock={() => requirePro('likelyCause')} />
           )}
 
-          <Card size="small" title={__('Site events just before this change')}>
+          <Card size="small" title={__('Site events before this change')}>
             {finding.attributed_events.length === 0 ? (
               <Empty
-                description={__('Nothing happened on the site in the window before this change.')}
+                description={__('There were no site events in the time before this change.')}
                 image={Empty.PRESENTED_IMAGE_SIMPLE}
               />
             ) : (
               <>
                 <Typography.Text type="secondary" className="mb-3 block text-xs">
                   {__(
-                    'These happened shortly before. They may be related, but we cannot be certain.'
+                    'These site events occurred a short time before this change. Possibly they caused the change, but SEO Sentry is not sure.'
                   )}
                 </Typography.Text>
                 <Timeline
@@ -333,7 +335,7 @@ export default function FindingDrawer({ finding, onClose }: Props) {
         confirmLoading={resolveFinding.isPending || addSuppression.isPending}
         okText={pendingAction === 'mute' ? __('Mute') : __('Resolve')}
         open={pendingAction !== null}
-        title={pendingAction === 'mute' ? __('Mute this finding') : __('Mark as resolved')}
+        title={pendingAction === 'mute' ? __('Mute this change') : __('Resolve this change')}
         onCancel={() => setPendingAction(null)}
         onOk={confirm}
       >
@@ -352,7 +354,9 @@ export default function FindingDrawer({ finding, onClose }: Props) {
             {quietFor !== 'once' && (
               <Typography.Paragraph type="secondary" className="mb-0 mt-2 text-sm">
                 {sprintf(
-                  __('New "%s" changes on this page will not be recorded or emailed.'),
+                  __(
+                    'SEO Sentry will not record new "%s" changes on this page or send alerts for them.'
+                  ),
                   changeLabel(finding.change_type)
                 )}
               </Typography.Paragraph>
@@ -360,11 +364,15 @@ export default function FindingDrawer({ finding, onClose }: Props) {
           </div>
         )}
         <Typography.Paragraph type="secondary" className="text-sm">
-          {__('Leave a short note so you remember why, when you look back at this later.')}
+          {__(
+            'Write a short note about the reason. The note helps you when you examine this change later.'
+          )}
         </Typography.Paragraph>
         <Input.TextArea
           autoFocus
-          placeholder={__('e.g. Intentional: we rewrote this page for the new campaign.')}
+          placeholder={__(
+            'For example: Intentional. We wrote new text for this page for the new campaign.'
+          )}
           rows={3}
           value={note}
           onChange={event => setNote(event.target.value)}

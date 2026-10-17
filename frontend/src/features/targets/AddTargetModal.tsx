@@ -38,7 +38,14 @@ function groupByPostType(results: PostSearchResult[]) {
 /** One URL per line, trimmed, blank lines dropped, duplicates collapsed - the
  *  same shape a person gets from pasting a list out of a spreadsheet. */
 function parseUrlLines(text: string) {
-  return Array.from(new Set(text.split('\n').map(line => line.trim()).filter(Boolean)))
+  return Array.from(
+    new Set(
+      text
+        .split('\n')
+        .map(line => line.trim())
+        .filter(Boolean)
+    )
+  )
 }
 
 export default function AddTargetModal({ open, onClose }: Props) {
@@ -63,7 +70,9 @@ export default function AddTargetModal({ open, onClose }: Props) {
 
   const submit = () => {
     if (pendingCount === 0) {
-      message.warning(mode === 'post' ? __('Pick at least one page to monitor.') : __('Enter at least one URL.'))
+      message.warning(
+        mode === 'post' ? __('Select 1 or more pages to monitor.') : __('Enter 1 or more URLs.')
+      )
 
       return
     }
@@ -76,7 +85,7 @@ export default function AddTargetModal({ open, onClose }: Props) {
         const parts = [sprintf(__('%d pages added.'), response.created.length)]
 
         if (response.skipped > 0) {
-          parts.push(sprintf(__('%d were already being monitored.'), response.skipped))
+          parts.push(sprintf(__('%d are already monitored pages.'), response.skipped))
         }
         if (response.invalid > 0) {
           parts.push(sprintf(__('%d were not a valid URL on this site.'), response.invalid))
@@ -106,7 +115,7 @@ export default function AddTargetModal({ open, onClose }: Props) {
         items={[
           {
             key: 'post',
-            label: __('Pick a page'),
+            label: __('Select a page'),
             children: (
               <Select<number[]>
                 showSearch
@@ -131,12 +140,14 @@ export default function AddTargetModal({ open, onClose }: Props) {
               <>
                 <Input.TextArea
                   autoSize={{ minRows: 3, maxRows: 8 }}
-                  placeholder={__('https://example.com/some-page/\nhttps://example.com/another-page/')}
+                  placeholder={__(
+                    'https://example.com/some-page/\nhttps://example.com/another-page/'
+                  )}
                   value={urlsText}
                   onChange={event => setUrlsText(event.target.value)}
                 />
                 <p className="mb-0 mt-2 text-xs" style={{ color: palette.inkMuted }}>
-                  {__('One URL per line, on this site.')}
+                  {__('Enter 1 URL on each line. The URLs must be on this site.')}
                 </p>
               </>
             )

@@ -48,7 +48,9 @@ export default function ExpectationModal({ rule, onClose }: Props) {
       { ...values, id: rule?.id ?? '' },
       {
         onSuccess: () => {
-          message.success(__('Expectation saved. It is checked on every run from now on.'))
+          message.success(
+            __('Expected state rule saved. SEO Sentry uses this rule in all checks from now on.')
+          )
           onClose()
         },
         onError: error => message.error(error.message)
@@ -65,9 +67,9 @@ export default function ExpectationModal({ rule, onClose }: Props) {
     <Modal
       destroyOnClose
       confirmLoading={saveRule.isPending}
-      okText={__('Save expectation')}
+      okText={__('Save rule')}
       open={rule !== null}
-      title={rule?.id ? __('Edit expectation') : __('New expectation')}
+      title={rule?.id ? __('Edit expected state rule') : __('New expected state rule')}
       width={600}
       onCancel={onClose}
       onOk={submit}
@@ -83,9 +85,9 @@ export default function ExpectationModal({ rule, onClose }: Props) {
         <Form.Item
           label={__('Name')}
           name="name"
-          rules={[{ required: true, whitespace: true, message: __('Give the rule a name.') }]}
+          rules={[{ required: true, whitespace: true, message: __('Enter a name for the rule.') }]}
         >
-          <Input placeholder={__('e.g. Homepage stays indexable')} />
+          <Input placeholder={__('For example: Homepage stays indexable')} />
         </Form.Item>
 
         <Form.Item label={__('Applies to')} name="scope">
@@ -102,7 +104,7 @@ export default function ExpectationModal({ rule, onClose }: Props) {
           <Form.Item
             label={__('Page')}
             name="target_id"
-            rules={[{ required: true, message: __('Choose a monitored page.') }]}
+            rules={[{ required: true, message: __('Select a monitored page.') }]}
           >
             <Select
               showSearch
@@ -119,7 +121,7 @@ export default function ExpectationModal({ rule, onClose }: Props) {
           <Form.Item
             label={__('Page group')}
             name="group_id"
-            rules={[{ required: true, message: __('Choose a page group.') }]}
+            rules={[{ required: true, message: __('Select a page group.') }]}
           >
             <Select options={groups.map(group => ({ label: group.name, value: group.id }))} />
           </Form.Item>
@@ -129,7 +131,7 @@ export default function ExpectationModal({ rule, onClose }: Props) {
           <Form.Item label={__('Indexing')} name={['checks', 'index']}>
             <Radio.Group
               options={[
-                { label: __("Don't check"), value: null },
+                { label: __('Do not check'), value: null },
                 { label: __('Must be indexable'), value: 'index' },
                 { label: __('Must stay noindex'), value: 'noindex' }
               ]}
@@ -139,7 +141,7 @@ export default function ExpectationModal({ rule, onClose }: Props) {
           <Form.Item label={__('Links')} name={['checks', 'follow']}>
             <Radio.Group
               options={[
-                { label: __("Don't check"), value: null },
+                { label: __('Do not check'), value: null },
                 { label: __('Must be followed'), value: 'follow' },
                 { label: __('Must stay nofollow'), value: 'nofollow' }
               ]}
@@ -147,19 +149,21 @@ export default function ExpectationModal({ rule, onClose }: Props) {
           </Form.Item>
         </div>
 
-        <Form.Item className="mb-2" label={__('Also require')}>
+        <Form.Item className="mb-2" label={__('Also check')}>
           <div className="flex flex-wrap gap-6">
             <Form.Item noStyle name={['checks', 'status_200']} valuePropName="checked">
               <Checkbox>{__('HTTP 200 (no error, no redirect)')}</Checkbox>
             </Form.Item>
             <Form.Item noStyle name={['checks', 'self_canonical']} valuePropName="checked">
-              <Checkbox>{__('Canonical points to itself')}</Checkbox>
+              <Checkbox>{__('Canonical URL is the same as the page URL')}</Checkbox>
             </Form.Item>
           </div>
         </Form.Item>
 
         <Form.Item
-          extra={__('The page must carry every type listed. Press Enter after each.')}
+          extra={__(
+            'The page must contain all the types in this list. Press Enter after each type.'
+          )}
           label={__('Must contain schema')}
           name={['checks', 'schema_types']}
         >
@@ -171,7 +175,7 @@ export default function ExpectationModal({ rule, onClose }: Props) {
         </Form.Item>
 
         <div className="grid grid-cols-1 gap-x-6 sm:grid-cols-2">
-          <Form.Item label={__('When broken, report as')} name="severity">
+          <Form.Item label={__('Severity if a page fails')} name="severity">
             <Select
               options={[
                 { label: __('Critical'), value: 'critical' },
@@ -187,13 +191,13 @@ export default function ExpectationModal({ rule, onClose }: Props) {
 
       <div className="flex flex-col gap-3">
         <Button className="self-start" loading={testRule.isPending} onClick={runTest}>
-          {__('Test against current pages')}
+          {__('Test with the current pages')}
         </Button>
 
         {testRule.data && testRule.data.covered === 0 && (
           <Alert
             showIcon
-            message={__('No checked pages match this rule yet, so there is nothing to test.')}
+            message={__('No checked pages match this rule. There is nothing to test.')}
             type="info"
           />
         )}
@@ -201,7 +205,7 @@ export default function ExpectationModal({ rule, onClose }: Props) {
         {testRule.data && testRule.data.covered > 0 && testRule.data.failing.length === 0 && (
           <Alert
             showIcon
-            message={sprintf(__('All %d pages pass this rule right now.'), testRule.data.covered)}
+            message={sprintf(__('All %d pages pass this rule now.'), testRule.data.covered)}
             type="success"
           />
         )}
@@ -220,7 +224,7 @@ export default function ExpectationModal({ rule, onClose }: Props) {
             }
             message={sprintf(
               __(
-                '%1$d of %2$d pages break this rule right now. Saving it will report them on the next check.'
+                '%1$d of %2$d pages break this rule now. If you save this rule, SEO Sentry will report these pages at the next check.'
               ),
               testRule.data.failing.length,
               testRule.data.covered

@@ -14,7 +14,7 @@ import type { Finding, FindingStatus, Severity } from '@/api/types'
 const STATUS_LABELS: Record<FindingStatus, string> = {
   open: __('Open'),
   resolved: __('Resolved'),
-  auto_resolved: __('Auto-resolved'),
+  auto_resolved: __('Resolved automatically'),
   muted: __('Muted')
 }
 
@@ -63,7 +63,7 @@ export default function FlightLogPage() {
             className="w-full sm:w-52"
             maxTagCount="responsive"
             mode="multiple"
-            placeholder={__('Any status')}
+            placeholder={__('All statuses')}
             value={store.status}
             onChange={store.setStatus}
             options={(Object.keys(STATUS_LABELS) as FindingStatus[]).map(status => ({
@@ -93,15 +93,19 @@ export default function FlightLogPage() {
           loading={isLoading}
           rowClassName="cursor-pointer"
           rowKey="id"
+          // Fixed: the other columns keep their widths and "What changed" gets
+          // the rest. With auto layout, one long description (a robots.txt
+          // change listing every AI crawler) widened the table off the screen.
+          tableLayout="fixed"
           onRow={finding => ({ onClick: () => setSelected(finding) })}
           locale={{
             emptyText: (
               <div className="py-10 text-center">
                 <p className="m-0 text-sm font-medium" style={{ color: palette.ink }}>
-                  {__('No changes recorded yet.')}
+                  {__('There are no changes yet.')}
                 </p>
                 <p className="m-0 text-xs" style={{ color: palette.inkMuted }}>
-                  {__('Anything that changes on your monitored pages will appear here.')}
+                  {__('Changes on your monitored pages will show here.')}
                 </p>
               </div>
             )
@@ -130,7 +134,12 @@ export default function FlightLogPage() {
               render: (type: string, finding) => (
                 <div className="flex min-w-0 flex-col">
                   <span className="font-medium">{changeLabel(type)}</span>
-                  <span className="truncate text-xs" style={{ color: palette.inkMuted }}>
+                  {/* Two lines at most; the drawer and the tooltip show all of it. */}
+                  <span
+                    className="line-clamp-2 break-words text-xs"
+                    style={{ color: palette.inkMuted }}
+                    title={finding.explanation.what}
+                  >
                     {finding.explanation.what}
                   </span>
                 </div>

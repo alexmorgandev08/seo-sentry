@@ -70,7 +70,7 @@ class FindingController
     {
         $from = (string) $request->get('date_from');
         if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $from)) {
-            return Response::error(__('Pick a valid start date.', 'seo-sentry'));
+            return Response::error(__('Select a valid start date.', 'seo-sentry'));
         }
 
         // created_at is 'Y-m-d H:i:s' in UTC, so its prefix is the period key.
@@ -112,7 +112,7 @@ class FindingController
     {
         $finding = Finding::findOne(['id' => (int) $request->get('id')]);
         if (!$finding) {
-            return Response::error(__('Finding not found.', 'seo-sentry'));
+            return Response::error(__('SEO Sentry cannot find this change.', 'seo-sentry'));
         }
 
         return Response::success($this->present($finding));
@@ -132,7 +132,7 @@ class FindingController
     {
         $finding = Finding::findOne(['id' => (int) $request->get('id')]);
         if (!$finding) {
-            return Response::error(__('Finding not found.', 'seo-sentry'));
+            return Response::error(__('SEO Sentry cannot find this change.', 'seo-sentry'));
         }
 
         Db::update(
@@ -148,12 +148,12 @@ class FindingController
     {
         $finding = Finding::findOne(['id' => (int) $request->get('id')]);
         if (!$finding) {
-            return Response::error(__('Finding not found.', 'seo-sentry'));
+            return Response::error(__('SEO Sentry cannot find this change.', 'seo-sentry'));
         }
 
         $note = sanitize_textarea_field((string) $request->get('note'));
         if ($note === '') {
-            return Response::error(__('Please add a short note explaining why.', 'seo-sentry'));
+            return Response::error(__('Add a short note that gives the reason.', 'seo-sentry'));
         }
 
         Db::update(

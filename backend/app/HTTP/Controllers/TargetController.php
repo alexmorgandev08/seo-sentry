@@ -31,14 +31,14 @@ class TargetController
         }
 
         if (!$url) {
-            return Response::error(__('Please provide a valid URL on this site.', 'seo-sentry'));
+            return Response::error(__('Enter a valid URL on this site.', 'seo-sentry'));
         }
 
         $label  = sanitize_text_field((string) $request->get('label'));
         $target = $this->insertPageTarget($url, $postId, $label !== '' ? $label : $url);
 
         if (!$target) {
-            return Response::error(__('This page is already being monitored.', 'seo-sentry'));
+            return Response::error(__('SEO Sentry already monitors this page.', 'seo-sentry'));
         }
 
         return Response::success($target);
@@ -55,7 +55,7 @@ class TargetController
         $items = $this->resolveBulkCreateItems($request);
 
         if ($items === []) {
-            return Response::error(__('Pick at least one page, or enter at least one URL.', 'seo-sentry'));
+            return Response::error(__('Select at least 1 page, or enter at least 1 URL.', 'seo-sentry'));
         }
 
         $created   = [];
@@ -81,7 +81,7 @@ class TargetController
         if ($created === []) {
             // Every pick was filtered out, for one reason or another, so
             // there is no single honest reason to give back.
-            return Response::error(__('None of the selected pages could be added.', 'seo-sentry'));
+            return Response::error(__('SEO Sentry could not add the selected pages.', 'seo-sentry'));
         }
 
         return Response::success(['created' => $created, 'skipped' => $duplicate, 'invalid' => $invalid]);
@@ -122,7 +122,7 @@ class TargetController
     {
         $target = $this->findPageTarget((int) $request->get('id'));
         if (!$target) {
-            return Response::error(__('Monitored page not found.', 'seo-sentry'));
+            return Response::error(__('SEO Sentry cannot find this monitored page.', 'seo-sentry'));
         }
 
         $updates = [];
@@ -145,7 +145,7 @@ class TargetController
     {
         $target = $this->findPageTarget((int) $request->get('id'));
         if (!$target) {
-            return Response::error(__('Monitored page not found.', 'seo-sentry'));
+            return Response::error(__('SEO Sentry cannot find this monitored page.', 'seo-sentry'));
         }
 
         Target::destroy([$target->id]);
@@ -157,11 +157,11 @@ class TargetController
     {
         $ids = $this->findPageTargetIds((array) $request->get('ids'));
         if ($ids === []) {
-            return Response::error(__('No monitored pages were selected.', 'seo-sentry'));
+            return Response::error(__('You did not select a monitored page.', 'seo-sentry'));
         }
 
         if (!$request->has('is_active')) {
-            return Response::error(__('Nothing to update.', 'seo-sentry'));
+            return Response::error(__('There is nothing to update.', 'seo-sentry'));
         }
 
         Target::whereIn('id', $ids)->update(['is_active' => $request->get('is_active') ? 1 : 0]);
@@ -173,7 +173,7 @@ class TargetController
     {
         $ids = $this->findPageTargetIds((array) $request->get('ids'));
         if ($ids === []) {
-            return Response::error(__('No monitored pages were selected.', 'seo-sentry'));
+            return Response::error(__('You did not select a monitored page.', 'seo-sentry'));
         }
 
         Target::destroy($ids);

@@ -30,7 +30,7 @@ class SiteHealth
         ];
 
         $tests['direct']['seo_sentry_criticals'] = [
-            'label' => __('SEO critical findings', 'seo-sentry'),
+            'label' => __('Critical SEO changes', 'seo-sentry'),
             'test'  => [$this, 'testCriticals'],
         ];
 
@@ -40,10 +40,10 @@ class SiteHealth
     public function testOperational()
     {
         $result = [
-            'label'       => __('SEO Sentry is watching your pages', 'seo-sentry'),
+            'label'       => __('SEO Sentry monitors your pages', 'seo-sentry'),
             'status'      => 'good',
             'badge'       => ['label' => __('SEO', 'seo-sentry'), 'color' => 'blue'],
-            'description' => '<p>' . esc_html__('Checks are running on schedule and the site can fetch its own pages.', 'seo-sentry') . '</p>',
+            'description' => '<p>' . esc_html__('Checks run on schedule, and the site can get its own pages.', 'seo-sentry') . '</p>',
             'actions'     => '',
             'test'        => 'seo_sentry_operational',
         ];
@@ -56,7 +56,7 @@ class SiteHealth
             $result['description'] = '<p>' . esc_html(
                 sprintf(
                     /* translators: 1: reason, 2: date */
-                    __('%1$s (since %2$s). Until this is fixed, changes to your pages may go unnoticed.', 'seo-sentry'),
+                    __('%1$s (since %2$s). Until you fix this problem, changes to your pages can occur without an alert.', 'seo-sentry'),
                     $details['reason'],
                     $details['since']
                 )
@@ -68,9 +68,9 @@ class SiteHealth
         $overdue = $this->overdueRun();
         if ($overdue) {
             $result['status']      = 'recommended';
-            $result['label']       = __('SEO checks are overdue', 'seo-sentry');
+            $result['label']       = __('SEO checks are late', 'seo-sentry');
             $result['description'] = '<p>' . esc_html__(
-                'The last scheduled check ran longer ago than expected. WP-Cron may not be firing on this site; a real system cron job is more reliable.',
+                'The last scheduled check is older than expected. Possibly WP-Cron does not run on this site. A real system cron job is more reliable.',
                 'seo-sentry'
             ) . '</p>';
         }
@@ -85,10 +85,10 @@ class SiteHealth
             ->count();
 
         $result = [
-            'label'       => __('No critical SEO changes are outstanding', 'seo-sentry'),
+            'label'       => __('No critical SEO changes are open', 'seo-sentry'),
             'status'      => 'good',
             'badge'       => ['label' => __('SEO', 'seo-sentry'), 'color' => 'blue'],
-            'description' => '<p>' . esc_html__('Nothing critical has changed on your monitored pages.', 'seo-sentry') . '</p>',
+            'description' => '<p>' . esc_html__('There are no critical changes on your monitored pages.', 'seo-sentry') . '</p>',
             'actions'     => '',
             'test'        => 'seo_sentry_criticals',
         ];
@@ -106,7 +106,7 @@ class SiteHealth
                 $count
             );
             $result['description'] = '<p>' . esc_html__(
-                'Something that affects whether your pages can be found in search has changed.',
+                'A change occurred that can prevent people from finding your pages in search results.',
                 'seo-sentry'
             ) . '</p>';
             $result['actions'] = sprintf(

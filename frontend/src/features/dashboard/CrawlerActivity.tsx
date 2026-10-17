@@ -21,7 +21,7 @@ export default function CrawlerActivity() {
   if (data && !data.bot_tracking) {
     return (
       <p className="m-0 py-2 text-xs" style={{ color: palette.inkMuted }}>
-        {__('Bot tracking is switched off in Settings.')}
+        {__('Bot tracking is off. Turn it on in Settings.')}
       </p>
     )
   }
@@ -29,7 +29,7 @@ export default function CrawlerActivity() {
   if (data && bots.length === 0) {
     return (
       <p className="m-0 py-2 text-xs" style={{ color: palette.inkMuted }}>
-        {__('No crawler visits recorded yet.')}
+        {__('There are no AI crawler visits yet.')}
       </p>
     )
   }
@@ -45,7 +45,7 @@ export default function CrawlerActivity() {
           <li key={bot.slug}>
             <Tooltip
               placement="left"
-              title={seen ? `${bot.label} — ${__('last seen')} ${seen}` : bot.label}
+              title={seen ? `${bot.label}: ${__('last seen')} ${seen}` : bot.label}
             >
               <div className="flex items-center gap-3">
                 <span className="w-28 shrink-0 truncate text-xs" style={{ color: palette.ink }}>

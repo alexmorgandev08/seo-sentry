@@ -69,7 +69,7 @@ function useHealth(): Health {
     }
   }
 
-  return { detail, label: __('All clear'), tone: palette.success }
+  return { detail, label: __('No critical issues'), tone: palette.success }
 }
 
 export default function TopBar() {
@@ -82,7 +82,7 @@ export default function TopBar() {
   const checked = relativeTime(lastCheckedAt)
   const checkedTitle = checked
     ? sprintf(__('Last checked %s'), absoluteTime(lastCheckedAt) ?? checked)
-    : __('No check has run yet')
+    : __('There are no checks yet')
 
   /*
    * Once the strip is narrow enough to scroll, the current tab can sit outside

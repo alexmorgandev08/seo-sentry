@@ -23,7 +23,7 @@ export default function IgnoreRules() {
           emptyText: (
             <Empty
               description={__(
-                'Nothing is being ignored. Choose a snooze or "Always ignore" when you mute a finding.'
+                'No changes are ignored. To ignore a change, mute it and select a snooze time or "Always ignore".'
               )}
               image={Empty.PRESENTED_IMAGE_SIMPLE}
             />
@@ -38,7 +38,7 @@ export default function IgnoreRules() {
                 size="small"
                 onClick={() =>
                   removeRule.mutate(rule.id, {
-                    onSuccess: () => message.success(__('Alerts for this change are back on.')),
+                    onSuccess: () => message.success(__('Alerts for this change are on again.')),
                     onError: error => message.error(error.message)
                   })
                 }

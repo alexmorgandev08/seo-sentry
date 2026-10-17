@@ -113,7 +113,7 @@ export default function ProUpsell({ feature, onClose }: Props) {
           style={{ borderColor: palette.lineSoft }}
         >
           <a className="text-xs" href={PLUGINS_URL} style={{ color: palette.inkMuted }}>
-            {__('Already have Pro? Activate it on the Plugins page')}
+            {__('Do you already have Pro? Activate it on the Plugins page.')}
           </a>
           <div className="ml-auto flex items-center gap-2">
             {isModal && <Button onClick={onClose}>{__('Not now')}</Button>}

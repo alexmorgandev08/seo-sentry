@@ -72,7 +72,7 @@ class DashboardWidget
         printf(
             '<li><strong>%d</strong> %s</li>',
             (int) $counts[Finding::SEVERITY_INFO],
-            esc_html__('informational changes open', 'seo-sentry')
+            esc_html__('info changes open', 'seo-sentry')
         );
         echo '</ul>';
 

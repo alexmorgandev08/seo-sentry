@@ -24,27 +24,27 @@ export const RANGES: Record<DashboardRange, RangeConfig> = {
     group: 'day',
     length: 7,
     labelEvery: 1,
-    changesTitle: __('Changes over the last 7 days'),
+    changesTitle: __('Changes in the last 7 days'),
     typesTitle: __('Change types · last 7 days'),
-    empty: __('No changes recorded in the last 7 days.')
+    empty: __('SEO Sentry found no changes in the last 7 days.')
   },
   '30d': {
     label: __('30 days'),
     group: 'day',
     length: 30,
     labelEvery: 5,
-    changesTitle: __('Changes over the last 30 days'),
+    changesTitle: __('Changes in the last 30 days'),
     typesTitle: __('Change types · last 30 days'),
-    empty: __('No changes recorded in the last 30 days.')
+    empty: __('SEO Sentry found no changes in the last 30 days.')
   },
   '12m': {
     label: __('12 months'),
     group: 'month',
     length: 12,
     labelEvery: 1,
-    changesTitle: __('Changes over the last 12 months'),
+    changesTitle: __('Changes in the last 12 months'),
     typesTitle: __('Change types · last 12 months'),
-    empty: __('No changes recorded in the last 12 months.')
+    empty: __('SEO Sentry found no changes in the last 12 months.')
   }
 }
 
@@ -58,7 +58,9 @@ function rangePeriods(range: DashboardRange): string[] {
 
     return group === 'day'
       ? new Date(now.getTime() - back * 86_400_000).toISOString().slice(0, 10)
-      : new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - back, 1)).toISOString().slice(0, 7)
+      : new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - back, 1))
+          .toISOString()
+          .slice(0, 7)
   })
 }
 

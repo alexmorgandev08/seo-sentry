@@ -153,7 +153,7 @@ class Config
 
     /**
      * Whether pro's features are on. The pro add-on answers this filter only
-     * while its license or trial is valid, so an installed but unlicensed pro
+     * while its license is valid, so an installed but unlicensed pro
      * counts as off. Drives the app's pro switch and the menu title.
      *
      * @return bool

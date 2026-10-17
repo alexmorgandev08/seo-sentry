@@ -28,7 +28,7 @@ const FIELD_LABELS: Record<string, string> = {
   http_status: __('HTTP status'),
   redirect_target: __('Redirects to'),
   redirect_final: __('Redirect ends at'),
-  redirect_hops: __('Redirect hops'),
+  redirect_hops: __('Number of redirects'),
   redirect_final_status: __('Final HTTP status'),
   redirect_loop: __('Redirect loop'),
   schema_types: __('Schema types'),
@@ -135,7 +135,11 @@ export default function HistoryDrawer({ targetId, onClose }: Props) {
       {isLoading && <Skeleton active />}
 
       {history && versions.length === 0 && (
-        <Empty description={__('No successful checks yet. History starts with the first one.')} />
+        <Empty
+          description={__(
+            'There are no successful checks for this page. History starts after the first successful check.'
+          )}
+        />
       )}
 
       {history && versions.length > 0 && (
@@ -143,7 +147,7 @@ export default function HistoryDrawer({ targetId, onClose }: Props) {
           <div className="text-sm" style={{ color: palette.inkMuted }}>
             {sprintf(
               __(
-                '%1$d versions across %2$d checks. A new version starts only when something changed.'
+                '%1$d versions from %2$d checks. SEO Sentry adds a new version only when the page changes.'
               ),
               versions.length,
               history.snapshots
@@ -151,7 +155,7 @@ export default function HistoryDrawer({ targetId, onClose }: Props) {
             {history.failed_checks > 0 &&
               ' ' +
                 sprintf(
-                  __('%d checks that could not load the page are left out.'),
+                  __('This list does not include %d checks that could not load the page.'),
                   history.failed_checks
                 )}
           </div>
@@ -165,7 +169,7 @@ export default function HistoryDrawer({ targetId, onClose }: Props) {
                 </span>
               }
               size="small"
-              title={__('Comparing two versions')}
+              title={__('Comparison of 2 versions')}
             >
               <Table
                 columns={[
@@ -181,7 +185,7 @@ export default function HistoryDrawer({ targetId, onClose }: Props) {
                 ]}
                 dataSource={comparedKeys.map(key => ({ key }))}
                 locale={{
-                  emptyText: __('These two versions are identical in every recorded field.')
+                  emptyText: __('All recorded fields are the same in these 2 versions.')
                 }}
                 pagination={false}
                 size="small"
@@ -191,7 +195,7 @@ export default function HistoryDrawer({ targetId, onClose }: Props) {
             versions.length > 1 && (
               <Alert
                 showIcon
-                message={__('Tick two versions below to compare them.')}
+                message={__('Select 2 versions below to compare them.')}
                 type="info"
               />
             )
@@ -229,7 +233,7 @@ export default function HistoryDrawer({ targetId, onClose }: Props) {
                       <When className="text-sm font-medium" value={version.first_seen} />
                       {version.is_baseline && <Tag color="blue">{__('Baseline')}</Tag>}
                       {version.changed.length === 0 ? (
-                        <Tag>{__('Starting point')}</Tag>
+                        <Tag>{__('First version')}</Tag>
                       ) : (
                         version.changed.map(key => (
                           <Tag key={key} color="orange">
@@ -239,7 +243,7 @@ export default function HistoryDrawer({ targetId, onClose }: Props) {
                       )}
                     </div>
                     <span className="text-xs" style={{ color: palette.inkMuted }}>
-                      {sprintf(__('Unchanged for %d checks, last seen'), version.checks)}{' '}
+                      {sprintf(__('No change in %d checks. Last seen'), version.checks)}{' '}
                       <When value={version.last_seen} />
                     </span>
                     {field !== 'all' && (

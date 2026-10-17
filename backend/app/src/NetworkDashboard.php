@@ -147,7 +147,7 @@ class NetworkDashboard
             esc_html(
                 sprintf(
                     /* translators: 1: sites, 2: pages, 3: critical, 4: warnings */
-                    __('%1$d sites · %2$d pages monitored · %3$d critical · %4$d warnings', 'seo-sentry'),
+                    __('%1$d sites · %2$d monitored pages · %3$d critical · %4$d warnings', 'seo-sentry'),
                     \count($rows),
                     $totals['pages'],
                     $totals['critical'],
@@ -163,8 +163,8 @@ class NetworkDashboard
                     sprintf(
                         /* translators: %d: number of sites */
                         _n(
-                            'Monitoring is impaired on %d site. Its results cannot be trusted until fixed.',
-                            'Monitoring is impaired on %d sites. Their results cannot be trusted until fixed.',
+                            'Monitoring is impaired on %d site. Do not trust its results until you fix the problem.',
+                            'Monitoring is impaired on %d sites. Do not trust their results until you fix the problems.',
                             $totals['impaired'],
                             'seo-sentry'
                         ),
@@ -178,7 +178,7 @@ class NetworkDashboard
             '<p><a class="button" href="%s">%s</a> <span style="color:#646970;">%s</span></p>',
             esc_url($refreshUrl),
             esc_html__('Refresh now', 'seo-sentry'),
-            esc_html__('Figures are cached for 5 minutes.', 'seo-sentry')
+            esc_html__('SEO Sentry keeps these numbers in a cache for 5 minutes.', 'seo-sentry')
         );
 
         echo '<table class="widefat striped"><thead><tr>';
@@ -207,7 +207,7 @@ class NetworkDashboard
             if (!$row['active']) {
                 printf(
                     '<td colspan="4" style="color:#646970;">%s</td>',
-                    esc_html__('Plugin not active on this site', 'seo-sentry')
+                    esc_html__('SEO Sentry is not active on this site', 'seo-sentry')
                 );
             } else {
                 printf(

@@ -98,23 +98,28 @@ export default function TargetsPage() {
             </span>
             <Space size="small" wrap>
               <Button disabled={isBulkBusy} size="small" onClick={() => bulkToggle(true)}>
-                {__('Resume monitoring')}
+                {__('Turn on monitoring')}
               </Button>
               <Button disabled={isBulkBusy} size="small" onClick={() => bulkToggle(false)}>
-                {__('Pause monitoring')}
+                {__('Turn off monitoring')}
               </Button>
               <Popconfirm
                 cancelText={__('Cancel')}
                 okText={__('Remove')}
                 title={sprintf(__('Stop monitoring %d pages?'), selectedIds.length)}
-                description={__('They stay visible in Change History.')}
+                description={__('Change History still shows the changes for these pages.')}
                 onConfirm={bulkRemove}
               >
                 <Button danger disabled={isBulkBusy} icon={<DeleteOutlined />} size="small">
                   {__('Remove')}
                 </Button>
               </Popconfirm>
-              <Button disabled={isBulkBusy} size="small" type="text" onClick={() => setSelectedIds([])}>
+              <Button
+                disabled={isBulkBusy}
+                size="small"
+                type="text"
+                onClick={() => setSelectedIds([])}
+              >
                 {__('Clear')}
               </Button>
             </Space>
@@ -209,7 +214,7 @@ export default function TargetsPage() {
                   cancelText={__('Cancel')}
                   okText={__('Remove')}
                   title={__('Stop monitoring this page?')}
-                  description={__('It stays visible in Change History.')}
+                  description={__('Change History still shows the changes for this page.')}
                   onConfirm={() => remove(target)}
                 >
                   <Tooltip title={__('Remove')}>

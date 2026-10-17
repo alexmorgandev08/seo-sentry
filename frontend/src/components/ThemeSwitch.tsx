@@ -50,7 +50,7 @@ export default function ThemeSwitch() {
     {
       key: 'system',
       icon: <DesktopOutlined />,
-      label: <Row label={__('Follow system')} on={mode === 'system'} />
+      label: <Row label={__('Use system setting')} on={mode === 'system'} />
     },
     {
       key: 'light',

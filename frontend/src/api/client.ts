@@ -7,7 +7,7 @@ const toError = (value: unknown): Error => {
 
   const data = (value as { data?: unknown } | null)?.data
 
-  return new Error(typeof data === 'string' && data !== '' ? data : __('Request failed.'))
+  return new Error(typeof data === 'string' && data !== '' ? data : __('The request failed.'))
 }
 
 /**

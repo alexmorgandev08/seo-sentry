@@ -281,7 +281,7 @@ class CheckRunner
 
         if ($isImpaired) {
             ImpairedState::mark(
-                __('The site could not fetch its own pages (loopback requests are failing).', 'seo-sentry')
+                __('The site could not get its own pages (loopback requests fail).', 'seo-sentry')
             );
         } else {
             ImpairedState::clear();

@@ -9,21 +9,21 @@ const TONE: Record<
   { caption: string; icon: ReactNode; label: string; soft: string; tone: string }
 > = {
   critical: {
-    caption: __('Affects whether pages can be found'),
+    caption: __('Affects if search engines can find your pages'),
     icon: <ExclamationCircleOutlined />,
     label: __('Critical'),
     soft: palette.criticalSoft,
     tone: palette.critical
   },
   warning: {
-    caption: __('Worth a look when you have a moment'),
+    caption: __('Examine this when you have time'),
     icon: <WarningOutlined />,
     label: __('Warning'),
     soft: palette.warningSoft,
     tone: palette.warning
   },
   info: {
-    caption: __('Recorded for the history, no action needed'),
+    caption: __('Recorded in the history. No action is necessary.'),
     icon: <EyeOutlined />,
     label: __('Info'),
     soft: palette.infoSoft,

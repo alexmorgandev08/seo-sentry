@@ -137,7 +137,7 @@ export default function TypeBreakdown({ range }: { range: DashboardRange }) {
           style={{ color: palette.inkMuted }}
         >
           {RANGES[range].empty}{' '}
-          {__('When something on your pages changes, the breakdown by type appears here.')}
+          {__('When a change occurs on your pages, this chart shows the changes by type.')}
         </p>
       ) : (
         /* Values live here permanently, so nothing depends on hovering a slice. */

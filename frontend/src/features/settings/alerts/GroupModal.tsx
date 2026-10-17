@@ -49,7 +49,7 @@ export default function GroupModal({ group, meta, onClose }: Props) {
     <Modal
       destroyOnClose
       confirmLoading={saveGroup.isPending}
-      okText={__('Save group')}
+      okText={__('Save page group')}
       open={group !== null}
       title={group?.id ? __('Edit page group') : __('New page group')}
       width={560}
@@ -65,9 +65,11 @@ export default function GroupModal({ group, meta, onClose }: Props) {
         <Form.Item
           label={__('Name')}
           name="name"
-          rules={[{ required: true, whitespace: true, message: __('Give the group a name.') }]}
+          rules={[
+            { required: true, whitespace: true, message: __('Enter a name for the page group.') }
+          ]}
         >
-          <Input placeholder={__('e.g. Money pages')} />
+          <Input placeholder={__('For example: Important pages')} />
         </Form.Item>
 
         <Form.Item label={__('Pages of these types')} name="post_types">
@@ -76,15 +78,15 @@ export default function GroupModal({ group, meta, onClose }: Props) {
             mode="multiple"
             optionFilterProp="label"
             options={meta?.post_types ?? []}
-            placeholder={__('e.g. Products')}
+            placeholder={__('For example: Products')}
           />
         </Form.Item>
 
         <Form.Item
           extra={__(
-            'Use * as a wildcard. Start with / to match the path, e.g. /blog/* or /pricing/. A page joins the group if it matches any type or pattern.'
+            'Use * as a wildcard. Start with / to match the path, for example: /blog/* or /pricing/. A page is in this page group if it matches 1 or more of the types or patterns.'
           )}
-          label={__('Or URLs matching')}
+          label={__('Or URLs that match')}
           name="url_patterns"
         >
           <Select mode="tags" open={false} placeholder="/shop/*" tokenSeparators={[',', ' ']} />
@@ -93,7 +95,7 @@ export default function GroupModal({ group, meta, onClose }: Props) {
         <Form.Item
           className="mb-0"
           extra={__(
-            'Check important pages more often and the rest less. A page in several groups follows the most frequent one.'
+            'Check important pages more frequently and other pages less frequently. If a page is in more than 1 page group, SEO Sentry uses the most frequent setting.'
           )}
           label={__('Check these pages')}
           name="frequency"

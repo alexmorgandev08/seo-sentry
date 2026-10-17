@@ -19,7 +19,7 @@ class AdminCheckerMiddleware
     {
         if (!Capabilities::check('manage_options')) {
             return Response::error(
-                __('You do not have permission to perform this action.', 'seo-sentry'),
+                __('You do not have permission to do this action.', 'seo-sentry'),
                 403
             );
         }

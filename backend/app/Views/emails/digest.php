@@ -34,7 +34,7 @@ $severityColours = [
                 <?php
                 printf(
                     /* translators: %s: date */
-                    esc_html__('Since %s. Until this is fixed, no all-clear can be trusted.', 'seo-sentry'),
+                    esc_html__('Since %s. Until you fix this problem, do not trust an "all clear" result.', 'seo-sentry'),
                     esc_html($impaired['since'])
                 );
                 ?>
@@ -43,7 +43,7 @@ $severityColours = [
     <?php endif; ?>
 
     <?php if (!empty($findings)) : ?>
-        <p><?php esc_html_e('These changes were detected on your site:', 'seo-sentry'); ?></p>
+        <p><?php esc_html_e('SEO Sentry found these changes on your site:', 'seo-sentry'); ?></p>
 
         <?php foreach ($findings as $finding) : ?>
             <?php
@@ -65,7 +65,7 @@ $severityColours = [
                 <?php if ($explanation) : ?>
                     <p style="margin:0 0 8px;"><?php echo esc_html($explanation['what']); ?></p>
                     <p style="margin:0 0 8px;color:#50575e;"><strong><?php esc_html_e('Why it matters:', 'seo-sentry'); ?></strong> <?php echo esc_html($explanation['why']); ?></p>
-                    <p style="margin:0 0 8px;color:#50575e;"><strong><?php esc_html_e('What to check:', 'seo-sentry'); ?></strong> <?php echo esc_html($explanation['check']); ?></p>
+                    <p style="margin:0 0 8px;color:#50575e;"><strong><?php esc_html_e('What to examine:', 'seo-sentry'); ?></strong> <?php echo esc_html($explanation['check']); ?></p>
                 <?php endif; ?>
 
                 <table style="font-size:13px;border-collapse:collapse;margin-top:6px;">
@@ -81,7 +81,7 @@ $severityColours = [
 
                 <?php if (!empty($events)) : ?>
                     <p style="margin:10px 0 0;font-size:13px;color:#646970;">
-                        <?php esc_html_e('Site events shortly before this change (they may be related, but we cannot be certain):', 'seo-sentry'); ?><br>
+                        <?php esc_html_e('Site events that occurred a short time before this change. They can be related, but SEO Sentry cannot be sure:', 'seo-sentry'); ?><br>
                         <?php foreach ($events as $event) : ?>
                             • <?php echo esc_html(str_replace('_', ' ', $event['type'])); ?>
                             <strong><?php echo esc_html($event['subject']); ?></strong>
@@ -96,7 +96,7 @@ $severityColours = [
     <?php if (!empty($resolved)) : ?>
         <div style="border:1px solid #dcdcde;border-left:4px solid #008a20;padding:14px 16px;margin-bottom:16px;">
             <div style="font-weight:600;margin-bottom:6px;"><?php esc_html_e('All clear', 'seo-sentry'); ?></div>
-            <p style="margin:0 0 8px;"><?php esc_html_e('These critical problems are no longer present:', 'seo-sentry'); ?></p>
+            <p style="margin:0 0 8px;"><?php esc_html_e('These critical problems are not present now:', 'seo-sentry'); ?></p>
             <ul style="margin:0;padding-left:18px;">
                 <?php foreach ($resolved as $finding) : ?>
                     <li>
@@ -117,6 +117,6 @@ $severityColours = [
     <p style="font-size:13px;color:#646970;">
         <a href="<?php echo esc_url($adminUrl); ?>" style="color:#2271b1;"><?php esc_html_e('View all changes', 'seo-sentry'); ?></a>
         &nbsp;·&nbsp;
-        <?php esc_html_e('Sent by SEO Sentry. Change your alert settings in the plugin.', 'seo-sentry'); ?>
+        <?php esc_html_e('SEO Sentry sent this alert. You can change your alert settings in SEO Sentry.', 'seo-sentry'); ?>
     </p>
 </div>

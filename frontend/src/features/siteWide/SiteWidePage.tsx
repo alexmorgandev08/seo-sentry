@@ -81,9 +81,9 @@ export default function SiteWidePage() {
           <Alert
             showIcon
             description={__(
-              'WordPress is asking search engines to stay away. Until this is turned off in Settings → Reading, your pages will not appear in search results.'
+              'Go to Settings → Reading. Clear the "Discourage search engines from indexing this site" box. Until you do this, your pages will not show in search results.'
             )}
-            message={__('Search engines are being discouraged from indexing this site')}
+            message={__('WordPress tells search engines not to index this site')}
             type="error"
           />
         )}
@@ -91,7 +91,7 @@ export default function SiteWidePage() {
         <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-2">
           <Card loading={isLoading} title={__('robots.txt')}>
             {robots.reachable === false ? (
-              <Placeholder text={__('Not reachable.')} />
+              <Placeholder text={__('SEO Sentry cannot get this file.')} />
             ) : (
               <div className="flex flex-col gap-3">
                 {Boolean(robots.blocks_all) && (
@@ -108,9 +108,7 @@ export default function SiteWidePage() {
                 {robotsText ? (
                   <pre className="scm-code max-h-56">{robotsText}</pre>
                 ) : (
-                  <Placeholder
-                    text={__('This file is empty, so nothing is blocked from crawling.')}
-                  />
+                  <Placeholder text={__('This file is empty, so it does not block crawlers.')} />
                 )}
               </div>
             )}
@@ -124,7 +122,7 @@ export default function SiteWidePage() {
                     {Number(sitemap.url_count ?? 0)}
                   </span>
                   <span className="text-sm" style={{ color: palette.inkMuted }}>
-                    {__('URLs listed')}
+                    {__('URLs in the sitemap')}
                   </span>
                 </div>
                 <a
@@ -136,15 +134,17 @@ export default function SiteWidePage() {
                   {String(sitemap.url ?? '')}
                 </a>
                 {sitemap.valid === false && (
-                  <Alert showIcon message={__('Sitemap is not valid XML.')} type="error" />
+                  <Alert showIcon message={__('The sitemap is not valid XML.')} type="error" />
                 )}
               </div>
             ) : (
               <Placeholder
                 text={
                   isPublic
-                    ? __('No sitemap found at the usual locations.')
-                    : __('WordPress disables the sitemap while search engines are discouraged.')
+                    ? __('SEO Sentry did not find a sitemap at the usual locations.')
+                    : __(
+                        'WordPress turns off the sitemap when it tells search engines not to index the site.'
+                      )
                 }
               />
             )}
@@ -154,7 +154,9 @@ export default function SiteWidePage() {
         <Card
           extra={
             <span className="text-xs" style={{ color: palette.inkMuted }}>
-              {__('Last-seen counts only requests that reach WordPress. Caching can hide visits.')}
+              {__(
+                'This table counts only the requests that get to WordPress. A page cache can hide some visits.'
+              )}
             </span>
           }
           loading={isLoading}
@@ -179,13 +181,13 @@ export default function SiteWidePage() {
                 )
               },
               {
-                title: __('robots.txt says'),
+                title: __('Rule in robots.txt'),
                 dataIndex: 'slug',
                 width: 170,
                 render: (slug: string) => verdictTag(aiBots[slug])
               },
               {
-                title: __('Last seen here'),
+                title: __('Last visit'),
                 dataIndex: 'last_seen',
                 width: 220,
                 render: (lastSeen: null | string, row) => {
@@ -200,7 +202,7 @@ export default function SiteWidePage() {
                   if (!lastSeen) {
                     return (
                       <span className="text-xs" style={{ color: palette.inkFaint }}>
-                        {__('Never seen')}
+                        {__('No visits')}
                       </span>
                     )
                   }

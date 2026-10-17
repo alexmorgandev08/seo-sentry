@@ -19,7 +19,7 @@ class NonceCheckerMiddleware
     public function handle(Request $request)
     {
         if (!wp_verify_nonce($request->get('_ajax_nonce'), Config::withPrefix('nonce'))) {
-            return Response::error(__('Nonce verification failed.', 'seo-sentry'), 403);
+            return Response::error(__('The security token is not valid. Reload the page and try again.', 'seo-sentry'), 403);
         }
 
         return true;
