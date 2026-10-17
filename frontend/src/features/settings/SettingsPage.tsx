@@ -20,7 +20,7 @@ import {
   Tabs
 } from 'antd'
 import { useEffect, useState } from 'react'
-import { __ } from '@common/helpers/i18nWrap'
+import { __, sprintf } from '@common/helpers/i18nWrap'
 import useDebounce from '@common/hooks/useDebounce'
 import { usePreviewReport, useSendReport, useSettings, useUpdateSettings } from '@/api/queries'
 import PageHeader from '@components/PageHeader'
@@ -32,6 +32,7 @@ import type { ReactNode } from 'react'
 import AlertRulesSettings from './alerts/AlertRulesSettings'
 import AutoMonitorSettings from './AutoMonitorSettings'
 import ExpectedStateSettings from './expectations/ExpectedStateSettings'
+import { useEmailTime } from './emailTime'
 import IgnoreRules from './IgnoreRules'
 import LogoPicker from './LogoPicker'
 import SettingRow, { CARD_STYLES } from './SettingRow'
@@ -148,15 +149,20 @@ export default function SettingsPage() {
 
   const isEmailDisabled = isLoading || !draft?.email_enabled
   const isReportDisabled = isLoading || !draft?.report_enabled
+  // Not from the draft: the time is changed on the Alert rules tab, and the
+  // draft here is seeded only once.
+  const emailTime = useEmailTime()
 
   const tabItems = [
     {
       key: 'checking',
-      label: __('Checking'),
+      label: __('Checks'),
       children: (
         <Card styles={CARD_STYLES}>
           <SettingRow
-            description={__('Also checks right after you update a plugin, theme, or WordPress.')}
+            description={__(
+              'SEO Sentry also checks your pages after you update a plugin, a theme or WordPress.'
+            )}
             icon={<ClockCircleOutlined />}
             title={__('How often to check for changes')}
           >
@@ -169,14 +175,14 @@ export default function SettingsPage() {
                 { label: __('Every hour'), value: 'hourly' },
                 { label: __('Twice a day'), value: 'twicedaily' },
                 { label: __('Once a day'), value: 'daily' },
-                { label: __('Off (only when I click Check now)'), value: 'off' }
+                { label: __('Off (only when you click Check now)'), value: 'off' }
               ]}
             />
           </SettingRow>
 
           <SettingRow
             description={__(
-              "Set to 0 to keep everything forever. Critical changes you haven't fixed are never deleted."
+              'Enter 0 to keep all history. SEO Sentry does not delete critical changes that are not resolved.'
             )}
             icon={<HistoryOutlined />}
             title={__('How long to keep history')}
@@ -200,7 +206,7 @@ export default function SettingsPage() {
       children: (
         <Card styles={CARD_STYLES}>
           <SettingRow
-            description={__('Get one email after a check run finds something worth knowing.')}
+            description={__('SEO Sentry sends you 1 email for each check that finds changes.')}
             icon={<MailOutlined />}
             title={__('Turn on email alerts')}
           >
@@ -213,7 +219,7 @@ export default function SettingsPage() {
 
           <SettingRow
             description={__(
-              "Smaller changes are still recorded - you just won't get an email about them."
+              'SEO Sentry also records the other changes, but it does not send an email about them.'
             )}
             icon={<FilterOutlined />}
             title={__('Email me about')}
@@ -225,14 +231,14 @@ export default function SettingsPage() {
               onChange={value => save('email_threshold', value)}
               options={[
                 { label: __('Critical changes only'), value: 'critical' },
-                { label: __('Critical and warnings'), value: 'warning' },
-                { label: __('Everything, including info'), value: 'info' }
+                { label: __('Critical and Warning changes'), value: 'warning' },
+                { label: __('All changes, including Info'), value: 'info' }
               ]}
             />
           </SettingRow>
 
           <SettingRow
-            description={__('Leave empty to use your WordPress admin email.')}
+            description={__('Leave this field empty to use your WordPress admin email.')}
             icon={<SendOutlined />}
             title={__('Send emails to')}
           >
@@ -276,7 +282,9 @@ export default function SettingsPage() {
         title={__('Weekly client report')}
       >
         <SettingRow
-          description={__('Your branding, not ours. Choose how often below.')}
+          description={__(
+            'The report shows your brand, not SEO Sentry. Select how often to send it below.'
+          )}
           icon={<MailOutlined />}
           title={__('Email a client report')}
         >
@@ -290,8 +298,18 @@ export default function SettingsPage() {
         <SettingRow
           description={
             draft?.report_frequency === 'monthly'
-              ? __('Covers the previous calendar month. Sent at the start of each month.')
-              : __('Covers the last seven days. Sent every Monday morning.')
+              ? sprintf(
+                  __(
+                    'The report shows the previous calendar month. SEO Sentry sends it on the first Monday of each month, at %s. Change the time on the Alert rules tab.'
+                  ),
+                  emailTime
+                )
+              : sprintf(
+                  __(
+                    'The report shows the last 7 days. SEO Sentry sends it every Monday, at %s. Change the time on the Alert rules tab.'
+                  ),
+                  emailTime
+                )
           }
           icon={<CalendarOutlined />}
           title={__('How often')}
@@ -309,7 +327,7 @@ export default function SettingsPage() {
         </SettingRow>
 
         <SettingRow
-          description={__('Comma-separated. These addresses receive the report.')}
+          description={__('Put a comma between the addresses. These addresses get the report.')}
           icon={<SendOutlined />}
           title={__('Send the report to')}
         >
@@ -322,7 +340,7 @@ export default function SettingsPage() {
         </SettingRow>
 
         <SettingRow
-          description={__('Shown in place of the plugin name.')}
+          description={__('The report shows this name in place of SEO Sentry.')}
           title={__('Your business name')}
         >
           <Input
@@ -332,7 +350,10 @@ export default function SettingsPage() {
           />
         </SettingRow>
 
-        <SettingRow description={__('Used for headings and links.')} title={__('Accent colour')}>
+        <SettingRow
+          description={__('The report uses this colour for headings and links.')}
+          title={__('Accent colour')}
+        >
           {/* Dragging only previews; the colour is saved once it is let go. No
               alpha: the server accepts plain hex (#rrggbb) only. */}
           <ColorPicker
@@ -352,7 +373,7 @@ export default function SettingsPage() {
 
         <SettingRow
           description={__(
-            'Shown at the top of the report. Pick one from your Media Library or upload a new one.'
+            'The report shows the logo at the top. Select an image from your Media Library or upload a new image.'
           )}
           title={__('Logo')}
         >
@@ -364,7 +385,7 @@ export default function SettingsPage() {
         </SettingRow>
 
         <SettingRow
-          description={__('Replaces the default line at the bottom of the report.')}
+          description={__('This text replaces the default line at the bottom of the report.')}
           title={__('Footer text')}
         >
           <Input
@@ -392,7 +413,7 @@ export default function SettingsPage() {
         <Card styles={CARD_STYLES}>
           <SettingRow
             description={__(
-              'Notes the date each known AI crawler last visited. Full-page caching can hide some visits.'
+              'SEO Sentry records the date of the last visit from each known AI crawler. Full-page caching can hide some visits.'
             )}
             icon={<RobotOutlined />}
             title={__('Record when AI crawlers visit')}

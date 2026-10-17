@@ -1,8 +1,9 @@
 import { App, Checkbox, Form, Input, Modal, Radio, Select, Switch } from 'antd'
-import { __ } from '@common/helpers/i18nWrap'
+import { __, sprintf } from '@common/helpers/i18nWrap'
 import { useSaveAlertRule } from '@/api/queries'
 import { changeLabel } from '@components/changeLabels'
 import type { AlertMeta, AlertRule, PageGroup } from '@/api/types'
+import { useEmailTime } from '../emailTime'
 
 const NEW_RULE: Omit<AlertRule, 'id'> = {
   name: '',
@@ -18,8 +19,8 @@ const NEW_RULE: Omit<AlertRule, 'id'> = {
 
 export const SEVERITY_OPTIONS = [
   { label: __('Critical only'), value: 'critical' },
-  { label: __('Warning and above'), value: 'warning' },
-  { label: __('Everything, including info'), value: 'info' }
+  { label: __('Warning and Critical'), value: 'warning' },
+  { label: __('All changes, including Info'), value: 'info' }
 ]
 
 interface Props {
@@ -35,6 +36,7 @@ export default function RuleModal({ rule, groups, meta, onClose }: Props) {
   const [form] = Form.useForm<AlertRule>()
   const saveRule = useSaveAlertRule()
   const scope = Form.useWatch('scope', form)
+  const emailTime = useEmailTime()
 
   const submit = async () => {
     const values = await form.validateFields()
@@ -71,18 +73,18 @@ export default function RuleModal({ rule, groups, meta, onClose }: Props) {
         <Form.Item
           label={__('Name')}
           name="name"
-          rules={[{ required: true, whitespace: true, message: __('Give the rule a name.') }]}
+          rules={[{ required: true, whitespace: true, message: __('Enter a name for the rule.') }]}
         >
-          <Input placeholder={__('e.g. Money pages to the client')} />
+          <Input placeholder={__('For example: Important pages to the client')} />
         </Form.Item>
 
-        <Form.Item label={__('Alert on')} name="min_severity">
+        <Form.Item label={__('Send alerts for')} name="min_severity">
           <Select options={SEVERITY_OPTIONS} />
         </Form.Item>
 
         <Form.Item
-          extra={__('Leave empty to include every kind of change.')}
-          label={__('Only these changes')}
+          extra={__('Leave this field empty to include all types of change.')}
+          label={__('Only these types of change')}
           name="change_types"
         >
           <Select
@@ -114,15 +116,15 @@ export default function RuleModal({ rule, groups, meta, onClose }: Props) {
           <Form.Item
             label={__('Page group')}
             name="group_id"
-            rules={[{ required: true, message: __('Choose a page group.') }]}
+            rules={[{ required: true, message: __('Select a page group.') }]}
           >
             <Select options={groups.map(group => ({ label: group.name, value: group.id }))} />
           </Form.Item>
         )}
 
         <Form.Item
-          extra={__('Press Enter or comma after each address.')}
-          label={__('Email to')}
+          extra={__('Press Enter or type a comma after each address.')}
+          label={__('Send email to')}
           name="emails"
         >
           <Select
@@ -135,7 +137,7 @@ export default function RuleModal({ rule, groups, meta, onClose }: Props) {
 
         <Form.Item
           className="mb-2"
-          extra={__('Uses the webhook addresses set on the Integrations page.')}
+          extra={__('This option uses the webhook endpoint that you set on the Integrations page.')}
           label={__('Also send to')}
         >
           <div className="flex gap-6">
@@ -148,8 +150,8 @@ export default function RuleModal({ rule, groups, meta, onClose }: Props) {
         <Form.Item label={__('When')} name="mode">
           <Radio.Group
             options={[
-              { label: __('Right after each check'), value: 'immediate' },
-              { label: __('Once a day, at 8:00'), value: 'daily' }
+              { label: __('After each check'), value: 'immediate' },
+              { label: sprintf(__('Once a day, at %s'), emailTime), value: 'daily' }
             ]}
           />
         </Form.Item>

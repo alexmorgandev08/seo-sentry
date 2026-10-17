@@ -1,4 +1,4 @@
-import { App, Alert, Button, Card, Empty, List, Popconfirm, Switch, Tag } from 'antd'
+import { App, Alert, Button, Card, Empty, List, Popconfirm, Select, Switch, Tag } from 'antd'
 import { useState } from 'react'
 import { __, sprintf } from '@common/helpers/i18nWrap'
 import {
@@ -7,32 +7,38 @@ import {
   useDeleteAlertRule,
   useDeletePageGroup,
   usePageGroups,
-  useSaveAlertRule
+  useSaveAlertRule,
+  useSettings,
+  useUpdateSettings
 } from '@/api/queries'
 import { changeLabel } from '@components/changeLabels'
 import type { AlertRule, PageGroup } from '@/api/types'
+import { EMAIL_TIME_OPTIONS, useEmailTime } from '../emailTime'
+import SettingRow, { CARD_STYLES } from '../SettingRow'
 import GroupModal, { FREQUENCY_OPTIONS } from './GroupModal'
 import RuleModal, { SEVERITY_OPTIONS } from './RuleModal'
 
-/** One readable line per rule: "Warning and above · Money pages · 2 email, Webhooks · Daily". */
+/** One readable line per rule: "Warning and Critical · Important pages · Email (2), Webhooks · Once a day". */
 const describeRule = (rule: AlertRule, groups: PageGroup[]) => {
   const parts = [SEVERITY_OPTIONS.find(option => option.value === rule.min_severity)?.label ?? '']
 
   if (rule.change_types.length === 1) parts.push(changeLabel(rule.change_types[0]))
   if (rule.change_types.length > 1)
-    parts.push(sprintf(__('%d kinds of change'), rule.change_types.length))
+    parts.push(sprintf(__('%d types of change'), rule.change_types.length))
 
   if (rule.scope === 'site') parts.push(__('Site-wide checks'))
   if (rule.scope === 'group') {
-    parts.push(groups.find(group => group.id === rule.group_id)?.name ?? __('(missing group)'))
+    parts.push(
+      groups.find(group => group.id === rule.group_id)?.name ?? __('(page group not found)')
+    )
   }
 
   const channels = [
-    ...(rule.emails.length > 0 ? [sprintf(__('%d email'), rule.emails.length)] : []),
+    ...(rule.emails.length > 0 ? [sprintf(__('Email (%d)'), rule.emails.length)] : []),
     ...(rule.webhook ? [__('Webhooks')] : [])
   ]
   parts.push(channels.join(', '))
-  parts.push(rule.mode === 'daily' ? __('Daily digest') : __('Right away'))
+  parts.push(rule.mode === 'daily' ? __('Once a day') : __('After each check'))
 
   return parts.join(' · ')
 }
@@ -55,6 +61,9 @@ export default function AlertRulesSettings() {
   const saveRule = useSaveAlertRule()
   const deleteRule = useDeleteAlertRule()
   const deleteGroup = useDeletePageGroup()
+  const { data: settings } = useSettings()
+  const emailTime = useEmailTime()
+  const updateSettings = useUpdateSettings()
   const [editingRule, setEditingRule] = useState<null | Partial<AlertRule>>(null)
   const [editingGroup, setEditingGroup] = useState<null | Partial<PageGroup>>(null)
 
@@ -63,15 +72,41 @@ export default function AlertRulesSettings() {
 
   const onError = (error: Error) => message.error(error.message)
 
+  const saveEmailTime = (email_time: string) =>
+    updateSettings.mutate(
+      { email_time },
+      {
+        onSuccess: () => message.success({ content: __('Settings saved.'), key: 'settings-saved' }),
+        onError
+      }
+    )
+
   return (
     <div className="flex flex-col gap-4">
       <Alert
         showIcon
         message={__(
-          'Rules send extra alerts on top of the main email alert. To make rules your only alerts, switch off "Turn on email alerts" on the Email alerts tab.'
+          'Alert rules send more alerts in addition to the main email alert. To use only alert rules, turn off "Turn on email alerts" on the Email alerts tab.'
         )}
         type="info"
       />
+
+      <Card styles={CARD_STYLES}>
+        <SettingRow
+          description={__(
+            'SEO Sentry sends the daily alert emails and the client report at this time. It uses the time zone in Settings → General.'
+          )}
+          title={__('Send time for scheduled emails')}
+        >
+          <Select
+            className="w-full"
+            disabled={!settings}
+            options={EMAIL_TIME_OPTIONS}
+            value={emailTime}
+            onChange={saveEmailTime}
+          />
+        </SettingRow>
+      </Card>
 
       <Card
         extra={
@@ -88,7 +123,7 @@ export default function AlertRulesSettings() {
             emptyText: (
               <Empty
                 description={__(
-                  'No rules yet. Example: email the client only when a money page goes noindex.'
+                  'There are no alert rules. For example, you can send an email to the client only when an important page changes to noindex.'
                 )}
                 image={Empty.PRESENTED_IMAGE_SIMPLE}
               />
@@ -108,7 +143,7 @@ export default function AlertRulesSettings() {
                 </Button>,
                 <Popconfirm
                   key="delete"
-                  title={__('Delete this rule?')}
+                  title={__('Delete this alert rule?')}
                   onConfirm={() => deleteRule.mutate({ id: rule.id }, { onError })}
                 >
                   <Button danger size="small">
@@ -132,7 +167,7 @@ export default function AlertRulesSettings() {
       </Card>
 
       <Card
-        extra={<Button onClick={() => setEditingGroup({})}>{__('Add group')}</Button>}
+        extra={<Button onClick={() => setEditingGroup({})}>{__('Add page group')}</Button>}
         title={__('Page groups')}
       >
         <List
@@ -142,7 +177,7 @@ export default function AlertRulesSettings() {
             emptyText: (
               <Empty
                 description={__(
-                  'Group pages so a rule can target them, e.g. all products, or everything under /blog/.'
+                  'There are no page groups. Add a page group to use it in an alert rule, for example: all products, or all pages under /blog/.'
                 )}
                 image={Empty.PRESENTED_IMAGE_SIMPLE}
               />
@@ -156,7 +191,7 @@ export default function AlertRulesSettings() {
                 </Button>,
                 <Popconfirm
                   key="delete"
-                  title={__('Delete this group?')}
+                  title={__('Delete this page group?')}
                   onConfirm={() => deleteGroup.mutate({ id: group.id }, { onError })}
                 >
                   <Button danger size="small">

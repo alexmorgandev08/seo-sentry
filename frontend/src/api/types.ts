@@ -196,6 +196,7 @@ export interface Settings {
   webhook_urls: string[]
   webhook_threshold: Severity
   webhook_secret: string
+  email_time: string
   report_enabled: boolean
   report_frequency: 'weekly' | 'monthly'
   report_recipients: string
