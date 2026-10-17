@@ -29,7 +29,7 @@
     "pretty:fix": "npx prettier ./frontend/src --check --write",
     "preview": "vite preview",
     "prod": "pnpm prod:free && pnpm prod:pro",
-    "prod-zip": "pnpm prod:free-zip",
+    "prod-zip": "pnpm prod:free-zip && pnpm prod:pro-zip",
     "prod:free": "VITE_PRO=false vite build",
     "prod:pro": "VITE_PRO=true vite build",
     "production": "composer install --no-dev && pnpm install && pnpm i18n && pnpm build",
@@ -43,6 +43,7 @@
     "update-ver": "node bin/update-version.js -p seo-sentry",
     "package": "node scripts/build-zip.mjs",
     "prod:free-zip": "pnpm build:free && node scripts/build-zip.mjs",
+    "prod:pro-zip": "node scripts/build-zip.mjs ../seo-sentry-pro",
     "i18n": "wp i18n make-pot . languages/seo-sentry.pot --slug=seo-sentry --exclude=frontend,node_modules,vendor,tests,assets,dist,scripts"
   },
   "dependencies": {

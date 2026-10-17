@@ -1,6 +1,10 @@
 /**
  * Packages a distributable plugin zip.
  *
+ * Usage: `node scripts/build-zip.mjs [plugin-dir]`. With no argument it packages
+ * this plugin; `../seo-sentry-pro` packages the pro add-on. Every zip lands in
+ * this project's dist/, so a release's zips sit side by side.
+ *
  * Two things this has to get right that a plain `zip -r` does not:
  *   1. The folder inside the zip must be named after the plugin slug, not the
  *      checkout directory, since WordPress derives the plugin folder from it.
@@ -13,8 +17,9 @@ import path from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
 
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
-const distDir = path.join(root, 'dist')
+const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
+const root = process.argv[2] ? path.resolve(process.argv[2]) : projectRoot
+const distDir = path.join(projectRoot, 'dist')
 
 /** Only these are copied. An allowlist means .env or .git can never slip in. */
 const INCLUDE = [
@@ -151,14 +156,18 @@ function verifyBuiltAssets(slug) {
 }
 
 const plugin = readPluginHeader()
-if (!plugin) fail('No plugin file with a "Plugin Name:" header found in the project root.')
+if (!plugin) fail(`No plugin file with a "Plugin Name:" header found in ${root}.`)
 
 log(`Packaging ${plugin.name} ${plugin.version} (slug: ${plugin.slug})`)
 
-verifyBuiltAssets(plugin.slug)
+// Only a plugin with its own frontend has built assets to verify. Pro has
+// none: its screens ship inside the free plugin's bundle.
+if (fs.existsSync(path.join(root, 'frontend'))) {
+  verifyBuiltAssets(plugin.slug)
+}
 
 // Stage under the slug so the zip expands to the right folder name.
-const stageRoot = fs.mkdtempSync(path.join(distDir.replace(/dist$/, ''), '.scm-package-'))
+const stageRoot = fs.mkdtempSync(path.join(projectRoot, '.scm-package-'))
 const stage = path.join(stageRoot, plugin.slug)
 fs.mkdirSync(stage, { recursive: true })
 
@@ -223,7 +232,7 @@ try {
   if (smuggled.length > 0) fail(`Excluded files ended up in the zip: ${smuggled.join(', ')}`)
 
   log('')
-  log(`✔ ${path.relative(root, zipPath)}`)
+  log(`✔ ${path.relative(projectRoot, zipPath)}`)
   log(`  ${entries.length} files, ${mb(fs.statSync(zipPath).size)} zipped (${mb(directorySize(stage))} unpacked)`)
   log(`  top-level folder: ${plugin.slug}/`)
 } finally {
