@@ -24,6 +24,15 @@ const SCHEMA_SUGGESTIONS = [
   'LocalBusiness'
 ]
 
+/**
+ * A radio needs a string value, but a rule stores "do not check" as null.
+ * The radio shows '' and the form keeps null, so the saved rule is unchanged.
+ */
+const NOT_CHECKED = {
+  getValueProps: (value: unknown) => ({ value: value ?? '' }),
+  normalize: (value: string) => (value === '' ? null : value)
+}
+
 interface Props {
   /** null = closed; an object without an id = creating. */
   rule: null | Partial<ExpectedRule>
@@ -128,20 +137,20 @@ export default function ExpectationModal({ rule, onClose }: Props) {
         )}
 
         <div className="grid grid-cols-1 gap-x-6 sm:grid-cols-2">
-          <Form.Item label={__('Indexing')} name={['checks', 'index']}>
+          <Form.Item {...NOT_CHECKED} label={__('Indexing')} name={['checks', 'index']}>
             <Radio.Group
               options={[
-                { label: __('Do not check'), value: null },
+                { label: __('Do not check'), value: '' },
                 { label: __('Must be indexable'), value: 'index' },
                 { label: __('Must stay noindex'), value: 'noindex' }
               ]}
             />
           </Form.Item>
 
-          <Form.Item label={__('Links')} name={['checks', 'follow']}>
+          <Form.Item {...NOT_CHECKED} label={__('Links')} name={['checks', 'follow']}>
             <Radio.Group
               options={[
-                { label: __('Do not check'), value: null },
+                { label: __('Do not check'), value: '' },
                 { label: __('Must be followed'), value: 'follow' },
                 { label: __('Must stay nofollow'), value: 'nofollow' }
               ]}

@@ -26,9 +26,7 @@ interface ConfigType {
   NONCE: string
   PLUGIN_ADMIN_URL: string
   PLUGIN_SLUG: string
-  PRO_SLUG?: string
   PRO_URL: string
-  PRO_VERSION?: string
   PRODUCT_NAME: string
   REDIRECT_URI: string
   REST_NONCE: string
@@ -55,10 +53,8 @@ const config = {
   NONCE: getServerVariable('nonce', ''),
   PLUGIN_ADMIN_URL: getServerVariable('pluginAdminURL'),
   PLUGIN_SLUG: getServerVariable('pluginSlug', 'seo-sentry'),
-  PRO_SLUG: getServerVariable('proSlug'),
   // Where "Get SEO Sentry Pro" leads. Placeholder until the pro page is live.
   PRO_URL: 'https://wordpress.org/plugins/seo-sentry/',
-  PRO_VERSION: getServerVariable('proPluginVersion'),
   PRODUCT_NAME: 'seo-sentry',
   REDIRECT_URI: getServerVariable('redirectUri'),
   REST_NONCE: getServerVariable('restNonce', ''),

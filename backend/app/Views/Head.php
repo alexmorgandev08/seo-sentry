@@ -76,9 +76,6 @@ class Head
                 // license its screens stay visible but locked behind an
                 // upgrade prompt.
                 'isSeoSentryProExist' => Config::hasProLicense() ? '1' : '0',
-                'proPluginVersion'    => defined('SEO_SENTRY_PRO_VERSION')
-                    ? SEO_SENTRY_PRO_VERSION
-                    : '',
             ]
         );
 

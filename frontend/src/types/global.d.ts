@@ -27,8 +27,6 @@ declare const SERVER_VARIABLES: {
   nonce: string
   pluginAdminURL: string
   pluginSlug: string
-  proPluginVersion: string
-  proSlug: string
   redirectUri: string
   restNonce: string
   rootURL: string
