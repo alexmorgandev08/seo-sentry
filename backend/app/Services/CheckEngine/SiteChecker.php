@@ -8,6 +8,7 @@ if (!defined('ABSPATH')) {
 
 use SeoSentry\Config;
 use SeoSentry\Models\Target;
+use SeoSentry\Services\Settings;
 
 /**
  * The three site-wide checks: robots.txt, XML sitemap, and the site's own
@@ -26,6 +27,14 @@ class SiteChecker
 
     /** @var bool true when the collected list stopped short of the whole sitemap */
     private $incomplete = false;
+
+    /**
+     * Every address locateSitemap() asked for, in order, and what came back.
+     * Stored with a "not found" result, so the user can see why.
+     *
+     * @var array<int, array{url: string, status: null|int, bytes: int, error: null|string}>
+     */
+    private $attempts = [];
 
     /** @var PageFetcher */
     private $fetcher;
@@ -78,11 +87,20 @@ class SiteChecker
 
     public function checkSitemap()
     {
-        $url = $this->locateSitemap();
+        // An address set in Settings wins: the user knows where the sitemap
+        // is, and the automatic search would only look somewhere else.
+        $manual = (string) Settings::get('sitemap_url');
+        $url    = $manual !== '' ? $manual : $this->locateSitemap();
 
         if (!$url) {
             return [
-                'fields' => ['url' => null, 'reachable' => false, 'valid' => false, 'url_count' => 0],
+                'fields' => [
+                    'url'       => null,
+                    'reachable' => false,
+                    'valid'     => false,
+                    'url_count' => 0,
+                    'tried'     => $this->attempts,
+                ],
                 'error'  => null,
                 'status' => null,
             ];
@@ -106,6 +124,8 @@ class SiteChecker
             'reachable' => $reachable,
             'valid'     => $parsed['valid'],
             'url_count' => $parsed['count'],
+            // True when the address comes from Settings, not the search.
+            'manual'    => $manual !== '',
         ];
 
         // Hands an add-on every URL the check read, and whether that was all
@@ -244,7 +264,9 @@ class SiteChecker
      */
     private function locateSitemap()
     {
-        $robots = $this->fetcher->fetch(home_url('/robots.txt'));
+        $this->attempts = [];
+
+        $robots = $this->attempt(home_url('/robots.txt'));
         if (!$robots->isTransportError() && $robots->status === 200) {
             $fromRobots = $this->sitemapUrlsFrom($robots->body);
             if ($fromRobots !== []) {
@@ -253,13 +275,28 @@ class SiteChecker
         }
 
         foreach (['/wp-sitemap.xml', '/sitemap_index.xml', '/sitemap.xml'] as $path) {
-            $candidate = $this->fetcher->fetch(home_url($path));
+            $candidate = $this->attempt(home_url($path));
             if (!$candidate->isTransportError() && $candidate->status === 200 && $candidate->body !== '') {
                 return home_url($path);
             }
         }
 
         return null;
+    }
+
+    /** One fetch for locateSitemap(), recorded in $attempts. */
+    private function attempt($url)
+    {
+        $result = $this->fetcher->fetch($url);
+
+        $this->attempts[] = [
+            'url'    => $url,
+            'status' => $result->status,
+            'bytes'  => \strlen($result->body),
+            'error'  => $result->error,
+        ];
+
+        return $result;
     }
 
     private function sitemapUrlsFrom($raw)

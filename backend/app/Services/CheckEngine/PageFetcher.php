@@ -36,6 +36,18 @@ class PageFetcher
         $result->status = (int) wp_remote_retrieve_response_code($response);
         $result->body   = (string) wp_remote_retrieve_body($response);
 
+        // An empty "200 OK" is not a page, a robots.txt or a sitemap. Some hosts
+        // answer a site's requests to itself like this (a firewall or a cache in
+        // front of WordPress). Counted as a success, it reported an all-clear
+        // for a check that read nothing.
+        if ($result->status >= 200 && $result->status < 300 && trim($result->body) === '') {
+            $result->error = sprintf(
+                /* translators: %d: HTTP status code, for example 200 */
+                __('The server sent an empty response (HTTP %d).', 'seo-sentry'),
+                $result->status
+            );
+        }
+
         $headers = wp_remote_retrieve_headers($response);
         if (\is_object($headers) && method_exists($headers, 'getAll')) {
             $result->headers = $headers->getAll();

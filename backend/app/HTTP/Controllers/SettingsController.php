@@ -62,6 +62,15 @@ class SettingsController
             $partial['retention_days'] = $days;
         }
 
+        if ($request->has('sitemap_url')) {
+            $url = esc_url_raw(trim((string) $request->get('sitemap_url')));
+            if ($url !== '' && !\in_array(wp_parse_url($url, PHP_URL_SCHEME), ['http', 'https'], true)) {
+                return Response::error(__('Enter the full sitemap address, starting with https://', 'seo-sentry'));
+            }
+
+            $partial['sitemap_url'] = $url;
+        }
+
         if ($request->has('bot_tracking')) {
             $partial['bot_tracking'] = (bool) $request->get('bot_tracking');
         }

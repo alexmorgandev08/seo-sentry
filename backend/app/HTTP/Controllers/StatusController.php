@@ -16,6 +16,7 @@ use SeoSentry\Models\Target;
 use SeoSentry\Providers\CronProvider;
 use SeoSentry\Services\Baseline\BaselineManager;
 use SeoSentry\Services\CheckEngine\AiBots;
+use SeoSentry\Services\CheckEngine\CheckRunner;
 use SeoSentry\Services\Db;
 use SeoSentry\Services\ImpairedState;
 use SeoSentry\Services\Settings;
@@ -72,6 +73,7 @@ class StatusController
                 'checked_at' => $target->last_checked_at,
                 'fields'     => $snapshot ? (json_decode((string) $snapshot->fields, true) ?: []) : [],
                 'error'      => $snapshot ? $snapshot->fetch_error : null,
+                'status'     => $snapshot && $snapshot->http_status !== null ? (int) $snapshot->http_status : null,
             ];
         }
 
@@ -85,6 +87,23 @@ class StatusController
                 'impaired'      => ImpairedState::details(),
             ]
         );
+    }
+
+    /**
+     * Checks the sitemap now, not at the next scheduled run, so the Site Checks
+     * card can show the result of a new sitemap address at once. It is a
+     * normal check: a change it finds is recorded like any other.
+     */
+    public function checkSitemap()
+    {
+        $target = Target::findOne(['type' => Target::TYPE_SITEMAP]);
+
+        if ($target) {
+            $errors = 0;
+            (new CheckRunner())->checkTarget($target, null, $errors);
+        }
+
+        return $this->site();
     }
 
     public function armBaseline()

@@ -1,11 +1,12 @@
 import { Alert, Card, Table, Tag } from 'antd'
 import { useQuery } from '@tanstack/react-query'
-import { __ } from '@common/helpers/i18nWrap'
+import { __, sprintf } from '@common/helpers/i18nWrap'
 import call from '@/api/client'
 import { parseUtc } from '@common/helpers/datetime'
 import PageHeader from '@components/PageHeader'
 import When from '@components/When'
 import { palette } from '@config/theme'
+import SitemapAddress from './SitemapAddress'
 
 interface BotRow {
   slug: string
@@ -18,6 +19,15 @@ interface BotRow {
 interface SitePanel {
   checked_at: null | string
   fields: Record<string, unknown>
+  error: null | string
+  status: null | number
+}
+
+/** One address the sitemap search asked for, and what came back. */
+interface SitemapAttempt {
+  url: string
+  status: null | number
+  bytes: number
   error: null | string
 }
 
@@ -57,6 +67,143 @@ function Placeholder({ text }: { text: string }) {
   )
 }
 
+/** "HTTP 200 · 468 bytes" (or "HTTP 200" with no size), or the error, for one request. */
+const describeResponse = (
+  status: null | number | undefined,
+  bytes?: number,
+  error?: null | string
+) => {
+  if (error) return error
+  if (bytes === undefined) return sprintf(__('HTTP %d'), Number(status ?? 0))
+
+  return sprintf(__('HTTP %1$d · %2$d bytes'), Number(status ?? 0), bytes)
+}
+
+/**
+ * A check whose request failed. Without this, a failed request had no fields
+ * and read as "this file is empty" or "no sitemap found", which hid the cause.
+ */
+function FetchFailed({ error }: { error: string }) {
+  return (
+    <Alert
+      showIcon
+      description={__(
+        'Your server must let the site send requests to its own address. These are called loopback requests. If this error stays, ask your hosting company to allow them.'
+      )}
+      message={sprintf(__('SEO Sentry could not read this file: %s'), error)}
+      type="warning"
+    />
+  )
+}
+
+/** When the check ran, and what the server sent. Shown under each card. */
+function ResponseLine({ panel, bytes }: { panel: null | SitePanel | undefined; bytes?: number }) {
+  if (!panel || panel.error || panel.status === null) return null
+
+  return (
+    <div
+      className="flex flex-wrap items-center gap-x-2 text-xs"
+      style={{ color: palette.inkMuted }}
+    >
+      <span>{describeResponse(panel.status, bytes)}</span>
+      <span>·</span>
+      <When value={panel.checked_at} />
+    </div>
+  )
+}
+
+/**
+ * What the last sitemap check found: a failed request, the sitemap, an address
+ * that did not answer with a sitemap, or no sitemap at all.
+ */
+function SitemapResult({
+  panel,
+  isPublic
+}: {
+  panel: null | SitePanel | undefined
+  isPublic: boolean
+}) {
+  const sitemap = panel?.fields ?? {}
+
+  if (panel?.error) return <FetchFailed error={panel.error} />
+
+  if (sitemap.reachable) {
+    return (
+      <div className="flex flex-col gap-2">
+        <div className="flex items-baseline gap-2">
+          <span className="text-3xl font-semibold leading-none">
+            {Number(sitemap.url_count ?? 0)}
+          </span>
+          <span className="text-sm" style={{ color: palette.inkMuted }}>
+            {__('URLs in the sitemap')}
+          </span>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <a
+            className="break-all text-xs"
+            href={String(sitemap.url ?? '')}
+            rel="noreferrer"
+            target="_blank"
+          >
+            {String(sitemap.url ?? '')}
+          </a>
+          {Boolean(sitemap.manual) && <Tag bordered={false}>{__('Address from Settings')}</Tag>}
+        </div>
+        {sitemap.valid === false && (
+          <Alert showIcon message={__('The sitemap is not valid XML.')} type="error" />
+        )}
+        <ResponseLine panel={panel} />
+      </div>
+    )
+  }
+
+  // An address is known (from Settings or robots.txt) but did not answer with
+  // a sitemap: say which address, and what it sent.
+  if (sitemap.url) {
+    return (
+      <Placeholder
+        text={sprintf(
+          __('SEO Sentry could not read the sitemap at %1$s. The server sent HTTP %2$d.'),
+          String(sitemap.url),
+          Number(panel?.status ?? 0)
+        )}
+      />
+    )
+  }
+
+  const tried = (sitemap.tried ?? []) as SitemapAttempt[]
+
+  return (
+    <div className="flex flex-col gap-2">
+      <Placeholder
+        text={
+          isPublic
+            ? __('SEO Sentry did not find a sitemap at the usual locations.')
+            : __(
+                'WordPress turns off the sitemap when it tells search engines not to index the site.'
+              )
+        }
+      />
+      {/* What each address sent, so a 404, a redirect or a blocked request is
+          visible without a terminal. */}
+      {tried.length > 0 && (
+        <div className="flex flex-col gap-1 text-xs">
+          <span className="font-medium">{__('SEO Sentry looked at these addresses:')}</span>
+          {tried.map(attempt => (
+            <div key={attempt.url} className="flex flex-wrap gap-x-2">
+              <span className="break-all">{attempt.url}</span>
+              <span style={{ color: palette.inkMuted }}>
+                {describeResponse(attempt.status, attempt.bytes, attempt.error)}
+              </span>
+            </div>
+          ))}
+          <When className="mt-1" value={panel?.checked_at} />
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function SiteWidePage() {
   const { data, isLoading } = useQuery({
     queryKey: ['site-status'],
@@ -65,7 +212,10 @@ export default function SiteWidePage() {
 
   const robots = data?.robots?.fields ?? {}
   const robotsText = String(robots.raw ?? '').trim()
+  const robotsError = data?.robots?.error
   const sitemap = data?.sitemap?.fields ?? {}
+  const isFoundAutomatically =
+    Boolean(sitemap.reachable) && !sitemap.manual && !data?.sitemap?.error
   const settings = data?.settings?.fields ?? {}
   const aiBots = (robots.ai_bots ?? {}) as Record<string, string>
   const isPublic = settings.blog_public !== false
@@ -90,8 +240,15 @@ export default function SiteWidePage() {
 
         <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-2">
           <Card loading={isLoading} title={__('robots.txt')}>
-            {robots.reachable === false ? (
-              <Placeholder text={__('SEO Sentry cannot get this file.')} />
+            {robotsError ? (
+              <FetchFailed error={robotsError} />
+            ) : robots.reachable === false ? (
+              <Placeholder
+                text={sprintf(
+                  __('SEO Sentry cannot get this file. The server sent HTTP %d.'),
+                  Number(data?.robots?.status ?? 0)
+                )}
+              />
             ) : (
               <div className="flex flex-col gap-3">
                 {Boolean(robots.blocks_all) && (
@@ -110,44 +267,21 @@ export default function SiteWidePage() {
                 ) : (
                   <Placeholder text={__('This file is empty, so it does not block crawlers.')} />
                 )}
+                <ResponseLine bytes={String(robots.raw ?? '').length} panel={data?.robots} />
               </div>
             )}
           </Card>
 
           <Card loading={isLoading} title={__('XML sitemap')}>
-            {sitemap.reachable ? (
-              <div className="flex flex-col gap-2">
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-semibold leading-none">
-                    {Number(sitemap.url_count ?? 0)}
-                  </span>
-                  <span className="text-sm" style={{ color: palette.inkMuted }}>
-                    {__('URLs in the sitemap')}
-                  </span>
-                </div>
-                <a
-                  className="break-all text-xs"
-                  href={String(sitemap.url ?? '')}
-                  rel="noreferrer"
-                  target="_blank"
-                >
-                  {String(sitemap.url ?? '')}
-                </a>
-                {sitemap.valid === false && (
-                  <Alert showIcon message={__('The sitemap is not valid XML.')} type="error" />
-                )}
-              </div>
-            ) : (
-              <Placeholder
-                text={
-                  isPublic
-                    ? __('SEO Sentry did not find a sitemap at the usual locations.')
-                    : __(
-                        'WordPress turns off the sitemap when it tells search engines not to index the site.'
-                      )
-                }
-              />
-            )}
+            <div className="flex flex-col gap-3">
+              <SitemapResult isPublic={isPublic} panel={data?.sitemap} />
+              {/* Open whenever the sitemap is not read automatically: then the
+                address is what the user needs to change. Keyed on that, so
+                it opens or closes again when a new check changes the result. */}
+              {data && (
+                <SitemapAddress key={String(isFoundAutomatically)} open={!isFoundAutomatically} />
+              )}
+            </div>
           </Card>
         </div>
 

@@ -1,6 +1,7 @@
 import {
   CalendarOutlined,
   ClockCircleOutlined,
+  FileSearchOutlined,
   FilterOutlined,
   HistoryOutlined,
   MailOutlined,
@@ -195,6 +196,22 @@ export default function SettingsPage() {
               min={0}
               value={draft?.retention_days}
               onChange={value => saveTyped('retention_days', value ?? 0)}
+            />
+          </SettingRow>
+
+          <SettingRow
+            description={__(
+              'Leave this field empty, and SEO Sentry finds the sitemap automatically. Enter an address only if SEO Sentry cannot find your sitemap.'
+            )}
+            icon={<FileSearchOutlined />}
+            title={__('Sitemap address')}
+          >
+            <Input
+              disabled={isLoading}
+              placeholder="https://example.com/sitemap_index.xml"
+              type="url"
+              value={draft?.sitemap_url}
+              onChange={event => saveTyped('sitemap_url', event.target.value.trim())}
             />
           </SettingRow>
         </Card>

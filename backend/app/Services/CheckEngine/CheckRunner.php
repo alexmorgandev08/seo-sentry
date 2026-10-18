@@ -280,9 +280,17 @@ class CheckRunner
         $isImpaired = $total > 0 && $transportErrors >= $total;
 
         if ($isImpaired) {
-            ImpairedState::mark(
-                __('The site could not get its own pages (loopback requests fail).', 'seo-sentry')
-            );
+            // The real error says what to ask the host about: a timeout, a
+            // certificate problem, an empty response from a firewall.
+            $failed = Snapshot::where('check_run_id', $runId)->whereNotNull('fetch_error')->first();
+            $reason = __('The site could not get its own pages (loopback requests fail).', 'seo-sentry');
+
+            if ($failed) {
+                /* translators: %s: the error message, for example "Operation timed out" */
+                $reason .= ' ' . sprintf(__('Last error: %s', 'seo-sentry'), $failed->fetch_error);
+            }
+
+            ImpairedState::mark($reason);
         } else {
             ImpairedState::clear();
         }

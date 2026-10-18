@@ -37,6 +37,7 @@ Route::group(
 
         Route::post('dashboard/summary', [StatusController::class, 'dashboard']);
         Route::post('status/site', [StatusController::class, 'site']);
+        Route::post('status/check-sitemap', [StatusController::class, 'checkSitemap']);
         Route::post('baseline/arm', [StatusController::class, 'armBaseline']);
         Route::post('baseline/disarm', [StatusController::class, 'disarmBaseline']);
     }

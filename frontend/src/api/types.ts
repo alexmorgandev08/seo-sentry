@@ -191,6 +191,7 @@ export interface Settings {
   email_threshold: Severity
   email_recipient: string
   retention_days: number
+  sitemap_url: string
   bot_tracking: boolean
   webhook_enabled: boolean
   webhook_urls: string[]

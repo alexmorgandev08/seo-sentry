@@ -28,6 +28,9 @@ class Settings
             'email_recipient'   => '',
             'retention_days'    => 0, // 0 = keep forever; open criticals are never trimmed
             'bot_tracking'      => true,
+            // Empty: find the sitemap automatically. Set it when the sitemap
+            // is at an address the automatic search does not know.
+            'sitemap_url'       => '',
         ]);
     }
 
