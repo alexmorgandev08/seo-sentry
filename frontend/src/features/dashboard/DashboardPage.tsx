@@ -309,7 +309,16 @@ export default function DashboardPage() {
               <TypeBreakdown range={range} />
             </Card>
 
-            <Card title={__('AI crawler visits')}>
+            {/* Always shown: the full table on Site Checks lists every known
+                crawler and its robots.txt rule, even before the first visit. */}
+            <Card
+              extra={
+                <Button size="small" type="link" onClick={() => navigate('/site')}>
+                  {__('View all')}
+                </Button>
+              }
+              title={__('AI crawler visits')}
+            >
               <CrawlerActivity />
             </Card>
 
