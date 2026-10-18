@@ -331,6 +331,21 @@ Deleting the plugin removes its plugin-specific tables, options, scheduled event
 
 == Changelog ==
 
+= v1.2.0 (Oct 19, 2026) =
+
+* New: Detects when your server starts to tell search engines not to index a page with the X-Robots-Tag HTTP header.
+* New: Detects when your server stops sending a noindex instruction for a page in the X-Robots-Tag header.
+* New: Detects when the X-Robots-Tag header that your server sends for a page changes.
+* New: If SEO Sentry cannot find your sitemap, you can enter its address on the Site Checks page or in Settings > Checks.
+* New: The app now shows what each SEO Sentry Pro feature does, with a short summary on each locked screen.
+* Improved: Site Checks shows the HTTP status and size of each answer, and every address that SEO Sentry looked at to find the sitemap.
+* Improved: All labels, help text, change explanations and alert emails use short, plain English that is easier to read, also if English is not your first language.
+* Improved: The AI crawler visits card on the Dashboard has a "View all" link to the full list on Site Checks.
+* Improved: Long change descriptions in Change History show on 2 lines, and the table always fits the screen.
+* Fixed: If the server sends an empty answer to SEO Sentry's own requests, SEO Sentry now reports a monitoring problem instead of "No critical issues".
+* Fixed: A failed robots.txt or sitemap check now shows the real error instead of "This file is empty" or "No sitemap found".
+* Fixed: The browser console no longer shows "Missing server variable" errors.
+
 = v1.1.0 (Oct 7, 2026) =
 
 * New: Switch the dashboard between the last 7 days, 30 days and 12 months.
