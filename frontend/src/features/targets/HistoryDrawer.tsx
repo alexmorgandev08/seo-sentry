@@ -37,7 +37,8 @@ const FIELD_LABELS: Record<string, string> = {
   word_count: __('Word count'),
   og: __('Open Graph tags'),
   twitter: __('Twitter/X card tags'),
-  hreflang: __('Hreflang links')
+  hreflang: __('Hreflang links'),
+  link_rels: __('Link follow status')
 }
 
 const fieldLabel = (key: string) => FIELD_LABELS[key] ?? key

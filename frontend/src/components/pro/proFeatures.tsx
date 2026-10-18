@@ -93,7 +93,7 @@ export const PRO_FEATURES = {
     benefits: [
       __('Ranks the plugin, theme and setting events that possibly caused each change'),
       __('"Rank Math was deactivated 12 minutes before this"'),
-      __('Also includes hreflang, redirect chain and sitemap URL checks')
+      __('Also includes checks for hreflang, redirect chains, sitemap URLs and nofollow links')
     ]
   },
   integrations: {

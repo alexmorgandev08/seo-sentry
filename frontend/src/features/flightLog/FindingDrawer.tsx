@@ -110,6 +110,49 @@ function LikelyCauses({ causes }: { causes: LikelyCause[] }) {
   )
 }
 
+interface LinkChange {
+  url: string
+  before: string
+  after: string
+}
+
+/**
+ * Pro's link checks: each link whose follow status changed, before and after.
+ * The before/after text above lists only the first few; this lists up to 50.
+ */
+function AffectedLinks({ finding }: { finding: Finding }) {
+  const links = Array.isArray(finding.context.links) ? (finding.context.links as LinkChange[]) : []
+  if (links.length === 0) return null
+
+  const more = Number(finding.context.count ?? links.length) - links.length
+
+  return (
+    <Card size="small" title={__('Affected links')}>
+      <div className="flex flex-col gap-2.5">
+        {links.map(link => (
+          <div key={link.url} className="flex min-w-0 flex-col gap-1">
+            <a className="break-all text-sm" href={link.url} rel="noreferrer" target="_blank">
+              {link.url}
+            </a>
+            <span className="flex flex-wrap items-center gap-1.5 text-xs">
+              <Tag bordered={false}>{link.before}</Tag>
+              <span style={{ color: palette.inkFaint }}>→</span>
+              <Tag bordered={false} color="blue">
+                {link.after}
+              </Tag>
+            </span>
+          </div>
+        ))}
+        {more > 0 && (
+          <Typography.Text className="text-xs" type="secondary">
+            {sprintf(__('And %d more links.'), more)}
+          </Typography.Text>
+        )}
+      </div>
+    </Card>
+  )
+}
+
 /** Without pro: says the events below can be ranked, and offers the upgrade. */
 function LockedCauses({ onUnlock }: { onUnlock: () => void }) {
   return (
@@ -273,6 +316,8 @@ export default function FindingDrawer({ finding, onClose }: Props) {
               {renderValue(finding.after)}
             </div>
           </Card>
+
+          <AffectedLinks finding={finding} />
 
           <Card size="small" title={__('What this means')}>
             <div className="flex flex-col gap-3 text-sm">
