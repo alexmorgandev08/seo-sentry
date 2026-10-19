@@ -53,8 +53,8 @@ const config = {
   NONCE: getServerVariable('nonce', ''),
   PLUGIN_ADMIN_URL: getServerVariable('pluginAdminURL'),
   PLUGIN_SLUG: getServerVariable('pluginSlug', 'seo-sentry'),
-  // Where "Get SEO Sentry Pro" leads. Placeholder until the pro page is live.
-  PRO_URL: 'https://wordpress.org/plugins/seo-sentry/',
+  // Where "Upgrade to Pro" leads.
+  PRO_URL: 'https://seo-sentry.com/pricing/',
   PRODUCT_NAME: 'seo-sentry',
   REDIRECT_URI: getServerVariable('redirectUri'),
   REST_NONCE: getServerVariable('restNonce', ''),
