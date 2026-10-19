@@ -331,6 +331,10 @@ Deleting the plugin removes its plugin-specific tables, options, scheduled event
 
 == Changelog ==
 
+= v1.2.1 (Oct 19, 2026) =
+
+* Fixed: The Upgrade to Pro button now opens the SEO Sentry Pro pricing page.
+
 = v1.2.0 (Oct 19, 2026) =
 
 * New: Detects when your server starts to tell search engines not to index a page with the X-Robots-Tag HTTP header.
